@@ -1,13 +1,39 @@
 <%@ include templates/euweb.etag as euweb %>
 <%- euweb:head title="Hello" %>
 
-<%- euweb:errors %>
+<h3>Greeter Module</h3>
+<img src="/images/pic.gif" class="floatTL" alt="Something scenic" />
+
+<p>
+The greeter module is nothing more than an example of the features that exist in Web Clay.
+It shows off how to use modules and actions, default form population, form validation, 
+error handling, form submissions, parameter type conversion and routine registration.
+</p>
+
+<p>
+	It's not really meant to do anything but that. Oh... It also shows of some advanced
+	usage of ETML. The error display is just an ETML tag, it includes headers and footers,
+	uses quite a few common syntaxes from Euphoria as well as some ETML related ones.
+</p>
+
+<p>
+	Another purpose for the greeter module is to get the theme working properly. On this
+	page is error information (when a form is submitted incorrectly), a form, a paragraph
+	of text, headings, a table, login box, search box, etc... Please scroll to see it all.
+</p>
+				
+<br class="clear" />
 
 <% if length(@greet_name) then %>
+	<h4>Greeting</h3>
 	<div>
 		<%= @greet_greeting %>, <%= @greet_name %>!
 	</div>
 <% end if %>
+
+<h4>Greeting Form</h4>
+
+<%- euweb:errors %>
 
 <form method="post" action="/greeter/greet.wc">
 	<table class="form">
@@ -17,6 +43,7 @@
 			    <input type="text" name="greeting" value="<%= @greeting %>"
 				    {greeting_error=1:}class="error"{:greeting_error}/>
 					<!--{greeting_emsg}-->
+					Do not say "Goodbye".
 			</td>
 		</tr>
 
@@ -35,5 +62,142 @@
 		</tr>
 	</table>
 </form>
+
+<br class="clear" />
+
+
+<h4>Table Example</h4>
+<table class="list">
+    <tr>
+        <th width="1%" nowrap="nowrap">&nbsp;</th>
+        <th width="75%">Subject</th>
+        <th width="2%">Replies</th>
+        <th width="2%">Views</th>
+        <th width="20%"><span>Last</span> Post</th>
+    </tr>
+        
+    <tr class="normal">
+        <td nowrap="nowrap">
+            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107790#107790"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                <img src="http://openeuphoria.org/EUforum/images/new.png" />
+                
+        </td>
+        <td>
+            <a href="index.cgi?module=forum&action=flat&amp;id=107790#unread">SVN2386 DOS error</a><br />
+            &nbsp;&nbsp;&nbsp;by bernie 2 hours ago
+        </td>
+        <td align="center">1</td>
+        <td align="center">19</td>
+        <td>
+                
+            by jeremy<br />
+            &nbsp;&nbsp;&nbsp;49 minutes ago
+                
+        </td>
+    </tr>
+
+    </tr>
+        
+    <tr class="normal">
+        <td nowrap="nowrap">
+            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107769#107769"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                
+        </td>
+        <td>
+            <a href="index.cgi?module=forum&action=flat&amp;id=107769#unread">Euphoria Logo Contest, will you participate?</a><br />
+            &nbsp;&nbsp;&nbsp;by jeremy 1 day ago
+        </td>
+        <td align="center">3</td>
+        <td align="center">60</td>
+        <td>
+                
+            by jeremy<br />
+            &nbsp;&nbsp;&nbsp;52 minutes ago
+                
+        </td>
+    </tr>
+
+    </tr>
+        
+    <tr class="stipple">
+        <td nowrap="nowrap">
+            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107702#107702"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                
+        </td>
+        <td>
+            <a href="index.cgi?module=forum&action=flat&amp;id=107702#unread">ver 4  source preproc..e ?</a><br />
+            &nbsp;&nbsp;&nbsp;by bernie 3 days ago
+        </td>
+        <td align="center">5</td>
+        <td align="center">106</td>
+        <td>
+                
+            by SDPringle<br />
+            &nbsp;&nbsp;&nbsp;2 hours ago
+                
+        </td>
+    </tr>
+
+    <tr class="stipple">
+        <td nowrap="nowrap">
+            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107702#107702"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                
+        </td>
+        <td>
+            <a href="index.cgi?module=forum&action=flat&amp;id=107702#unread">ver 4  source preproc..e ?</a><br />
+            &nbsp;&nbsp;&nbsp;by bernie 3 days ago
+        </td>
+        <td align="center">5</td>
+        <td align="center">106</td>
+        <td>
+                
+            by SDPringle<br />
+            &nbsp;&nbsp;&nbsp;2 hours ago
+                
+        </td>
+    </tr>
+
+    <tr class="normal">
+        <td nowrap="nowrap">
+            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107790#107790"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                <img src="http://openeuphoria.org/EUforum/images/new.png" />
+                
+        </td>
+        <td>
+            <a href="index.cgi?module=forum&action=flat&amp;id=107790#unread">SVN2386 DOS error</a><br />
+            &nbsp;&nbsp;&nbsp;by bernie 2 hours ago
+        </td>
+        <td align="center">1</td>
+        <td align="center">19</td>
+        <td>
+                
+            by jeremy<br />
+            &nbsp;&nbsp;&nbsp;49 minutes ago
+                
+        </td>
+    </tr>
+
+    <tr class="normal">
+        <td nowrap="nowrap">
+            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107769#107769"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                
+        </td>
+        <td>
+            <a href="index.cgi?module=forum&action=flat&amp;id=107769#unread">Euphoria Logo Contest, will you participate?</a><br />
+            &nbsp;&nbsp;&nbsp;by jeremy 1 day ago
+        </td>
+        <td align="center">3</td>
+        <td align="center">60</td>
+        <td>
+                
+            by jeremy<br />
+            &nbsp;&nbsp;&nbsp;52 minutes ago
+                
+        </td>
+    </tr>
+
+    </tr>
+</table>
+
 
 <%- euweb:foot %>

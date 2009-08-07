@@ -106,8 +106,12 @@
 </div>
 
 <div id="footer" class="fluid">
-	Copyright &copy; <%= datetime:format(datetime:now(), "%Y") %> by The OpenEuphoria Group. All rights reserved. <br />
+	Copyright &copy; <%= datetime:format(datetime:now(), "%Y") %> by The OpenEuphoria Group. All rights reserved.
+	<br />
+ 	<img src="/images/poweredby-euphoria.png" />
+	<!-- <br />
 	Design by <a href="http://www.nodethirtythree.com/">NodeThirtyThree Design</a>.
+	-->
 </div>
 
 </body>
