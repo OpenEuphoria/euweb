@@ -1,0 +1,39 @@
+<%@ include templates/euweb.etag as euweb %>
+<%- euweb:head title="Hello" %>
+
+<%- euweb:errors %>
+
+<% if length(@greet_name) then %>
+	<div>
+		<%= @greet_greeting %>, <%= @greet_name %>!
+	</div>
+<% end if %>
+
+<form method="post" action="/greeter/greet.wc">
+	<table class="form">
+		<tr>
+			<th>Greeting:</th>
+			<td>
+			    <input type="text" name="greeting" value="<%= @greeting %>"
+				    {greeting_error=1:}class="error"{:greeting_error}/>
+					<!--{greeting_emsg}-->
+			</td>
+		</tr>
+
+		<tr>
+			<th>Name:</th>
+			<td>
+				<input type="text" name="name" value="<%= @name %>"
+					{name_error=1:}class="error"{:name_error}/>
+					<!--{name_emsg}-->
+			</td>
+		</tr>
+
+		<tr>
+			<th>&nbsp;</th>
+			<td><input type="submit" class="button" value="Greet Me" /></td>
+		</tr>
+	</table>
+</form>
+
+<%- euweb:foot %>
