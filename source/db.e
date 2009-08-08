@@ -48,3 +48,12 @@ public function sqlDateTimeToDateTime(sequence sD)
         defaulted_value(sD[15..16], 0),
         defaulted_value(sD[18..19], 0))
 end function
+
+--
+-- Return a count of records of the supplied database
+-- 
+
+public function record_count(sequence table)
+ 	return defaulted_value(mysql_query_object(db, "SELECT COUNT(*) FROM " & table), 0)
+end function
+
