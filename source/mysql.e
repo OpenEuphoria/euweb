@@ -1,6 +1,7 @@
-include std/dll.e
-include std/machine.e
 include std/datetime.e as dt
+include std/dll.e
+include std/error.e
+include std/machine.e
 include std/search.e
 
 export sequence last_statements = {}
@@ -8,7 +9,7 @@ export atom last_stmts_limit = 10
 
 -- Helper Functions
 
-export function sprintf_sql(sequence sql, object values)
+function sprintf_sql(sequence sql, object values)
     sequence ns
     integer in_fmt, idx, ch
 
@@ -27,39 +28,44 @@ export function sprintf_sql(sequence sql, object values)
             in_fmt = 1
         elsif in_fmt = 1 then
             in_fmt = 0
-
-            if ch = '%' then
-                ns &= '%'
-            elsif ch = 'b' then -- boolean
-                if values[idx] then
-                    ns &= "true"
-                else
-                    ns &= "false"
-                end if
-            elsif ch = 'S' then -- unescaped string
-                ns &= sprintf("'%s'", {values[idx]})
-                idx += 1
-            elsif ch = 's' then -- escaped string
-				-- TODO: Use MySQL's escape string function
-                ns &= sprintf("'%s'", {find_replace("\\", find_replace("'", values[idx], "''", 0), "\\\\")})
-                idx += 1
-            elsif ch = 'd' then  -- integer
-                ns &= sprintf("%d", {values[idx]})
-                idx += 1
-            elsif ch = 'D' then -- date
-                -- TODO
-                ns &= dt:format(values[idx], "'%Y-%m-%d'")
-                idx += 1
-            elsif ch = 'T' then -- datetime
-                ns &= dt:format(values[idx], "'%Y-%m-%d %H:%M:%S'")
-                idx += 1
-            elsif ch = 't' then -- time
-                ns &= dt:format(values[idx], "'%H:%M:%S'")
-                idx += 1
-            elsif ch = 'f' then -- float
-                ns &= sprintf("%f", {values[idx]})
-                idx += 1
-            end if
+			
+			switch ch do
+	            case '%' then
+	                ns &= '%'
+	            case 'b' then -- boolean
+	                if values[idx] then
+	                    ns &= "true"
+	                else
+	                    ns &= "false"
+	                end if
+	            case 'S' then -- unescaped string
+	                ns &= sprintf("'%s'", {values[idx]})
+	                idx += 1
+	            case 's' then -- escaped string
+					-- TODO: Use MySQL's escape string function
+	                ns &= sprintf("'%s'", { find_replace("\\", 
+						find_replace("'", values[idx], "''", 0), "\\\\")})
+	                idx += 1
+	            case 'd' then  -- integer
+	                ns &= sprintf("%d", {values[idx]})
+	                idx += 1
+	            case 'D' then -- date
+	                -- TODO
+	                ns &= dt:format(values[idx], "'%Y-%m-%d'")
+	                idx += 1
+	            case 'T' then -- datetime
+	                ns &= dt:format(values[idx], "'%Y-%m-%d %H:%M:%S'")
+	                idx += 1
+	            case 't' then -- time
+	                ns &= dt:format(values[idx], "'%H:%M:%S'")
+	                idx += 1
+	            case 'f' then -- float
+	                ns &= sprintf("%f", {values[idx]})
+	                idx += 1
+				case else
+					crash("Unknown format character: %s (parameter #%d) in SQL %s", 
+						{ ch, idx, sql })
+            end switch
         else
             ns &= ch
         end if
@@ -68,23 +74,12 @@ export function sprintf_sql(sequence sql, object values)
     return ns
 end function
 
+constant lib_mysql = open_dll({ "libmysqlclient.so", "libmysqlclient.dylib", 
+	"libmysql.dll" })
 
-ifdef LINUX then
-	constant lib_mysql = open_dll("libmysqlclient.so")
-
-elsifdef FREEBSD then
-	constant lib_mysql = open_dll("libmysqlclient.so")
-
-elsifdef OSX then
-	constant lib_mysql = open_dll("libmysqlclient.dylib")
-
-elsifdef WIN32 then
-	constant lib_mysql = open_dll("libmysql.dll")
-
-else
-	puts(1, "Unknown OS\n")
-	abort(1)
-end ifdef
+if lib_mysql = -1 then
+	crash("Could not find a suitable MySQL shared library")
+end if
 
 constant 
 	h_mysql_init = define_c_func(lib_mysql, "mysql_init", {C_POINTER}, C_POINTER),
@@ -174,7 +169,7 @@ end procedure
 --**
 -- Retrieve an error message
 
-export function mysql_error(atom dbh)
+public function mysql_error(atom dbh)
 	sequence message=""
 	atom p_error = c_func(h_mysql_error, {dbh})
 
@@ -189,35 +184,35 @@ end function
 --**
 -- Get the last inserted id
 
-export function mysql_insert_id(atom dbh)
+public function mysql_insert_id(atom dbh)
 	return c_func(h_mysql_insert_id, {dbh})
 end function
 
 --**
 -- Return the field count for the most recently used query
 
-export function mysql_field_count(atom dbh)
+public function mysql_field_count(atom dbh)
 	return c_func(h_mysql_field_count, {dbh})
 end function
 
 --**
 -- Use a MySQL result
 
-export function mysql_use_result(atom dbh)
+public function mysql_use_result(atom dbh)
 	return c_func(h_mysql_use_result, {dbh})
 end function
 
 --**
 -- Free a MySQL result
 
-export procedure mysql_free_result(atom dbr)
+public procedure mysql_free_result(atom dbr)
 	c_proc(h_mysql_free_result, {dbr})
 end procedure
 
 --**
 -- Return the number of fields in a MySQL result
 
-export function mysql_num_fields(atom dbr)
+public function mysql_num_fields(atom dbr)
 	return c_func(h_mysql_num_fields, {dbr})
 end function
 
@@ -230,8 +225,11 @@ end function
 
 --**
 -- Fetch the next row in a MySQL result
+-- 
+-- Return:
+--   A ##sequence## of field values.
 
-export function mysql_fetch_row(atom dbr)
+public function mysql_fetch_row(atom dbr)
 	atom p_lengths, p_row = c_func(h_mysql_fetch_row, {dbr})
 	integer field_count
 	object data = {}, tmp
@@ -253,7 +251,7 @@ end function
 --**
 -- Query the database
 
-export function mysql_query(atom dbh, sequence sql, object data={})
+public function mysql_query(atom dbh, sequence sql, object data={})
 	integer result
 	atom p_sql
 
@@ -271,7 +269,7 @@ export function mysql_query(atom dbh, sequence sql, object data={})
 	return result
 end function
 
-export function mysql_query_one(atom dbh, sequence sql, object data={})
+public function mysql_query_one(atom dbh, sequence sql, object data={})
 	atom res
 
 	if mysql_query(dbh, sql, data) then

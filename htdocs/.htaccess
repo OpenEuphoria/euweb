@@ -5,7 +5,7 @@
 #
 
 Options +ExecCGI
-AddHandler cgi-script ex
+AddHandler cgi-script ex exe
 
 SetEnv EUDIR C:/Development/Projects/euphoria
 
