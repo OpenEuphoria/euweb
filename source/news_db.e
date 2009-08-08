@@ -46,7 +46,7 @@ public function get_article_list(integer page, integer per_page)
 		ORDER BY publish_at DESC
 		LIMIT %d OFFSET %d`
 
-	object data = mysql_query_rows(db, sql, { per_page, page * per_page })
+	object data = mysql_query_rows(db, sql, { per_page, (page - 1) * per_page })
 	if atom(data) then
 		crash("Couldn't query the " & dbtable & " table: %s", { mysql_error(db) })
 	end if
