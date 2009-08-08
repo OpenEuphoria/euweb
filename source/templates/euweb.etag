@@ -28,11 +28,21 @@
 		
 		<div id="menu">
 			<ul>
-				<li><a href="/index.wc" class="active">Home</a></li>
-				<li><a href="/forum/index.wc">Forum</a></li>
-				<li><a href="/wiki/index.wc">Wiki</a></li>
-				<li><a href="/manual/index.html">Manual</a></li>
-				<li><a href="/download/index.wc">Download</a></li>
+				<li><a href="/index.wc"
+				  	<% if length(#active) = 0 or equal(#active, "home") then %>class="active"<% end if %>
+					>Home</a></li>
+				<li><a href="/forum/index.wc" 
+				  <% if equal(#active, "forum") then %>class="active"<% end if %>
+				  >Forum</a></li>
+				<li><a href="/wiki/index.wc" 
+				  <% if equal(#active, "wiki") then %>class="active"<% end if %>
+				  >Wiki</a></li>
+				<li><a href="/manual/index.html" 
+				  <% if equal(#active, "manual") then %>class="active"<% end if %>>
+				  Manual</a></li>
+				<li><a href="/download/index.wc"
+				  <% if equal(#active, "download") then %>class="active"<% end if %>
+				  >Download</a></li>
 				<li><a href="http://sourceforge.net/tracker/?group_id=182827&atid=902782">Bug Tracker</a></li>
 			</ul>
 		</div>
@@ -131,3 +141,30 @@
 		</ul>
 	</div>
 <% end if %>
+
+{{{paginator}}}
+<%
+integer size = 10, mid_size = 5
+integer current_page = #page
+integer per_page = #per_page
+integer last_page = floor(#total / per_page)
+integer start = current_page
+
+if start <= mid_size then
+	start = 1
+elsif start >= (last_page - mid_size) then
+	start = last_page - size
+else
+	start -= mid_size
+end if
+%>
+Pages 
+<a href="<%= #base %>?page=1&per_page=<%= sprintf("%d", #per_page) %>">newest</a>
+...
+<% for i = start to start + size do %>
+<a <% if i = current_page then %>class="current_page"<% end if %> href="<%= #base %>?page=<%= sprintf("%d", i) %>&per_page=<%= sprintf("%d", #per_page) %>"
+><%= sprintf("%d", i) %></a>,
+<% end for %>
+...
+<a href="<%= #base %>?page=<%= sprintf("%d", last_page) %>&per_page=<%= sprintf("%d", per_page) %>"
+	>oldest</a>

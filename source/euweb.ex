@@ -1,5 +1,8 @@
 -- WebClay includes
 include webclay/webclay.e as wc
+include webclay/logging.e as log
+
+log:open("euweb.log")
 
 -- Configuration includes
 include config.e

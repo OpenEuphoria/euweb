@@ -478,3 +478,12 @@ div.error_box {
 #main_inner table.list td {
 	padding: 2px 5px 2px 5px;
 }
+
+#main_inner .current_page {
+	font-weight: bold;
+	font-size: 1.3em;
+}
+
+.centered {
+	text-align: center;
+}

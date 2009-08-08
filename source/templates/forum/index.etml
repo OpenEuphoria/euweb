@@ -1,0 +1,47 @@
+<%@ include templates/euweb.etag as euweb %>
+<%@ include forum_db.e %>
+<%- euweb:head title="Forum Index" active="forum" %>
+
+<h3>Forum Index</h3>
+<table class="list">
+    <tr>
+        <th width="1%" nowrap="nowrap">&nbsp;</th>
+        <th width="75%">Subject</th>
+        <th width="2%">Replies</th>
+        <th width="2%">Views</th>
+        <th width="20%"><span>Last</span> Post</th>
+    </tr>
+    
+    <% 
+    sequence threads = @threads
+    for i = 1 to length(@threads) do 
+        sequence thread = threads[i]
+        %>
+        <tr class="normal">
+            <td nowrap="nowrap">
+                <a href="/forum/thread_<%= thread[THREAD_ID] %>.wc"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+            </td>
+            <td>
+                <a href="/forum/<%= thread[THREAD_ID] %>.wc"><%= thread[THREAD_SUBJECT] %></a><br />
+                &nbsp;&nbsp;&nbsp;by <%= thread[THREAD_AUTHOR_NAME] %> 
+                at <%= thread[THREAD_CREATED_AT] %>
+            </td>
+            <td align="center"><%= thread[THREAD_VIEWS] %></td>
+            <td align="center"><%= thread[THREAD_REPLIES] %></td>
+            <td>
+                
+                by <%= thread[THREAD_LAST_POST_BY] %><br />
+                &nbsp;&nbsp;&nbsp;<%= thread[THREAD_LAST_POST_AT] %>
+                
+            </td>
+        </tr>
+    <% end for %>
+</table>
+<div class="centered">
+    <%- euweb:paginator base="/forum/index.wc" page=@page per_page=@per_page total=@thread_count %>
+    <br />
+    <%= sprintf("%d", @message_count) %> messages in
+    <%= sprintf("%d", @thread_count) %> threads,
+</div>
+
+<%- euweb:foot %>

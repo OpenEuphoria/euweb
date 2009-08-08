@@ -9,7 +9,7 @@ include std/error.e
 include std/get.e
 
 include config.e
-include mysql.e
+public include mysql.e
 
 public atom db = 0
 

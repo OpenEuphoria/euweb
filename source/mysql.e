@@ -4,7 +4,7 @@ include std/error.e
 include std/machine.e
 include std/search.e
 
-export sequence last_statements = {}
+public sequence last_statements = {}
 export atom last_stmts_limit = 10
 
 -- Helper Functions
@@ -286,4 +286,29 @@ public function mysql_query_one(atom dbh, sequence sql, object data={})
 	mysql_free_result(res)
 
 	return data
+end function
+
+public function mysql_query_object(atom dbh, sequence sql, object data={})
+	object result = mysql_query_one(dbh, sql, data)
+	if sequence(result) then
+		return result[1]
+	end if
+	return 0
+end function
+
+public function mysql_query_rows(atom dbh, sequence sql, object data={})
+	if mysql_query(dbh, sql, data) then
+		return 0
+	end if
+	
+	object row, result = {}
+	object stmt = mysql_use_result(dbh)
+	while sequence(row) with entry do
+		result = append(result, row)
+	entry
+		row = mysql_fetch_row(stmt)
+	end while
+    mysql_free_result(stmt)
+
+	return result
 end function
