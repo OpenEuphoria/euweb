@@ -4,16 +4,16 @@
 
 <%- euweb:head title="News Index" active="home" %>
 
-<% 
-sequence articles = @articles
+<% sequence articles = @articles %>
+<%
 for i = 1 to length(@articles) do 
     sequence article = articles[i]
     %>
-	<div>
-		ID:<%= article[ID] %><br/>
-		SBJ:<%= article[SUBJECT] %><br/>
-		CONTENT:<%= article[CONTENT] %><br/>
-	</div>
+	
+	<h3><%= article[SUBJECT] %></h3>
+	<h4>Posted <%= article[PUBLISH_AT] %> by <%= article[AUTHOR_NAME] %></h4>
+	<p><%= article[CONTENT] %></p>
+
 <% end for %>
 	
 <%- euweb:foot %>

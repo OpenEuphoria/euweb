@@ -31,7 +31,7 @@ sequence index_invars = {
 	{ wc:INTEGER, "per_page",  20 }
 }
 
-public enum ID,SUBMITTED_BY_ID,APPROVED,APPROVED_BY_ID,PUBLISH_AT,SUBJECT,CONTENT
+public enum ID,SUBMITTED_BY_ID,APPROVED,APPROVED_BY_ID,PUBLISH_AT,SUBJECT,CONTENT,AUTHOR_NAME
 
 public function article_count()
 	return db:record_count( dbtable )
@@ -41,8 +41,11 @@ end function
 -- Get the thread list
 -- 
 
+sequence fields = "n.id,n.submitted_by_id,n.approved,n.approved_by_id,n.publish_at,n.subject,n.content,u.user"
+
 public function get_article_list(integer page, integer per_page)
-	sequence sql = `SELECT * FROM news
+	sequence sql = `SELECT ` & fields & ` FROM news as n
+		INNER JOIN users as u on n.submitted_by_id = u.id
 		ORDER BY publish_at DESC
 		LIMIT %d OFFSET %d`
 
