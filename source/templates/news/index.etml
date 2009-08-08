@@ -1,6 +1,10 @@
+<%@ include std/text.e %>
 <%@ include std/math.e %>
+<%@ include std/datetime.e as dt %>
 <%@ include templates/euweb.etag as euweb %>
 <%@ include news_db.e %>
+
+<%@ include db.e %>
 
 <%- euweb:head title="News Index" active="home" %>
 
@@ -8,10 +12,15 @@
 <%
 for i = 1 to length(articles) do 
     sequence article = articles[i]
-    %>
+	sequence the_date = article[PUBLISH_AT]
+	
+	the_date = db:sqlDateTimeToDateTime( the_date )
+
+	the_date = dt:format( the_date, "%Y-%m-%d %l:%m %P" )
+	%>
 	
 	<h3><%= article[SUBJECT] %></h3>
-	<h4>Posted <%= article[PUBLISH_AT] %> by <%= article[AUTHOR_NAME] %></h4>
+	<h4>Posted <%= the_date %> by <%= article[AUTHOR_NAME] %></h4>
 	<p><%= article[CONTENT] %></p>
 
 <% end for %>
