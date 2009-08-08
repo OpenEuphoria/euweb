@@ -6,6 +6,9 @@
 
 <%
 sequence messages = @messages
+sequence topic_id = messages[1][MSG_TOPIC_ID]
+sequence subject = messages[1][MSG_SUBJECT]
+
 for i = 1 to length(messages) do
 	sequence message = messages[i]
 	sequence div_class = "normal"
@@ -23,22 +26,29 @@ for i = 1 to length(messages) do
 			on <%= message[MSG_CREATED_AT] %></li>
 			<li class="comments">
 				<%= message[MSG_VIEWS] %> views
-				<% if not equal(message[MSG_PARENT_ID], "0") then %>
-					, 
-					goto <a href="#<%= message[MSG_PARENT_ID] %>" 
-						onclick="Effect.ScrollTo('<%= message[MSG_PARENT_ID] %>', { duration: 0.25 } ); 
-						new Effect.Highlight($('<%= message[MSG_PARENT_ID] %>'), 
-							{ startcolor: '#ffff99', endcolor: '#ffffff' }); return false;"
-					>parent</a>
-				<% end if %>
 			</li>
 		</ul>					
 		
 		<%= message[MSG_BODY_FORMATTED] %>
+
+		<div class="post_tools">
+			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>">reply</a>,
+			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>
+			<% if not equal(message[MSG_PARENT_ID], "0") then %>
+				,
+				<a href="#<%= message[MSG_PARENT_ID] %>" 
+					onclick="Effect.ScrollTo('<%= message[MSG_PARENT_ID] %>', { duration: 0.25 }  ); 
+					new Effect.Highlight($('<%= message[MSG_PARENT_ID] %>'), 
+						{ startcolor: '#ffff99', endcolor: '#ffffff', queue: 'end' }); return false;"
+				>goto parent</a>
+			 <% end if %>
+			 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
+			 <a href="/forum.wc">topic index</a>,
+			 <a href="/forum/post.wc">new topic</a>
+		</div>
 	</div>
 <% end for %>
 
 <br class="clear" />
-
 
 <%- euweb:foot %>

@@ -5,6 +5,10 @@
 <%- euweb:head title="Forum Index" active="forum" %>
 
 <h3>Forum Index</h3>
+<p>
+<a href="/forum/post.wc">new topic</a>
+</p>
+
 <table class="list">
     <tr>
         <th width="1%" nowrap="nowrap">&nbsp;</th>
@@ -28,8 +32,8 @@
                 &nbsp;&nbsp;&nbsp;by <%= thread[THREAD_AUTHOR_NAME] %> 
                 at <%= thread[THREAD_CREATED_AT] %>
             </td>
-            <td align="center"><%= thread[THREAD_VIEWS] %></td>
             <td align="center"><%= thread[THREAD_REPLIES] %></td>
+            <td align="center"><%= thread[THREAD_VIEWS] %></td>
             <td>
                 by <%= thread[THREAD_LAST_POST_BY] %><br />
                 &nbsp;&nbsp;&nbsp;<%= thread[THREAD_LAST_POST_AT] %>

@@ -6,7 +6,7 @@
 
 <% sequence articles = @articles %>
 <%
-for i = 1 to length(@articles) do 
+for i = 1 to length(articles) do 
     sequence article = articles[i]
     %>
 	

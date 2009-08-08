@@ -277,6 +277,13 @@ background-image: url('images/n6.gif');
 margin-left: 1.1em;
 }
 
+#main_inner .post .post_tools
+{
+border-top: dotted 1px #E1E1E1;
+padding: 5px 20px 5px 20px;
+font-size: 0.8em;
+}
+
 /* Footer */
 
 #footer
