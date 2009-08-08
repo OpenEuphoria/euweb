@@ -21,7 +21,6 @@ function index(map data, map invars)
 	map:put(data, "page", map:get(invars, "page"))
 	map:put(data, "per_page", map:get(invars, "per_page"))
 	map:put(data, "article_count", news_db:article_count())
---	map:put(data, "thread_count", news_db:thread_count())
 
 	map:put(data, "articles", 
 		news_db:get_article_list(map:get(invars, "page"), map:get(invars, "per_page")))

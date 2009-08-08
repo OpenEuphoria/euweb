@@ -46,6 +46,7 @@ sequence fields = "n.id,n.submitted_by_id,n.approved,n.approved_by_id,n.publish_
 public function get_article_list(integer page, integer per_page)
 	sequence sql = `SELECT ` & fields & ` FROM news as n
 		INNER JOIN users as u on n.submitted_by_id = u.id
+		WHERE publish_at < NOW()
 		ORDER BY publish_at DESC
 		LIMIT %d OFFSET %d`
 
