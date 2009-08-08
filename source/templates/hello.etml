@@ -1,6 +1,30 @@
 <%@ include templates/euweb.etag as euweb %>
 <%- euweb:head title="Hello" %>
 
+<div class="post">				
+	<h3>Euphoria 4.0 beta 1 is Released!</h3>
+	<ul class="post_info">
+		<li class="date">Posted by <a href="#">jeremy</a> on 8/10/2009 at 13:30</li>
+		<li class="comments"><a href="#">44 comments</a></li>
+	</ul>					
+	<p>
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+	</p>
+	<p>
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+	</p>
+</div>
+
 <h3>Greeter Module</h3>
 <img src="/images/pic.gif" class="floatTL" alt="Something scenic" />
 
@@ -64,140 +88,5 @@ error handling, form submissions, parameter type conversion and routine registra
 </form>
 
 <br class="clear" />
-
-
-<h4>Table Example</h4>
-<table class="list">
-    <tr>
-        <th width="1%" nowrap="nowrap">&nbsp;</th>
-        <th width="75%">Subject</th>
-        <th width="2%">Replies</th>
-        <th width="2%">Views</th>
-        <th width="20%"><span>Last</span> Post</th>
-    </tr>
-        
-    <tr class="normal">
-        <td nowrap="nowrap">
-            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107790#107790"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
-                <img src="http://openeuphoria.org/EUforum/images/new.png" />
-                
-        </td>
-        <td>
-            <a href="index.cgi?module=forum&action=flat&amp;id=107790#unread">SVN2386 DOS error</a><br />
-            &nbsp;&nbsp;&nbsp;by bernie 2 hours ago
-        </td>
-        <td align="center">1</td>
-        <td align="center">19</td>
-        <td>
-                
-            by jeremy<br />
-            &nbsp;&nbsp;&nbsp;49 minutes ago
-                
-        </td>
-    </tr>
-
-    </tr>
-        
-    <tr class="normal">
-        <td nowrap="nowrap">
-            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107769#107769"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
-                
-        </td>
-        <td>
-            <a href="index.cgi?module=forum&action=flat&amp;id=107769#unread">Euphoria Logo Contest, will you participate?</a><br />
-            &nbsp;&nbsp;&nbsp;by jeremy 1 day ago
-        </td>
-        <td align="center">3</td>
-        <td align="center">60</td>
-        <td>
-                
-            by jeremy<br />
-            &nbsp;&nbsp;&nbsp;52 minutes ago
-                
-        </td>
-    </tr>
-
-    </tr>
-        
-    <tr class="stipple">
-        <td nowrap="nowrap">
-            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107702#107702"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
-                
-        </td>
-        <td>
-            <a href="index.cgi?module=forum&action=flat&amp;id=107702#unread">ver 4  source preproc..e ?</a><br />
-            &nbsp;&nbsp;&nbsp;by bernie 3 days ago
-        </td>
-        <td align="center">5</td>
-        <td align="center">106</td>
-        <td>
-                
-            by SDPringle<br />
-            &nbsp;&nbsp;&nbsp;2 hours ago
-                
-        </td>
-    </tr>
-
-    <tr class="stipple">
-        <td nowrap="nowrap">
-            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107702#107702"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
-                
-        </td>
-        <td>
-            <a href="index.cgi?module=forum&action=flat&amp;id=107702#unread">ver 4  source preproc..e ?</a><br />
-            &nbsp;&nbsp;&nbsp;by bernie 3 days ago
-        </td>
-        <td align="center">5</td>
-        <td align="center">106</td>
-        <td>
-                
-            by SDPringle<br />
-            &nbsp;&nbsp;&nbsp;2 hours ago
-                
-        </td>
-    </tr>
-
-    <tr class="normal">
-        <td nowrap="nowrap">
-            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107790#107790"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
-                <img src="http://openeuphoria.org/EUforum/images/new.png" />
-                
-        </td>
-        <td>
-            <a href="index.cgi?module=forum&action=flat&amp;id=107790#unread">SVN2386 DOS error</a><br />
-            &nbsp;&nbsp;&nbsp;by bernie 2 hours ago
-        </td>
-        <td align="center">1</td>
-        <td align="center">19</td>
-        <td>
-                
-            by jeremy<br />
-            &nbsp;&nbsp;&nbsp;49 minutes ago
-                
-        </td>
-    </tr>
-
-    <tr class="normal">
-        <td nowrap="nowrap">
-            <a href="index.cgi?module=forum&amp;action=thread&amp;id=107769#107769"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
-                
-        </td>
-        <td>
-            <a href="index.cgi?module=forum&action=flat&amp;id=107769#unread">Euphoria Logo Contest, will you participate?</a><br />
-            &nbsp;&nbsp;&nbsp;by jeremy 1 day ago
-        </td>
-        <td align="center">3</td>
-        <td align="center">60</td>
-        <td>
-                
-            by jeremy<br />
-            &nbsp;&nbsp;&nbsp;52 minutes ago
-                
-        </td>
-    </tr>
-
-    </tr>
-</table>
-
 
 <%- euweb:foot %>
