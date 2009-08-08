@@ -29,6 +29,9 @@ ifdef PRODUCTION then
 elsifdef JEREMY then
 	public include config_jeremy.e
 
+elsifdef CKL then
+	public include dbconfig_ck.e
+	
 elsedef
 	include std/error.e
 	crash("Invalid configuration, please see config.e")
