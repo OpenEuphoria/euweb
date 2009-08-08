@@ -487,3 +487,38 @@ div.error_box {
 .centered {
 	text-align: center;
 }
+
+#main_inner img {
+	border: 0;
+}
+
+#main_inner .quote {
+	margin: 5px;
+	padding: 5px 20px 5px 20px;
+	border: 1px solid gray;
+	background-color: #f8f8f8;
+}
+
+#main_inner .quote .quote {
+	background-color: #f0f0f0;
+}
+
+#main_inner .quote .quote .quote {
+	background-color: #e8e8e8;
+}
+
+#main_inner .quote .quote .quote .quote {
+	background-color: #e0e0e0;
+}
+
+#main_inner .forum {
+	border: dotted 1px #C1C1C1;
+}
+
+#main_inner .forum p {
+	padding: 0 10px 0 10px;
+}
+
+#main_inner div.stipple {
+	background-color: #fcfcfc;
+}

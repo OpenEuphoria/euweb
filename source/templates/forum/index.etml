@@ -20,7 +20,7 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap">
-                <a href="/forum/<%= thread[THREAD_ID] %>.wc"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                <a href="/forum/<%= thread[THREAD_TOPIC_ID] %>.wc"><img src="/images/threaded.png" /></a>
             </td>
             <td>
                 <a href="/forum/<%= thread[THREAD_ID] %>.wc"><%= thread[THREAD_SUBJECT] %></a><br />

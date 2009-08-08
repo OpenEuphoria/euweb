@@ -3,6 +3,7 @@
 --
 
 -- StdLib includes
+include std/error.e
 include std/map.e
 
 -- Webclay includes
@@ -44,11 +45,17 @@ sequence view_invars = {
 }
 
 function view(map data, map invars)
-	object message = forum_db:get(map:get(invars, "id"))
-	map:put(data, "message", message)
-
-	map:put(data, "message_formatted", format_body(message[MSG_BODY])) 
+	object messages = forum_db:get_topic_messages(map:get(invars, "id"))
+	if atom(messages) then
+		crash("Couldn't get message: %s", { mysql_error(db) })
+	end if
 	
+	for i = 1 to length(messages) do
+		messages[i] = append(messages[i], format_body(messages[i][MSG_BODY]))
+	end for
+	
+	map:put(data, "messages", messages)
+
 	return { TEXT, t_view:template(data) }
 end function
 wc:add_handler(routine_id("view"), -1, "forum", "view", view_invars)

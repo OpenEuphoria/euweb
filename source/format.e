@@ -6,25 +6,25 @@ include creole.e
 include html_gen.e
 
 sequence smilies = {
-	":-)",     "<img src=\"images/ksk-smile.png\" />",
-	":-P",     "<img src=\"images/ksk-tongue.png\" />",
-	":-D",     "<img src=\"images/ksk-grin.png\" />",
-	":-O",     "<img src=\"images/ksk-shocked.png\" />",
-	":lol:",   "<img src=\"images/ksk-lol.png\" />",
-	":-/",     "<img src=\"images/ksk-getlost.png\" />",
-	"^_^",     "<img src=\"images/ksk-pleased.png\" />",
-	":-|",     "<img src=\"images/ksk-none.png\" />",
-	":-(",     "<img src=\"images/ksk-sad.png\" />",
-	";-)",     "<img src=\"images/ksk-blink.png\" />",
-	">:[]",    "<img src=\"images/ksk-angry.png\" />",
-	"B-D",     "<img src=\"images/ksk-cool.png\" />",
-	":'(",     "<img src=\"images/ksk-cry.png\" />",
-	">:)",     "<img src=\"images/ksk-evil.png\" />",
-	":-*",     "<img src=\"images/ksk-kiss.png\" />",
-	":oops:",  "<img src=\"images/ksk-oops.png\" />",
-	":sick:",  "<img src=\"images/ksk-unwell.png\" />",
-	":heart:", "<img src=\"images/ksk-heart.png\" />",
-	":zzz:",   "<img src=\"images/ksk-zzz.png\" />"
+	":-)",     "<img src=\"/images/ksk-smile.png\" />",
+	":-P",     "<img src=\"/images/ksk-tongue.png\" />",
+	":-D",     "<img src=\"/images/ksk-grin.png\" />",
+	":-O",     "<img src=\"/images/ksk-shocked.png\" />",
+	":lol:",   "<img src=\"/images/ksk-lol.png\" />",
+	":-/",     "<img src=\"/images/ksk-getlost.png\" />",
+	"^_^",     "<img src=\"/images/ksk-pleased.png\" />",
+	":-|",     "<img src=\"/images/ksk-none.png\" />",
+	":-(",     "<img src=\"/images/ksk-sad.png\" />",
+	";-)",     "<img src=\"/images/ksk-blink.png\" />",
+	">:[]",    "<img src=\"/images/ksk-angry.png\" />",
+	"B-D",     "<img src=\"/images/ksk-cool.png\" />",
+	":'(",     "<img src=\"/images/ksk-cry.png\" />",
+	">:)",     "<img src=\"/images/ksk-evil.png\" />",
+	":-*",     "<img src=\"/images/ksk-kiss.png\" />",
+	":oops:",  "<img src=\"/images/ksk-oops.png\" />",
+	":sick:",  "<img src=\"/images/ksk-unwell.png\" />",
+	":heart:", "<img src=\"/images/ksk-heart.png\" />",
+	":zzz:",   "<img src=\"/images/ksk-zzz.png\" />"
 }
 
 sequence KnownWikis = { 
