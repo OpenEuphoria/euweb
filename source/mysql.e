@@ -75,7 +75,7 @@ function sprintf_sql(sequence sql, object values)
 end function
 
 constant lib_mysql = open_dll({ "libmysqlclient.so", "libmysqlclient.dylib", 
-	"libmysql.dll" })
+	"../source/libmysql.dll" })
 
 if lib_mysql = -1 then
 	crash("Could not find a suitable MySQL shared library")
