@@ -71,15 +71,20 @@ wc:add_handler(routine_id("view"), -1, "forum", "view", view_invars)
 
 sequence post_invars = {
 	{ wc:INTEGER, "parent_id",  -1 },
-	{ wc:INTEGER, "quote",  	 0 }
+	{ wc:INTEGER, "quote",  	 0 },
+	{ wc:INTEGER, "fork",   	 0 }
 }
 
 function post(map data, map invars)
 	integer id = map:get(invars, "parent_id")
+	integer fork = map:get(invars, "fork")
+	integer quote = map:get(invars, "quote")
 
-	map:put(data, "quote", 0)
-	map:put(data, "parent_id", id)
+	map:put(data, "quote", quote)
+	map:put(data, "fork", fork)
 	map:put(data, "id", -1)
+	map:put(data, "parent_id", -1)
+	map:put(data, "topic_id", -1)
 
 	if id > 0 then
 		object msg = forum_db:get(id)
@@ -93,12 +98,16 @@ function post(map data, map invars)
 			subject = "Re: " & subject
 		end if
 		
-		map:put(data, "subject", subject)
+		if fork = 0 then
+			map:put(data, "parent_id", id)
+			map:put(data, "subject", subject)
+			map:put(data, "topic_id", defaulted_value(msg[MSG_TOPIC_ID], 0))
+		end if
+
 		map:put(data, "body", msg[MSG_BODY])
-		map:put(data, "topic_id", defaulted_value(msg[MSG_TOPIC_ID], 0))
-		if map:get(invars, "quote") then
+		if quote or fork then
 			map:put(data, "quote", 1)
-			map:put(data, "quote_body", sprintf("[quote %s]\n%s\n[/quote]\n\n", {
+			map:put(data, "quote_body", sprintf("[quote %s]\n%s\n[/quote]\n", {
 				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }))
 		else
 		end if
@@ -145,8 +154,8 @@ end function
 -- 
 
 function save(map:map data, map:map vars)
-	object post = forum_db:create(map:get(vars, "parent_id", 0),
-		map:get(vars, "topic_id", 0), map:get(vars, "subject"),
+	object post = forum_db:create(map:get(vars, "parent_id"),
+		map:get(vars, "topic_id"), map:get(vars, "subject"),
 		map:get(vars, "body"))
 	
 	if atom(post) then

@@ -33,7 +33,8 @@ for i = 1 to length(messages) do
 
 		<div class="post_tools">
 			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>">reply</a>,
-			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>
+			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>,
+			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>
 			<% if not equal(message[MSG_PARENT_ID], "0") then %>
 				,
 				<a href="#<%= message[MSG_PARENT_ID] %>" 

@@ -4,6 +4,7 @@
 
 namespace forum_db
 
+include std/datetime.e
 include std/error.e
 include std/get.e
 
@@ -93,16 +94,17 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 		sequence body)	
 	sequence sql
 	sequence params
+	datetime now = datetime:now()
 	
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
-				subject, body, post_by) VALUES (0, %s, %s, %s, %s, %d)`
+				subject, body, post_by, last_post_at) VALUES (0, %s, %s, %s, %s, %d, %T)`
 		params = { current_user[USER_NAME], current_user[USER_EMAIL], subject, body, 
-			current_user[USER_ID] }
+			current_user[USER_ID], now }
 	else
 		sql = `INSERT INTO messages (topic_id, parent_id, author_name, author_email, 
 			subject, body, post_by) VALUES (%d, %d, %s, %s, %s, %s, %d)`
-		params = { parent_id, topic_id, current_user[USER_NAME], current_user[USER_EMAIL], 
+		params = { topic_id, parent_id, current_user[USER_NAME], current_user[USER_EMAIL], 
 			subject, body, current_user[USER_ID] }
 	end if
 
@@ -114,8 +116,8 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	
 	-- Update the original
 	if mysql_query(db, `UPDATE messages SET last_post_id=%d, replies=replies+1, last_post_by=%s,
-		last_post_at=CURRENT_TIMESTAMP, last_post_by_id=%d WHERE id=%d`, { 
-			id, current_user[USER_NAME], current_user[USER_ID], topic_id })
+		last_post_at=%T, last_post_by_id=%d WHERE id=%d`, { 
+			id, current_user[USER_NAME], now, current_user[USER_ID], topic_id })
 	then
 		crash("Couldn't update parent message: %s", { mysql_error(db) })
 	end if
@@ -124,10 +126,13 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	if atom(message) then
 		crash("Saved message could not be accessed: %s", { mysql_error(db) })
 	end if
+	
+	log:log("create, topic_id=%d", { topic_id })
 
-	mysql_query(db, "UPDATE messages SET topic_id=%d WHERE id=%d", { id, id })
-
-	message[MSG_TOPIC_ID] = message[MSG_ID]
+	if topic_id = -1 then
+		mysql_query(db, "UPDATE messages SET topic_id=%d WHERE id=%d", { id, id })
+		message[MSG_TOPIC_ID] = message[MSG_ID]
+	end if
 	
 	return message
 end function
