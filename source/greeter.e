@@ -26,11 +26,8 @@ function greet_form(map:map data, map:map vars)
 	return { TEXT, t_hello:template(data) }
 end function
 
-
--- Add the handler and conversion for the greeter form. Also set it as the default
+-- Add the handler and conversion for the greeter form.
 wc:add_handler(routine_id("greet_form"), -1, "greeter", "index", greeter_conversion)
-wc:add_handler(routine_id("greet_form"), -1, "index", "index", greeter_conversion)
-wc:set_default_handler(routine_id("greet_form"))
 
 --**
 -- Validate the information sent by the greeter form to the greet action

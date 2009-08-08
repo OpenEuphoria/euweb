@@ -1,0 +1,31 @@
+<%@ include std/math.e %>
+<%@ include templates/euweb.etag as euweb %>
+<%@ include news_db.e %>
+
+<%- euweb:head title="News Index" active="home" %>
+
+<div class="post">				
+	<h3>Euphoria 4.0 beta 1 is Released!!!</h3>
+	<ul class="post_info">
+		<li class="date">Posted by <a href="#">jeremy</a> on 8/10/2009 at 13:30</li>
+		<li class="comments"><a href="#">44 comments</a></li>
+	</ul>					
+	<p>
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+	</p>
+	<p>
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+		This is a news article. It contains news. This news is interesting. I am sure you will
+		enjoy reading it so much, I've added it again.
+	</p>
+</div>
+
+<%- euweb:foot %>
