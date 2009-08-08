@@ -7,15 +7,12 @@
 Options +ExecCGI
 AddHandler cgi-script ex exe
 
-SetEnv EUDIR C:/Development/Projects/euphoria
-
 #
 # Setup mod_rewrite
 #
 RewriteEngine on
 
 # If the requested file does not exist, rewrite
-RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^([^\.]+)/([0-9]+)\.wc$ /euweb.ex?module=$1&action=view&id=$2 [L,QSA]
 RewriteRule ^(.+)/([^\.]+)\.wc$ /euweb.ex?module=$1&action=$2 [L,QSA]
-RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)\.wc$ /euweb.ex?module=$1&action=index [L,QSA]

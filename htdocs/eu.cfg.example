@@ -1,4 +1,6 @@
 -p etml,etag:../../webclay2/webclay/etml.ex
 -i ../../webclay2
 -i ../source
+-i /Development/Projects/euphoria/include
+-d DEV_NAME
 -batch

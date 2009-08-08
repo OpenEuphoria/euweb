@@ -1,3 +1,4 @@
+<%@ include std/math.e %>
 <%@ include templates/euweb.etag as euweb %>
 <%@ include forum_db.e %>
 <%- euweb:head title="Forum Index" active="forum" %>
@@ -17,9 +18,9 @@
     for i = 1 to length(@threads) do 
         sequence thread = threads[i]
         %>
-        <tr class="normal">
+        <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap">
-                <a href="/forum/thread_<%= thread[THREAD_ID] %>.wc"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
+                <a href="/forum/<%= thread[THREAD_ID] %>.wc"><img src="http://openeuphoria.org/EUforum/images/threaded.png" /></a>
             </td>
             <td>
                 <a href="/forum/<%= thread[THREAD_ID] %>.wc"><%= thread[THREAD_SUBJECT] %></a><br />
@@ -29,14 +30,13 @@
             <td align="center"><%= thread[THREAD_VIEWS] %></td>
             <td align="center"><%= thread[THREAD_REPLIES] %></td>
             <td>
-                
                 by <%= thread[THREAD_LAST_POST_BY] %><br />
                 &nbsp;&nbsp;&nbsp;<%= thread[THREAD_LAST_POST_AT] %>
-                
             </td>
         </tr>
     <% end for %>
 </table>
+
 <div class="centered">
     <%- euweb:paginator base="/forum/index.wc" page=@page per_page=@per_page total=@thread_count %>
     <br />

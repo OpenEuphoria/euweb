@@ -59,3 +59,15 @@ public function get_thread_list(integer page, integer per_page)
 
 	return data
 end function
+
+public enum MSG_ID, MSG_CREATED_AT, MSG_PARENT_ID, MSG_AUTHOR_NAME, MSG_AUTHOR_EMAIL,
+	MSG_SUBJECT, MSG_BODY, MSG_VIEWS, MSG_IP, MSG_LAST_POST_ID, MSG_REPLIES,
+	MSG_LAST_POST_BY, MSG_LAST_POST_AT, MSG_LAST_POST_BY_ID, POST_BY
+
+--**
+-- Get a message
+--
+
+public function get(integer id)
+	return mysql_query_one(db, "SELECT * FROM messages WHERE id=%d", { id })
+end function

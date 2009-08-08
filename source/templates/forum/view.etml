@@ -1,0 +1,14 @@
+<%@ include std/math.e %>
+<%@ include templates/euweb.etag as euweb %>
+<%@ include forum_db.e %>
+<%- euweb:head title="Forum View" active="forum" %>
+
+<%
+sequence message = @message
+%>
+
+<h3>Forum: <%= message[MSG_SUBJECT] %></h3>
+
+<%= @message_formatted %>
+
+<%- euweb:foot %>

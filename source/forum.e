@@ -10,10 +10,13 @@ include webclay/webclay.e as wc
 include webclay/validate.e as valid
 include webclay/logging.e as log
 
+-- Templates
+include templates/forum/index.etml as t_index
+include templates/forum/view.etml as t_view
+
 -- Local includes
 include db.e
-include templates/forum/index.etml as t_index
-
+include format.e
 include forum_db.e
 
 sequence index_invars = {
@@ -35,3 +38,17 @@ function index(map data, map invars)
 	return { TEXT, t_index:template(data) }
 end function
 wc:add_handler(routine_id("index"), -1, "forum", "index", index_invars)
+
+sequence view_invars = {
+	{ wc:INTEGER, "id", -1 }
+}
+
+function view(map data, map invars)
+	object message = forum_db:get(map:get(invars, "id"))
+	map:put(data, "message", message)
+
+	map:put(data, "message_formatted", format_body(message[MSG_BODY])) 
+	
+	return { TEXT, t_view:template(data) }
+end function
+wc:add_handler(routine_id("view"), -1, "forum", "view", view_invars)
