@@ -1,6 +1,7 @@
 <%@ include std/math.e %>
 <%@ include templates/euweb.etag as euweb %>
 <%@ include forum_db.e %>
+
 <%- euweb:head title="Forum View" active="forum" %>
 
 <%
@@ -21,9 +22,15 @@ for i = 1 to length(messages) do
 			<li class="date">Posted by <a href="#"><%= message[MSG_AUTHOR_NAME] %></a> 
 			on <%= message[MSG_CREATED_AT] %></li>
 			<li class="comments">
-				<%= message[MSG_VIEWS] %> views, 
-				goto <a href="#<%= message[MSG_PARENT_ID] %>" 
-					onclick="Effect.ScrollTo('<%= message[MSG_PARENT_ID] %>', { duration: 0.25 } ); new Effect.Highlight($('<%= message[MSG_PARENT_ID] %>'), { startcolor: '#ffff99', endcolor: '#ffffff' }); return false;">parent</a>
+				<%= message[MSG_VIEWS] %> views
+				<% if not equal(message[MSG_PARENT_ID], "0") then %>
+					, 
+					goto <a href="#<%= message[MSG_PARENT_ID] %>" 
+						onclick="Effect.ScrollTo('<%= message[MSG_PARENT_ID] %>', { duration: 0.25 } ); 
+						new Effect.Highlight($('<%= message[MSG_PARENT_ID] %>'), 
+							{ startcolor: '#ffff99', endcolor: '#ffffff' }); return false;"
+					>parent</a>
+				<% end if %>
 			</li>
 		</ul>					
 		

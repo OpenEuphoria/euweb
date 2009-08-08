@@ -1,6 +1,7 @@
 <%@ include std/math.e %>
 <%@ include templates/euweb.etag as euweb %>
 <%@ include forum_db.e %>
+
 <%- euweb:head title="Forum Index" active="forum" %>
 
 <h3>Forum Index</h3>
@@ -20,7 +21,7 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap">
-                <a href="/forum/<%= thread[THREAD_TOPIC_ID] %>.wc"><img src="/images/threaded.png" /></a>
+                <a href="/forum/<%= thread[THREAD_TOPIC_ID] %>.wc"><img alt="threaded view" src="/images/threaded.png" /></a>
             </td>
             <td>
                 <a href="/forum/<%= thread[THREAD_ID] %>.wc"><%= thread[THREAD_SUBJECT] %></a><br />

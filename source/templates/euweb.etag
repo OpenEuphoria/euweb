@@ -90,23 +90,34 @@
 						<br class="clear" />
 					</div>
 				</form>
-
-				<h4><span>Login</span></h4>
 				
-				<form method="post" action="/login.wc">
-					Username: <input type="text" name="username" />
-					Password: <input type="password" name="password" />
-					<input type="submit" class="button" value="Login" />
-					<input type="submit" class="button" value="Signup" />
-					<br class="clear" />
-				</form>
+				<% if atom(current_user) then %> 
+					<h4><span>Login</span></h4>
 				
-				<h4><span>Forgot</span></h4>
-				<div>
-					<a href="/user/forgot_username.wc">Username</a>, 
-					<a href="/user/forgot_password.wc">Password</a>
-				</div>
-
+					<form method="post" action="/login.wc">
+						Username: <input type="text" name="username" />
+						Password: <input type="password" name="password" />
+						<input type="submit" class="button" value="Login" />
+						<input type="submit" class="button" value="Signup" />
+						<br class="clear" />
+					</form>
+				
+					<h4><span>Forgot</span></h4>
+					<div>
+						<a href="/user/forgot_username.wc">Username</a>, 
+						<a href="/user/forgot_password.wc">Password</a>
+					</div>
+				<% else %>
+				
+					<h4><span><%= current_user[USER_NAME] %></span>'s menu</h4>
+					<ul class="links">
+						<li class="first">
+						  <a href="/user/profile/<%= current_user[USER_NAME] %>"
+						  	>Profile</a>
+						</li>
+						<li><a href="/user/logout.wc">Logout</a></li>
+					</ul>
+				<% end if %>
 			</div>
 
 		</div>
