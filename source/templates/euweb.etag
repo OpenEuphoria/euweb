@@ -22,7 +22,7 @@
 	<div id="header_inner" class="fluid">
 
 		<div id="logo">
-			<h1><span>OpenEuphoria</span>4.0</h1>
+			<h1><span>Open</span>Euphoria</h1>
 			<h2><%= #title %></h2>
 		</div>
 		
@@ -108,10 +108,9 @@
 <div id="footer" class="fluid">
 	Copyright &copy; <%= datetime:format(datetime:now(), "%Y") %> by The OpenEuphoria Group. All rights reserved.
 	<br />
- 	<img src="/images/poweredby-euphoria.png" />
-	<!-- <br />
-	Design by <a href="http://www.nodethirtythree.com/">NodeThirtyThree Design</a>.
-	-->
+ 	<a href="http://www.openeuphoria.org/"><img src="/images/poweredby-euphoria.png" /></a>
+	<br />
+	<a href="/about.wc">About Website</a>
 </div>
 
 </body>

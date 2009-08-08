@@ -442,12 +442,12 @@ div.error_box {
 	padding-bottom: 0px;
 }
 
-div.error_box ul {
+#main_inner ul {
 	padding-bottom: 0px;
 	margin-bottom: 0px;
 }
 
-div.error_box ul li {
+#main_inner ul li {
 	margin-left: 30px;
 }
 
