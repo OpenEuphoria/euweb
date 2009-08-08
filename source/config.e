@@ -21,6 +21,8 @@
 	public constant DB_PASS = "secret"
 	public constant DB_NAME = "database_name"
 
+	public constant AUTO_LOGIN_UID = 0 -- 0 disables, otherwise set to your UID
+
 */
 
 ifdef PRODUCTION then

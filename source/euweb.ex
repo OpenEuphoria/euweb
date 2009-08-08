@@ -22,9 +22,13 @@ include user.e
 -- Open our database
 db:open()
 
--- This is temporary
+-- For developers use. Define AUTO_LOGIN_UID in your config file and 
+-- populate it with your user.id value from the database.
+
 include user_db.e
-current_user = user_db:get(1)
+if AUTO_LOGIN_UID > 0 then
+    current_user = user_db:get(AUTO_LOGIN_UID)
+end if
 
 -- Handle the request
 wc:handle_request()
