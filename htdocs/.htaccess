@@ -1,0 +1,21 @@
+# euweb config for Apache
+
+#
+# Setup Euphoria
+#
+
+Options +ExecCGI
+AddHandler cgi-script ex
+
+SetEnv EUDIR C:/Development/Projects/euphoria
+
+#
+# Setup mod_rewrite
+#
+RewriteEngine on
+
+# If the requested file does not exist, rewrite
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteRule ^(.+)/([^\.]+)\.wc$ /euweb.ex?module=$1&action=$2 [L,QSA]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)\.wc$ /euweb.ex?module=$1&action=index [L,QSA]
