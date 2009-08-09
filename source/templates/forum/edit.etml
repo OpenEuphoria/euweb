@@ -1,0 +1,21 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="Forum Edit" active="forum" %>
+
+<h3>Edit Forum Message</h3>
+
+<%- euweb:errors %>
+
+<form method="post" action="/forum/update.wc">
+	<input type="hidden" name="id" value="<%= @id %>" />
+	
+	Subject:<br />
+	<input type="text" name="subject" value="<%= @subject %>" size="80" />
+	<br />
+	Body:<br />
+	<textarea name="body" rows="15" cols="80" style="width: 100%;"><%= @body %></textarea>
+	<br />
+	<input type="submit" name="save" value="Save" />
+</form>
+
+<%- euweb:foot %>

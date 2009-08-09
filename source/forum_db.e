@@ -68,13 +68,13 @@ public function get_thread_list(integer page, integer per_page)
 end function
 
 public enum MSG_ID, MSG_TOPIC_ID, MSG_PARENT_ID, MSG_CREATED_AT,  
-	MSG_SUBJECT, MSG_BODY, MSG_IP, MSG_AUTHOR_NAME, MSG_AUTHOR_EMAIL, POST_BY, 
+	MSG_SUBJECT, MSG_BODY, MSG_IP, MSG_AUTHOR_NAME, MSG_AUTHOR_EMAIL, MSG_POST_BY_ID, 
 	MSG_VIEWS, MSG_REPLIES, MSG_LAST_POST_ID, MSG_LAST_POST_BY, MSG_LAST_POST_AT, 
-	MSG_LAST_POST_BY_ID, MSG_BODY_FORMATTED
+	MSG_LAST_POST_BY_ID, MSG_LAST_EDIT_AT, MSG_BODY_FORMATTED
 
 constant message_select_fields = ` id, topic_id, parent_id, created_at, subject, body, ip,
 	author_name, author_email, post_by, views, replies, last_post_id, last_post_by,
- 	last_post_at, last_post_by_id `
+ 	last_post_at, last_post_by_id, last_edit_at `
 
 --**
 -- Get a message
@@ -98,14 +98,15 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
-				subject, body, post_by, last_post_at) VALUES (0, %s, %s, %s, %s, %d, %T)`
+				subject, body, post_by, last_post_at, last_edit_at) 
+				VALUES (0, %s, %s, %s, %s, %d, %T, %T)`
 		params = { current_user[USER_NAME], current_user[USER_EMAIL], subject, body, 
-			current_user[USER_ID], now }
+			current_user[USER_ID], now, now }
 	else
 		sql = `INSERT INTO messages (topic_id, parent_id, author_name, author_email, 
-			subject, body, post_by) VALUES (%d, %d, %s, %s, %s, %s, %d)`
+			subject, body, post_by, last_edit_at) VALUES (%d, %d, %s, %s, %s, %s, %d, %T)`
 		params = { topic_id, parent_id, current_user[USER_NAME], current_user[USER_EMAIL], 
-			subject, body, current_user[USER_ID] }
+			subject, body, current_user[USER_ID], now }
 	end if
 
 	if mysql_query(db, sql, params) then
@@ -134,6 +135,14 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	
 	return message
 end function
+
+public procedure update(sequence message)
+	if mysql_query(db, `UPDATE messages SET last_edit_at=CURRENT_TIMESTAMP, subject=%s,
+			body=%s WHERE id=%s`, { message[MSG_SUBJECT], message[MSG_BODY], message[MSG_ID] })
+	then
+		crash("Couldn't update message: %s", { mysql_error(db) })
+	end if
+end procedure
 
 public procedure remove_post(integer id)
 	if mysql_query(db, "DELETE FROM messages WHERE id=%d", { id }) then

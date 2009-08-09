@@ -6,6 +6,7 @@
 include std/error.e
 include std/get.e
 include std/map.e
+include std/search.e
 
 -- Webclay includes
 include webclay/webclay.e as wc
@@ -20,6 +21,8 @@ include templates/forum/post.etml as t_post
 include templates/forum/post_ok.etml as t_post_ok
 include templates/forum/remove_post.etml as t_remove
 include templates/forum/remove_post_ok.etml as t_remove_ok
+include templates/forum/edit.etml as t_edit
+include templates/forum/edit_ok.etml as t_edit_ok
 
 -- Local includes
 include db.e
@@ -46,7 +49,7 @@ function index(map data, map invars)
 end function
 wc:add_handler(routine_id("index"), -1, "forum", "index", index_invars)
 
-sequence view_invars = {
+sequence basic_invars = {
 	{ wc:INTEGER, "id", -1 }
 }
 
@@ -70,7 +73,7 @@ function view(map data, map invars)
 	
 	return { TEXT, t_view:template(data) }
 end function
-wc:add_handler(routine_id("view"), -1, "forum", "view", view_invars)
+wc:add_handler(routine_id("view"), -1, "forum", "view", basic_invars)
 
 sequence post_invars = {
 	{ wc:INTEGER, "parent_id",  -1 },
@@ -79,7 +82,7 @@ sequence post_invars = {
 }
 
 function post(map data, map invars)
-	if not has_role("forum_moderator") then
+	if not has_role("user") then
 		return { TEXT, t_security:template(data) }
 	end if
 
@@ -143,7 +146,7 @@ sequence save_invars = {
 --	   
 
 function validate_save(integer data, map:map vars)
-	sequence errors = wc:new_errors("form", "view")
+	sequence errors = wc:new_errors("forum", "view")
 
 	if not valid:not_empty(map:get(vars, "subject")) then
 		errors = wc:add_error(errors, "subject", "Subject is empty!")
@@ -161,7 +164,7 @@ end function
 -- 
 
 function save(map:map data, map:map vars)
-	if not has_role("forum_moderator") then
+	if not has_role("post") then
 		return { TEXT, t_security:template(data) }
 	end if
 
@@ -182,9 +185,100 @@ function save(map:map data, map:map vars)
 
 	return { TEXT, t_post_ok:template(data) }
 end function
-
--- Add the handler, validation and conversion for the greeter action
 wc:add_handler(routine_id("save"), routine_id("validate_save"), "forum", "save", save_invars)
+
+function edit(map data, map invars)
+	object message = forum_db:get(map:get(invars, "id"))
+
+	-- A forum admin can edit any message, no need for further checks
+	if not has_role("forum_admin") then
+		-- You must be at least a user
+		if not has_role("user") then
+			return { TEXT, t_security:template(data) }
+		end if
+
+		-- You must be the owner of the message
+		if not equal(message[MSG_POST_BY_ID], current_user[USER_ID]) then 
+			return { TEXT, t_security:template(data) }
+		end if
+	end if
+
+	message[MSG_BODY] = find_replace("\r\n", message[MSG_BODY], "\n")
+
+	map:put(data, "id", message[MSG_ID])
+	map:put(data, "topic_id", message[MSG_TOPIC_ID])
+	map:put(data, "subject", message[MSG_SUBJECT])
+	map:put(data, "body", message[MSG_BODY])
+
+	return { TEXT, t_edit:template(data) }
+end function
+wc:add_handler(routine_id("edit"), -1, "forum", "edit", basic_invars)
+
+sequence update_invars = {
+	{ wc:INTEGER, "id", 	   -1 },
+	{ wc:SEQUENCE, "subject"	  },
+	{ wc:SEQUENCE, "body"   	  }
+}
+
+--**
+-- Validate the information sent by the forum edit form
+--
+-- Web Validation:
+--  * Subject must not be empty
+--  * Body must not be empty
+--  * Body must be valid creole
+--  * Body cannot have dangling <eucode>'s
+--	* id cannot be <= 0
+--	   
+
+function validate_update(integer data, map:map vars)
+	sequence errors = wc:new_errors("forum", "edit")
+	
+	if not valid:not_empty(map:get(vars, "subject")) then
+		errors = wc:add_error(errors, "subject", "Subject is empty!")
+	end if
+
+	if not valid:not_empty(map:get(vars, "body")) then
+		errors = wc:add_error(errors, "body", "Body is empty!")
+	end if
+	
+	if map:get(vars, "id") <= 0 then
+		errors = wc:add_error(errors, "form", "Invalid message id!")
+	end if
+
+	return errors
+end function
+
+function update(map data, map invars)
+	object message = forum_db:get(map:get(invars, "id"))
+	
+	-- A forum admin can edit any message, no need for further checks
+	if not has_role("forum_admin") then
+		-- You must be at least a user
+		if not has_role("user") then
+			return { TEXT, t_security:template(data) }
+		end if
+
+		-- You must be the owner of the message
+		if not equal(message[MSG_POST_BY_ID], current_user[USER_ID]) then 
+			return { TEXT, t_security:template(data) }
+		end if
+	end if
+	
+	message[MSG_SUBJECT] = map:get(invars, "subject")
+	message[MSG_BODY] = map:get(invars, "body")
+
+	forum_db:update(message)
+	
+	log:log("Update SQL: = '%s'", { last_statements[$] })
+	
+	map:put(data, "subject", message[MSG_SUBJECT])
+	map:put(data, "topic_id", message[MSG_TOPIC_ID])
+	map:put(data, "id", message[MSG_ID])
+
+	return { TEXT, t_edit_ok:template(data) }
+end function
+wc:add_handler(routine_id("update"), routine_id("validate_update"), "forum", "update", update_invars)
 
 sequence remove_invars = {
 	{ wc:INTEGER, "id", -1 }

@@ -15,7 +15,12 @@ integer is_forum_admin = has_role("forum_moderator")
 for i = 1 to length(messages) do
 	sequence message = messages[i]
 	sequence div_class = "normal"
+	integer is_owner = 0
 	
+	if sequence(current_user) then
+		is_owner = equal(current_user[USER_ID], message[MSG_POST_BY_ID])
+	end if
+
 	if mod(i, 2) = 0 then
 		div_class = "stipple"
 	end if
@@ -30,9 +35,9 @@ for i = 1 to length(messages) do
 			<li class="comments">
 				<%= message[MSG_VIEWS] %> views
 			</li>
-			<% if is_forum_admin then %>
-			<li>
-				<a href="/forum/remove.wc?id=<%= message[MSG_ID] %>">Remove</a>
+			<% if not equal(message[MSG_CREATED_AT], message[MSG_LAST_EDIT_AT]) then %>
+			<li class="edited">
+				Last edited at <%= message[MSG_LAST_EDIT_AT] %>
 			</li>
 			<% end if %>
 		</ul>					
@@ -43,7 +48,15 @@ for i = 1 to length(messages) do
 			<% if has_role("user") then %>
 				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>">reply</a>,
 				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>,
-				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>,
+				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>
+				<% if is_owner or is_forum_admin then %>
+					<a href="/forum/edit.wc?id=<%= message[MSG_ID] %>">edit</a>
+				<% end if %>
+				<% if is_forum_admin then %>
+					&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+					<a href="/forum/remove.wc?id=<%= message[MSG_ID] %>">remove</a>
+				<% end if %>
+				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 				<a href="/forum/post.wc">new topic</a>
 			<% end if %>
 			<% if not equal(message[MSG_PARENT_ID], "0") then %>

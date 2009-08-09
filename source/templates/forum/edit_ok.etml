@@ -1,0 +1,16 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="Forum Edit" active="forum" %>
+
+<h3>Message Saved OK</h3>
+<div class="good_status">
+	Your message titled '<%= @subject %>' has been saved.
+</div>
+
+<p class="centered">
+	<a href="/forum/edit.wc?id=<%= @id %>">Edit Again</a>,
+	<a href="/forum/<%= @topic_id %>.wc#<%= @id %>">Return to Topic</a>,
+ 	<a href="/forum/index.wc">Return to Topic List</a>
+</p>
+
+<%- euweb:foot %>
