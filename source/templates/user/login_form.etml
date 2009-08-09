@@ -1,0 +1,39 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="User Login" active="home" %>
+
+<h3><span>User</span> Login</h3>
+
+<form method="post" action="/user/do_login.wc">
+<table class="form">
+	<tr>
+		<th>Code:</th>
+		<td><input type="text" name="code" /></td>
+	</tr>
+	<tr>
+		<th>Password:</th>
+		<td><input type="password" name="password" /></td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+			<input class="button" type="submit" name="login" value="Login" />
+			<input class="button" type="submit" name="forgot_password" value="Forgot Password" />
+		</td>
+	</tr>
+</table>
+</form>
+
+<br class="clear" />
+
+<p>
+	<strong>Forgot your user code?</strong> If you forgot your user code, you can also login with your
+	email address.
+	<br />
+	<strong>Forgot your password?</strong> If you forgot your password, use the login form, 
+	do not enter a password and press the "Forgot Password" button instead of the "Login"
+	button. Instructions on how to reset your password will be emailed to the email address
+	on file.
+</p>
+
+<%- euweb:foot %>

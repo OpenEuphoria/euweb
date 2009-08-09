@@ -70,7 +70,17 @@
 		<div id="secondaryContent_2columns">
 		
 			<div id="columnC_2columns">
-	
+
+				<h4><span>Search</span></h4>
+				
+				<form method="post" action="/search.wc">
+					<div id="search">
+						<input type="text" name="keywords" />
+						<input type="submit" class="button" value="Go" />
+						<br class="clear" />
+					</div>
+				</form>
+					
 				<h4><span>Quick</span> Links</h4>
 				<ul class="links">
 				<% 
@@ -94,38 +104,21 @@
 				<% end if %>
 				</ul>
 				
-				<h4><span>Search</span></h4>
-				
-				<form method="post" action="/search.wc">
-					<div id="search">
-						<input type="text" name="keywords" />
-						<input type="submit" class="button" value="Go" />
-						<br class="clear" />
-					</div>
-				</form>
-				
 				<% if atom(current_user) then %> 
-					<h4><span>Login</span></h4>
-				
-					<form method="post" action="/login.wc">
-						Username: <input type="text" name="username" />
-						Password: <input type="password" name="password" />
-						<input type="submit" class="button" value="Login" />
-						<input type="submit" class="button" value="Signup" />
-						<br class="clear" />
-					</form>
-				
-					<h4><span>Forgot</span></h4>
-					<div>
-						<a href="/user/forgot_username.wc">Username</a>, 
-						<a href="/user/forgot_password.wc">Password</a>
-					</div>
+
+					<h4><span>User</span> menu</h4>
+					<ul class="links">
+					  	<li class="first">Not signed in.</li>
+ 					  	<li><a href="/user/login.wc">Login</a></li>
+						<li><a href="/user/signup.wc">Sign-up</a></li>
+					</ul>
+
 				<% else %>
-				
+
 					<h4><span><%= current_user[USER_NAME] %></span>'s menu</h4>
 					<ul class="links">
 						<li class="first">
-						  <a href="/user/profile/<%= current_user[USER_NAME] %>"
+						  <a href="/user/profile/<%= current_user[USER_NAME] %>.wc"
 						  	>Profile</a>
 						</li>
 						<li><a href="/user/logout.wc">Logout</a></li>

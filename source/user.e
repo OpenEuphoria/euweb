@@ -13,6 +13,7 @@ include webclay/logging.e as log
 
 -- Templates
 include templates/user/profile.etml as t_profile
+include templates/user/login_form.etml as t_login_form
 
 -- Local includes
 include db.e
@@ -34,3 +35,11 @@ public function profile(map data, map invars)
 	return { TEXT, t_profile:template(data) }
 end function
 wc:add_handler(routine_id("profile"), -1, "user", "profile", profile_invars)
+
+public function login_form(map data, map invars)
+
+	return { TEXT, t_login_form:template(data) }
+end function
+wc:add_handler(routine_id("login_form"), -1, "user", "login")
+wc:add_handler(routine_id("login_form"), -1, "login", "index")
+

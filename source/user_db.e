@@ -14,8 +14,7 @@ global enum USER_ID, USER_NAME, USER_EMAIL, USER_LAST_LOGIN_AT, USER_ROLES
 constant select_fields = "id, user, email, login_time"
 
 public function get(integer id)
-    object user = mysql_query_one(db, "SELECT " & select_fields & "FROM users WHERE id=%d", { id })
-    
+    object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE id=%d", { id })
     if atom(user) then
     	return 0
 	end if
