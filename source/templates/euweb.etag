@@ -71,14 +71,27 @@
 		
 			<div id="columnC_2columns">
 	
-
 				<h4><span>Quick</span> Links</h4>
 				<ul class="links">
-				<li class="first"><a href="/manual/index.html">Manual</a></li>
-				<li><a href="/miniguides/index.wc">Mini-Guides</a></li>
-				<li><a href="/faqs/index.wc">FAQs</a></li>
-				<li><a href="/archive/index.wc">The Archive</a></li>
-				<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
+				<% 
+				object quick_links = #quick_links
+ 				if sequence(quick_links) and length(quick_links) > 0 then
+					for quickLinkIdx = 1 to length(quick_links) do
+						sequence ql = quick_links[quickLinkIdx]
+						sequence class = "normal"
+						if quickLinkIdx = 1 then
+							class = "first"
+						end if
+					%>
+					<li class="<%= class %>"><a href="<%= ql[1] %>"><%= ql[2] %></a></li>
+					<% end for %>
+				<% else %>
+					<li class="first"><a href="/manual/index.html">Manual</a></li>
+					<li><a href="/miniguides/index.wc">Mini-Guides</a></li>
+					<li><a href="/faqs/index.wc">FAQs</a></li>
+					<li><a href="/archive/index.wc">The Archive</a></li>
+					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
+				<% end if %>
 				</ul>
 				
 				<h4><span>Search</span></h4>

@@ -5,11 +5,6 @@
 <%- euweb:head title="Forum Index" active="forum" %>
 
 <h3>Forum Index</h3>
-<% if has_role("user") then %>
-    <p>
-        <a href="/forum/post.wc">new topic</a>
-    </p>
-<% end if %>
 
 <table class="list">
     <tr>
@@ -51,4 +46,14 @@
     <%= sprintf("%d", @thread_count) %> threads,
 </div>
 
-<%- euweb:foot %>
+<%
+sequence quick_links = {
+    { "/forum/index.wc", "Forum Home" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>

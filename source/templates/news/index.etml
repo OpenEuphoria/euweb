@@ -4,7 +4,22 @@
 <%@ include templates/euweb.etag as euweb %>
 <%@ include news_db.e %>
 
-<%@ include db.e %>
+<%@ include db.e  %>
+
+<%
+sequence quick_links = {
+	{ "/news/index.wc", "News Home" },
+	{ "/news/popular.wc", "Popular News" }
+}
+
+if has_role("user") then
+	quick_links = append(quick_links, { "/news/post.wc", "Post News" })
+end if
+%>
+
+<% for i = 1 to length(quick_links) do %>
+<%= quick_links[i][2] %>, 
+<% end for %>
 
 <%- euweb:head title="News Index" active="home" %>
 
@@ -36,5 +51,5 @@ for i = 1 to length(articles) do
 	</div>
 
 <% end for %>
-	
-<%- euweb:foot %>
+
+<%- euweb:foot quick_links=!quick_links %>
