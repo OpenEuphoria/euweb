@@ -181,3 +181,6 @@ Pages
 ...
 <a href="<%= #base %>?page=<%= sprintf("%d", last_page) %>&per_page=<%= sprintf("%d", per_page) %>"
 	>oldest</a>
+
+{{{user_profile}}}
+<a href="/user/profile/<%= #user %>.wc"><%= #user %></a>
