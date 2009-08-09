@@ -1,0 +1,93 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="User Signup" active="home" %>
+
+<h3><span>User</span> Signup</h3>
+
+<form method="post" action="/user/do_sigup.wc">
+<table class="form">
+	<tr>
+		<th nowrap="nowrap">User Code:</th>
+		<td><input type="text" name="code" /></td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+		Your user code will be used to identify you on various parts
+		of the website such as in forum posts, news submissions or wiki page edits. Your user code must
+		contain only letters, numbers and underscores. It must not be all numeric. For example, 
+		john_doe, and john1988 are all valid. 2009, john+doe, and john doe are not valid user codes.
+		<br />&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<th>Password:</th>
+		<td><input type="password" name="password" /></td>
+	</tr>
+	<tr>
+		<th>Confirm:</th>
+		<td><input type="password" name="password_confirm" /></td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+			Your password must be at least 5 characters. It is highly
+			suggested that it contain letters, numbers, spaces and other punctuation. However, ensure that
+			you can remember it!
+			<br />&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<th>Email:</th>
+		<td><input type="text" name="email" size="40" /></td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+			The email address <strong>will be used for identity validation</strong>, password
+			recovery, any user signed up services (such as for notification to a subscribed message thread),
+			and occasionally for messages from the system administrators. Your email is not sold or given to
+			any other identity.
+			<br />&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<th>Captcha:</th>
+		<td>
+			<script type="text/javascript"
+			   src="http://api.recaptcha.net/challenge?k=6LejvQcAAAAAAMJeIJKsB816otyHOIbecox4fTp6">
+			</script>
+
+			<noscript>
+			   <iframe src="http://api.recaptcha.net/noscript?k=6LejvQcAAAAAAMJeIJKsB816otyHOIbecox4fTp6"
+			       height="300" width="500" frameborder="0"></iframe><br>
+			   <textarea name="recaptcha_challenge_field" rows="3" cols="40">
+			   </textarea>
+			   <input type="hidden" name="recaptcha_response_field" 
+			       value="manual_challenge">
+			</noscript>
+		</td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+			The captcha is a human test. It's now required due to the spam that we have been receiving
+			recently. We're sorry for the test but in today's Internet world, such tests are becoming 
+			required on many interactive web sites. As a side note, the use of reCAPTCHA helps to 
+			digitalize books, <a href="http://recaptcha.net/learnmore.html">learn more about it</a>.
+			<br />&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+			<input class="button" type="submit" name="login" value="Sign Up" />
+			<input class="button" type="submit" name="forgot_password" value="Forgot Password" />
+		</td>
+	</tr>
+</table>
+</form>
+
+<br class="clear" />
+
+<%- euweb:foot %>
