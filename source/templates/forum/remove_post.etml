@@ -1,0 +1,20 @@
+<%@ include std/math.e %>
+<%@ include templates/euweb.etag as euweb %>
+<%@ include forum_db.e %>
+
+<%- euweb:head title="Forum Index" active="forum" %>
+
+<%- euweb:errors %>
+
+<h3>Remove Forum Post</h3>
+<p>
+	Are you sure you wish to remove the forum post <%= @id %>, '<%= @subject %>'?
+</p>
+
+<p class="centered">
+ 	<a href="/forum/<%= @topic_id %>.wc#<%= @id %>">No</a>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a href="/forum/remove_confirmed.wc?id=<%= @id %>">Yes</a>
+</p>
+
+<%- euweb:foot %>
