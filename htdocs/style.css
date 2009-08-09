@@ -535,3 +535,7 @@ div.error_box {
 #main_inner div.stipple {
 	background-color: #fcfcfc;
 }
+
+#main_inner table.data th {
+text-align: right;
+}

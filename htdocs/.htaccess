@@ -13,6 +13,7 @@ AddHandler cgi-script ex exe
 RewriteEngine on
 
 # If the requested file does not exist, rewrite
+RewriteRule ^user/profile/(.+)\.wc$ /euweb.ex?module=user&action=profile&user=$1 [L,QSA]
 RewriteRule ^([^\.]+)/([0-9]+)\.wc$ /euweb.ex?module=$1&action=view&id=$2 [L,QSA]
 RewriteRule ^(.+)/([^\.]+)\.wc$ /euweb.ex?module=$1&action=$2 [L,QSA]
 RewriteRule ^([^\.]+)\.wc$ /euweb.ex?module=$1&action=index [L,QSA]

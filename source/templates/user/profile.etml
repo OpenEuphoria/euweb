@@ -1,0 +1,30 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="User Profile" active="home" %>
+
+<%
+sequence user = @user
+%>
+
+<h3><span><%= user[USER_NAME] %></span>'s profile</h3>
+
+<table class="data">
+	<tr>
+		<th>Code:</th>
+		<td><%= user[USER_NAME] %></td>
+	</tr>
+	<tr>
+		<th>Last Login:</th>
+		<td><%= user[USER_LAST_LOGIN_AT] %></td>
+	</tr>
+</table>
+
+<br class="clear" />
+
+<p>
+	More will be available on the profile page in the future such as name, 
+	bio, a form to contact the member, location, etc... All of these, the user
+	can opt-in/out of.
+</p>
+
+<%- euweb:foot %>

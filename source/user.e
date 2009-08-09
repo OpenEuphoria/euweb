@@ -12,9 +12,25 @@ include webclay/validate.e as valid
 include webclay/logging.e as log
 
 -- Templates
+include templates/user/profile.etml as t_profile
 
 -- Local includes
 include db.e
 include format.e
 include user_db.e
 
+sequence profile_invars = {
+	{ wc:SEQUENCE, "user" }
+}
+
+public function profile(map data, map invars)
+	object user = user_db:get_by_code(map:get(invars, "user"))
+	if atom(user) then
+		crash("User record could not be located")
+	end if
+
+	map:put(data, "user", user)
+
+	return { TEXT, t_profile:template(data) }
+end function
+wc:add_handler(routine_id("profile"), -1, "user", "profile", profile_invars)
