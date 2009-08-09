@@ -17,10 +17,6 @@ if has_role("user") then
 end if
 %>
 
-<% for i = 1 to length(quick_links) do %>
-<%= quick_links[i][2] %>, 
-<% end for %>
-
 <%- euweb:head title="News Index" active="home" %>
 
 <% sequence articles = @articles %>
