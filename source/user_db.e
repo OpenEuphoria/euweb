@@ -22,13 +22,16 @@ public function get(integer id)
 	if atom(roles) then
 		user &= {{}}
 	else
-		user &= flatten(roles)
+		for i = 1 to length(roles) do
+			roles[i] = roles[i][1] 
+		end for
+		user &= { roles }
 	end if
 
 	return user
 end function
 
-public function has_role(object user, sequence role)
+global function has_role(sequence role, object user=current_user)
 	if atom(user) then 
 		return 0
 	end if

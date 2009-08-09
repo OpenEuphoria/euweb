@@ -127,8 +127,6 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 		crash("Saved message could not be accessed: %s", { mysql_error(db) })
 	end if
 	
-	log:log("create, topic_id=%d", { topic_id })
-
 	if topic_id = -1 then
 		mysql_query(db, "UPDATE messages SET topic_id=%d WHERE id=%d", { id, id })
 		message[MSG_TOPIC_ID] = message[MSG_ID]
@@ -136,3 +134,12 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	
 	return message
 end function
+
+public procedure remove_post(integer id)
+	if mysql_query(db, "DELETE FROM messages WHERE id=%d", { id }) then
+		crash("Couldn't remove forum post: %s", { mysql_error(db) })
+	end if
+	if mysql_query(db, "DELETE FROM messages WHERE topic_id=%d", { id }) then
+		crash("Couldn't remove children from forum post: %s", { mysql_error(db) })
+	end if
+end procedure

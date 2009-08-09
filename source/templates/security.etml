@@ -1,0 +1,16 @@
+<%@ include templates/euweb.etag as euweb %>
+<%- euweb:head title="Security Violation" %>
+
+<h3><span>Security</span> Violation</h3>
+
+<p>
+	You have attempted to perform an action beyond your security level. If you feel this is an
+	error, please contact the site admins. Please use your browser's back button to continue
+	using a different area of the web site.
+</p>
+
+<p>
+	Thank you!
+</p>
+
+<%- euweb:foot %>

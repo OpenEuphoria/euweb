@@ -5,9 +5,11 @@
 <%- euweb:head title="Forum Index" active="forum" %>
 
 <h3>Forum Index</h3>
-<p>
-<a href="/forum/post.wc">new topic</a>
-</p>
+<% if has_role("user") then %>
+    <p>
+        <a href="/forum/post.wc">new topic</a>
+    </p>
+<% end if %>
 
 <table class="list">
     <tr>

@@ -17,6 +17,8 @@ include templates/forum/index.etml as t_index
 include templates/forum/view.etml as t_view
 include templates/forum/post.etml as t_post
 include templates/forum/post_ok.etml as t_post_ok
+include templates/forum/remove_post.etml as t_remove
+include templates/forum/remove_post_ok.etml as t_remove_ok
 
 -- Local includes
 include db.e
@@ -75,6 +77,16 @@ sequence post_invars = {
 	{ wc:INTEGER, "fork",   	 0 }
 }
 
+function validate_post(integer data, map:map vars)
+	sequence errors = wc:new_errors("security", "invalid")
+	
+	if not has_role("user") then
+		errors = wc:add_error(errors, "security", "Anonymous users cannot make forum posts")
+	end if
+	
+	return errors
+end function
+
 function post(map data, map invars)
 	integer id = map:get(invars, "parent_id")
 	integer fork = map:get(invars, "fork")
@@ -115,7 +127,7 @@ function post(map data, map invars)
 
 	return { TEXT, t_post:template(data) }
 end function
-wc:add_handler(routine_id("post"), -1, "forum", "post", post_invars)
+wc:add_handler(routine_id("post"), routine_id("validate_post"), "forum", "post", post_invars)
 
 sequence save_invars = {
 	{ wc:INTEGER, "id", 	   -1 },
@@ -135,7 +147,7 @@ sequence save_invars = {
 --  * Body cannot have dangling <eucode>'s
 --	   
 
-function validate_post(integer data, map:map vars)
+function validate_save(integer data, map:map vars)
 	sequence errors = wc:new_errors("form", "view")
 
 	if not valid:not_empty(map:get(vars, "subject")) then
@@ -173,4 +185,37 @@ function save(map:map data, map:map vars)
 end function
 
 -- Add the handler, validation and conversion for the greeter action
-wc:add_handler(routine_id("save"), routine_id("validate_post"), "forum", "save", save_invars)
+wc:add_handler(routine_id("save"), routine_id("validate_save"), "forum", "save", save_invars)
+
+sequence remove_invars = {
+	{ wc:INTEGER, "id", -1 }
+}
+
+function validate_remove(integer data, map:map vars)
+	sequence errors = wc:new_errors("security", "invalid")
+
+	if not has_role("forum_moderator") then
+		errors = wc:add_error(errors, "user", "You are not authorized to remove a post")
+	end if
+
+	return errors
+end function
+
+function remove_post(map data, map invars)
+	object message = forum_db:get(map:get(invars, "id"))
+	map:put(data, "id", message[MSG_ID])
+	map:put(data, "topic_id", message[MSG_TOPIC_ID])
+	map:put(data, "subject", message[MSG_SUBJECT])
+	
+	return { TEXT, t_remove:template(data) }
+end function
+wc:add_handler(routine_id("remove_post"), routine_id("validate_remove"), 
+	"forum", "remove", remove_invars)
+
+function remove_post_confirmed(map data, map invars)
+	forum_db:remove_post(map:get(invars, "id"))
+	
+	return { TEXT, t_remove_ok:template(data) }
+end function
+wc:add_handler(routine_id("remove_post_confirmed"), routine_id("validate_remove"), 
+	"forum", "remove_confirmed", remove_invars)

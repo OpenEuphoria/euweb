@@ -1,0 +1,18 @@
+<%@ include std/math.e %>
+<%@ include templates/euweb.etag as euweb %>
+<%@ include forum_db.e %>
+
+<%- euweb:head title="Forum Index" active="forum" %>
+
+<%- euweb:errors %>
+
+<h3>Forum Post Removed</h3>
+<p>
+	The forum post has been removed.
+</p>
+
+<p class="centered">
+ 	<a href="/forum/index.wc">Return to Topic List</a>
+</p>
+
+<%- euweb:foot %>

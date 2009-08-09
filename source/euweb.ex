@@ -16,6 +16,7 @@ include download.e
 include forum.e
 include greeter.e
 include news.e
+include security.e
 include wiki.e
 include user.e
 

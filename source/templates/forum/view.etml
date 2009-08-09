@@ -4,10 +4,13 @@
 
 <%- euweb:head title="Forum View" active="forum" %>
 
+<%- euweb:errors %>
+
 <%
 sequence messages = @messages
 sequence topic_id = messages[1][MSG_TOPIC_ID]
 sequence subject = messages[1][MSG_SUBJECT]
+integer is_forum_admin = has_role("forum_moderator")
 
 for i = 1 to length(messages) do
 	sequence message = messages[i]
@@ -27,25 +30,32 @@ for i = 1 to length(messages) do
 			<li class="comments">
 				<%= message[MSG_VIEWS] %> views
 			</li>
+			<% if is_forum_admin then %>
+			<li>
+				<a href="/forum/remove.wc?id=<%= message[MSG_ID] %>">Remove</a>
+			</li>
+			<% end if %>
 		</ul>					
 		
 		<%= message[MSG_BODY_FORMATTED] %>
 
 		<div class="post_tools">
-			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>">reply</a>,
-			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>,
-			<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>
+			<% if has_role("user") then %>
+				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>">reply</a>,
+				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>,
+				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>,
+				<a href="/forum/post.wc">new topic</a>
+			<% end if %>
 			<% if not equal(message[MSG_PARENT_ID], "0") then %>
-				,
-				<a href="#<%= message[MSG_PARENT_ID] %>" 
+				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+				<a href="#<%= message[MSG_PARENT_ID] %>"
 					onclick="Effect.ScrollTo('<%= message[MSG_PARENT_ID] %>', { duration: 0.25 }  ); 
 					new Effect.Highlight($('<%= message[MSG_PARENT_ID] %>'), 
 						{ startcolor: '#ffff99', endcolor: '#ffffff', queue: 'end' }); return false;"
 				>goto parent</a>
 			 <% end if %>
 			 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
-			 <a href="/forum.wc">topic index</a>,
-			 <a href="/forum/post.wc">new topic</a>
+			 <a href="/forum.wc">topic index</a>
 		</div>
 	</div>
 <% end for %>
