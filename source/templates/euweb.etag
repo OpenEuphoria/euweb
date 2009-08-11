@@ -39,7 +39,7 @@
 				<li><a href="/wiki/index.wc" 
 				  <% if equal(#active, "wiki") then %>class="active"<% end if %>
 				  >Wiki</a></li>
-				<li><a href="/manual/index.html" 
+				<li><a href="/manual/eu400_0001.html" 
 				  <% if equal(#active, "manual") then %>class="active"<% end if %>>
 				  Manual</a></li>
 				<li><a href="/download/index.wc"
@@ -96,7 +96,7 @@
 					<li class="<%= class %>"><a href="<%= ql[1] %>"><%= ql[2] %></a></li>
 					<% end for %>
 				<% else %>
-					<li class="first"><a href="/manual/index.html">Manual</a></li>
+					<li class="first"><a href="/manual/eu400_0001.html">Manual</a></li>
 					<li><a href="/miniguides/index.wc">Mini-Guides</a></li>
 					<li><a href="/faqs/index.wc">FAQs</a></li>
 					<li><a href="/archive/index.wc">The Archive</a></li>

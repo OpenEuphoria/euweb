@@ -450,16 +450,16 @@ div.error_box {
 	background-color: #ffdddd; 
 	border: 1px solid #ff5555;
 	padding-top: 15px;
-	margin-bottom: 0px;
-	padding-bottom: 0px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
 }
 
-#main_inner ul {
+#main_inner ul, #main_inner ol {
 	padding-bottom: 0px;
 	margin-bottom: 0px;
 }
 
-#main_inner ul li {
+#main_inner ul li, #main_inner ol li {
 	margin-left: 30px;
 }
 
@@ -538,3 +538,59 @@ div.error_box {
 #main_inner table.data th {
 text-align: right;
 }
+
+#docs h1 {
+	padding-top: 12px;
+} 
+#docs h2 {
+	padding-top: 12px;
+	font-size: 2.5em;
+} 
+#docs h3 {
+	padding-top: 12px;
+	font-size: 2em;
+} 
+#docs h4 {
+	padding-top: 12px;
+	font-size: 1.5em;
+} 
+#docs h5 {
+	padding-top: 12px;
+	font-size: 1.25em;
+} 
+#docs h6 {
+	padding-top: 12px;
+} 
+#docs .doc-tools {
+	padding: 0px 0px 5px 0px;
+}
+#docs .doc-tools a, #docs .doc-tools a:visited {
+	text-decoration: none;
+	padding: 5px;
+}
+#docs table {
+	padding: 0px;
+	margin: 0px 0px 10px 0px;
+}
+div.TOC a { text-decoration: none; }
+div.TOC div.toc_1 { 
+	font-size: 1.5em; 
+	font-weight: bold; 
+	margin-top: 10px; 
+	margin-bottom: 10px; 
+}
+div.TOC div.toc_2 { padding-left: 30px;  }
+div.TOC div.toc_3 { padding-left: 60px; font-style: italic; font-size: 0.95em; }
+div.TOC div.toc_4 { padding-left: 90px; font-size: 0.90em; }
+div.TOC div.toc_5 { padding-left: 120px; }
+div.TOC div.toc_6 { padding-left: 150px; }
+div.LEVELTOC { 
+	padding: 5px;
+}
+div.LEVELTOC a {
+	text-decoration: none;
+}
+
+div.LEVELTOC div.toc_2 { font-size: 1.2em; font-weight: bold; padding: 5px 0px 0px 10px; }
+div.LEVELTOC div.toc_3 { font-weight: bold; font-style: italic; padding-left: 30px; }
+div.LEVELTOC div.toc_4 { padding-left: 60px; }

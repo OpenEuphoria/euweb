@@ -4,6 +4,7 @@
 
 namespace user_db
 
+include std/get.e
 include std/sequence.e
 
 include db.e
@@ -12,6 +13,14 @@ global object current_user = 0
 global enum USER_ID, USER_NAME, USER_EMAIL, USER_LAST_LOGIN_AT, USER_ROLES
 
 constant select_fields = "id, user, email, login_time"
+
+public function is_code_used(sequence code)
+	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE user=%s LIMIT 1", { code }), 0)
+end function
+
+public function is_email_used(sequence email)
+	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE email=%s LIMIT 1", { email }), 0)
+end function
 
 public function get(integer id)
     object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE id=%d", { id })

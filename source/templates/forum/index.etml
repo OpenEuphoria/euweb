@@ -4,7 +4,7 @@
 
 <%- euweb:head title="Forum Index" active="forum" %>
 
-<h3>Forum Index</h3>
+<h3><span>Forum</span> Index</h3>
 
 <table class="list">
     <tr>
