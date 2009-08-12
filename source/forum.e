@@ -28,6 +28,7 @@ include templates/forum/edit_ok.etml as t_edit_ok
 include db.e
 include format.e
 include forum_db.e
+include fuzzydate.e
 
 sequence index_invars = {
 	{ wc:INTEGER, "page",   	1 },
@@ -39,9 +40,18 @@ function index(map data, map invars)
 	map:put(data, "per_page", map:get(invars, "per_page"))
 	map:put(data, "message_count", forum_db:message_count())
 	map:put(data, "thread_count", forum_db:thread_count())
+	
+	object threads = forum_db:get_thread_list(map:get(invars, "page"), map:get(invars, "per_page"))
+	for i = 1 to length(threads) do
+		threads[i][THREAD_CREATED_AT] = fuzzy_ago(sqlDateTimeToDateTime(
+			threads[i][THREAD_CREATED_AT]))
+		if length(threads[i][THREAD_LAST_POST_AT]) then
+			threads[i][THREAD_LAST_POST_AT] = fuzzy_ago(sqlDateTimeToDateTime(
+				threads[i][THREAD_LAST_POST_AT]))
+		end if
+	end for
 
-	map:put(data, "threads", 
-		forum_db:get_thread_list(map:get(invars, "page"), map:get(invars, "per_page")))
+	map:put(data, "threads", threads)
 
 	return { TEXT, t_index:template(data) }
 end function
@@ -66,6 +76,11 @@ function view(map data, map invars)
 	
 	for i = 1 to length(messages) do
 		messages[i] = append(messages[i], format_body(messages[i][MSG_BODY]))
+		messages[i][MSG_CREATED_AT] = fuzzy_ago(sqlDateTimeToDateTime(messages[i][MSG_CREATED_AT]))
+		if length(messages[i][MSG_LAST_EDIT_AT]) then
+			messages[i][MSG_LAST_EDIT_AT] = fuzzy_ago(sqlDateTimeToDateTime(
+				messages[i][MSG_LAST_EDIT_AT]))
+		end if
 	end for
 	
 	map:put(data, "messages", messages)

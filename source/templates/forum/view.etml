@@ -31,13 +31,13 @@ for i = 1 to length(messages) do
 		<a name="<%= message[MSG_ID] %>"></a>
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!message[MSG_AUTHOR_NAME] %> 
-			on <%= message[MSG_CREATED_AT] %></li>
+			<%= message[MSG_CREATED_AT] %></li>
 			<li class="comments">
 				<%= message[MSG_VIEWS] %> views
 			</li>
 			<% if not equal(message[MSG_CREATED_AT], message[MSG_LAST_EDIT_AT]) then %>
 			<li class="edited">
-				Last edited at <%= message[MSG_LAST_EDIT_AT] %>
+				Last edited <%= message[MSG_LAST_EDIT_AT] %>
 			</li>
 			<% end if %>
 		</ul>					

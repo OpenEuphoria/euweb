@@ -1,6 +1,5 @@
 <%@ include std/text.e %>
 <%@ include std/math.e %>
-<%@ include std/datetime.e as dt %>
 <%@ include templates/euweb.etag as euweb %>
 <%@ include news_db.e %>
 
@@ -23,18 +22,13 @@ end if
 <%
 for i = 1 to length(articles) do 
     sequence article = articles[i]
-	sequence the_date = article[PUBLISH_AT]
-	
-	the_date = db:sqlDateTimeToDateTime( the_date )
-
-	the_date = dt:format( the_date, "%Y-%m-%d %l:%m %P" )
 	%>
 	
 	<div class="post">
 		<h3><%= _h(article[SUBJECT]) %></h3>
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!article[AUTHOR_NAME] %> 
-			on <%= the_date %></li>
+			<%= article[PUBLISH_AT] %></li>
 			<% if has_role("news_admin") then %>
 				<li>
 					<a href="/news/edit.wc?id=<%= article[ID] %>">Edit</a>,
