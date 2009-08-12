@@ -6,7 +6,7 @@
 
 <h3><span>Forum</span> Index</h3>
 
-<table class="list">
+<table class="list forum">
     <tr>
         <th width="1%" nowrap="nowrap">&nbsp;</th>
         <th width="75%">Subject</th>
@@ -25,7 +25,7 @@
                 <a href="/forum/<%= thread[THREAD_TOPIC_ID] %>.wc"><img alt="threaded view" src="/images/threaded.png" /></a>
             </td>
             <td>
-                <a href="/forum/<%= thread[THREAD_ID] %>.wc"><%= _h(thread[THREAD_SUBJECT]) %></a><br />
+                <a class="forum_message" href="/forum/<%= thread[THREAD_ID] %>.wc?last_id=<%= thread[THREAD_LAST_POST_ID] %>"><%= _h(thread[THREAD_SUBJECT]) %></a><br />
                 &nbsp;&nbsp;&nbsp;by 
                 <%- euweb:user_profile user=!thread[THREAD_AUTHOR_NAME] %>
                 <%= thread[THREAD_CREATED_AT] %>
