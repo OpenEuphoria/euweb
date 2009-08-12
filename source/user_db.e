@@ -5,6 +5,7 @@
 namespace user_db
 
 include std/convert.e
+include std/error.e
 include std/get.e
 include std/sequence.e
 
@@ -17,7 +18,6 @@ global enum USER_ID, USER_NAME, USER_EMAIL, USER_LAST_LOGIN_AT, USER_DISABLED,
 	USER_DISABLED_REASON, USER_IP_ADDR, USER_ROLES
 
 constant select_fields = "id, user, email, login_time, disabled, disabled_reason, ip_addr"
-
 
 function salt(sequence salt, sequence message)
   integer s = 1, m = 1, ret
@@ -103,6 +103,16 @@ global function has_role(sequence role, object user=current_user)
 end function
 
 public procedure set_user_ip(sequence user, sequence ip)
-	mysql_query(db, "UPDATE users SET ip_addr=%s WHERE id=%s", { 
+	mysql_query(db, "UPDATE users SET ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
 		ip, user[USER_ID] })
 end procedure
+
+public function create(sequence code, sequence password, sequence email)
+	if mysql_query(db, "INSERT INTO users (user, password, email) VALUES (%s,%s,%s)", {
+		code, md5hex(salt(code,password)), email })
+	then
+		crash("Couldn't insert user into the database: %s", { mysql_error(db) })
+	end if
+	
+	return mysql_insert_id(db)
+end function

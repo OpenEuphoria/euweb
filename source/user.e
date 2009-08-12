@@ -158,6 +158,17 @@ function validate_do_signup(integer data, map:map vars)
 end function
 
 public function do_signup(map data, map invars)
+	user_db:create(map:get(invars, "code"), map:get(invars, "password"),
+		map:get(invars, "email"))
+	
+	datetime rightnow = dt:now(), expire
+
+	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
+	set_user_ip(current_user, server_var("REMOTE_ADDR"))
+	expire = dt:add(rightnow, 1, YEARS)
+
+    wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+
 	return { TEXT, t_signup_ok:template(data) }
 end function
 wc:add_handler(routine_id("do_signup"), routine_id("validate_do_signup"), "user", "do_signup", 
