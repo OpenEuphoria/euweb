@@ -99,10 +99,8 @@
 					<li class="<%= class %>"><a href="<%= ql[1] %>"><%= ql[2] %></a></li>
 					<% end for %>
 				<% else %>
-					<li class="first"><a href="/manual/eu400_0001.html">Manual</a></li>
-					<li><a href="/miniguides/index.wc">Mini-Guides</a></li>
-					<li><a href="/faqs/index.wc">FAQs</a></li>
-					<li><a href="/archive/index.wc">The Archive</a></li>
+					<li class="first"><a href="/docs/eu400_0001.html">Manual</a></li>
+					<li><a href="http://rapideuphoria.com/archive.htm">The Archive</a></li>
 					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
 				<% end if %>
 				</ul>
