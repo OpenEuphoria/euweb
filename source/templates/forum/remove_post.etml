@@ -8,7 +8,7 @@
 
 <h3>Remove Forum Post</h3>
 <p>
-	Are you sure you wish to remove the forum post <%= @id %>, '<%= @subject %>'?
+	Are you sure you wish to remove the forum post <%= @id %>, '<%= _h(@subject) %>'?
 </p>
 
 <p class="centered">
@@ -17,4 +17,14 @@
 	<a href="/forum/remove_confirmed.wc?id=<%= @id %>">Yes</a>
 </p>
 
-<%- euweb:foot %>
+<%
+sequence quick_links = {
+    { "/forum/index.wc", "Forum Home" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>

@@ -36,7 +36,7 @@ sequence profile_invars = {
 public function profile(map data, map invars)
 	object user = user_db:get_by_code(map:get(invars, "user"))
 	if atom(user) then
-		crash("User record could not be located")
+		crash("User %s could not be located", { map:get(invars, "user") })
 	end if
 
 	map:put(data, "user", user)

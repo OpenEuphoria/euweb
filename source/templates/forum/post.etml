@@ -25,7 +25,17 @@
 	Body:<br />
 	<textarea name="body" rows="15" cols="80" style="width: 100%;"><%= @quote_body %></textarea>
 	<br />
-	<input type="submit" name="save" value="Save" />
+	<input type="submit" name="save" value="Post" />
 </form>
 
-<%- euweb:foot %>
+<%
+sequence quick_links = {
+    { "/forum/index.wc", "Forum Home" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>

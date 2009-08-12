@@ -27,7 +27,7 @@ for i = 1 to length(messages) do
 	%>
 
 	<div class="post forum <%= div_class %>" id="<%= message[MSG_ID] %>">				
-		<h3><%= sprintf("%d", i) %>. <%= message[MSG_SUBJECT] %></h3>
+		<h3><%= sprintf("%d", i) %>. <%= _h(message[MSG_SUBJECT]) %></h3>
 		<a name="<%= message[MSG_ID] %>"></a>
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!message[MSG_AUTHOR_NAME] %> 
@@ -50,6 +50,7 @@ for i = 1 to length(messages) do
 				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>,
 				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>
 				<% if is_owner or is_forum_admin then %>
+					&nbsp;&nbsp;&nbsp;&#187;
 					<a href="/forum/edit.wc?id=<%= message[MSG_ID] %>">edit</a>
 				<% end if %>
 				<% if is_forum_admin then %>
@@ -75,4 +76,16 @@ for i = 1 to length(messages) do
 
 <br class="clear" />
 
-<%- euweb:foot %>
+<%
+sequence quick_links = {
+    { "/forum/index.wc", "Forum Home" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
+
+

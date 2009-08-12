@@ -31,7 +31,7 @@ for i = 1 to length(articles) do
 	%>
 	
 	<div class="post">
-		<h3><%= article[SUBJECT] %></h3>
+		<h3><%= _h(article[SUBJECT]) %></h3>
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!article[AUTHOR_NAME] %> 
 			on <%= the_date %></li>

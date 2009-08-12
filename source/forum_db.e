@@ -86,8 +86,19 @@ public function get(integer id)
 end function
 
 public function get_topic_messages(integer topic_id)
-	return mysql_query_rows(db, "SELECT " & message_select_fields &
-		"FROM messages WHERE topic_id=%d ORDER BY id", { topic_id })
+	object messages = mysql_query_rows(db, "SELECT " & message_select_fields &
+		" FROM messages WHERE topic_id=%d ORDER BY id", { topic_id })
+	if length(messages) then
+		return messages
+	end if
+
+	object msg = get(topic_id)
+	if sequence(msg) then
+		messages = mysql_query_rows(db, "SELECT " & message_select_fields &
+			" FROM messages WHERE topic_id=%s ORDER BY id", { msg[MSG_TOPIC_ID] })
+	end if
+
+	return messages
 end function
 
 public function create(integer parent_id, integer topic_id, sequence subject,
@@ -99,12 +110,12 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
 				subject, body, post_by, last_post_at, last_edit_at) 
-				VALUES (0, %s, %s, %s, %s, %d, %T, %T)`
+				VALUES (0, %s, %s, %s, %s, %s, %T, %T)`
 		params = { current_user[USER_NAME], current_user[USER_EMAIL], subject, body, 
 			current_user[USER_ID], now, now }
 	else
 		sql = `INSERT INTO messages (topic_id, parent_id, author_name, author_email, 
-			subject, body, post_by, last_edit_at) VALUES (%d, %d, %s, %s, %s, %s, %d, %T)`
+			subject, body, post_by, last_edit_at) VALUES (%d, %d, %s, %s, %s, %s, %s, %T)`
 		params = { topic_id, parent_id, current_user[USER_NAME], current_user[USER_EMAIL], 
 			subject, body, current_user[USER_ID], now }
 	end if

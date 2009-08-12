@@ -1,6 +1,8 @@
 <%@ include templates/euweb.etag as euweb %>
 <%- euweb:head title="Hello" %>
 
+<!-- Helllo -->
+
 <h3>About the <span>Open</span>Euphoria Website</h3>
 
 <p>

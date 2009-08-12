@@ -11,6 +11,7 @@ include webclay/webclay.e as wc
 -- Local includes
 include templates/news/index.etml as t_index
 include news_db.e
+include format.e
 
 sequence index_invars = {
 	{ wc:INTEGER, "page",   	1 },
@@ -22,8 +23,12 @@ function index(map data, map invars)
 	map:put(data, "per_page", map:get(invars, "per_page"))
 	map:put(data, "article_count", news_db:article_count())
 
-	map:put(data, "articles", 
-		news_db:get_article_list(map:get(invars, "page"), map:get(invars, "per_page")))
+	object arts = news_db:get_article_list(map:get(invars, "page"), map:get(invars, "per_page"))
+	for i = 1 to length(arts) do
+		arts[i][news_db:CONTENT] = format_body(arts[i][news_db:CONTENT])
+	end for
+
+	map:put(data, "articles", arts)
 
 	return { TEXT, t_index:template(data) }
 end function

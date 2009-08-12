@@ -36,13 +36,13 @@
 				<li><a href="/forum/index.wc" 
 				  <% if equal(#active, "forum") then %>class="active"<% end if %>
 				  >Forum</a></li>
-				<li><a href="/wiki/index.wc" 
+				<li><a href="/wiki/wiki.cgi" 
 				  <% if equal(#active, "wiki") then %>class="active"<% end if %>
 				  >Wiki</a></li>
-				<li><a href="/manual/eu400_0001.html" 
+				<li><a href="/docs/eu400_0001.html" 
 				  <% if equal(#active, "manual") then %>class="active"<% end if %>>
 				  Manual</a></li>
-				<li><a href="/download/index.wc"
+				<li><a href="http://sourceforge.net/projects/rapideuphoria/files/"
 				  <% if equal(#active, "download") then %>class="active"<% end if %>
 				  >Download</a></li>
 				<li><a href="http://sourceforge.net/tracker/?group_id=182827&atid=902782">Bug Tracker</a></li>
@@ -73,10 +73,13 @@
 
 				<h4><span>Search</span></h4>
 				
-				<form method="post" action="/search.wc">
+				<form method="get" action="http://google.com/cse">
 					<div id="search">
-						<input type="text" name="keywords" />
-						<input type="submit" class="button" value="Go" />
+
+						<input type="hidden" name="cx" value="004923656550405328555:5fzsgj0iwy0" />
+						<input type="hidden" name="ie" value="UTF-8" />
+						<input type="text" name="q" />
+						<input type="submit" name="sa" class="button" value="Go" />
 						<br class="clear" />
 					</div>
 				</form>

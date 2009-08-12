@@ -4,11 +4,11 @@
 
 <h3>Message Posted OK</h3>
 <div class="good_status">
-	Your message titled '<%= @subject %>' has been posted.
+	Your message titled '<%= _h(@subject) %>' has been posted.
 </div>
 
 <p class="centered">
-	<a href="/forum/<%= @topic_id %>.wc">Return to Topic</a>,
+	<a href="/forum/<%= @topic_id %>.wc#<%= @id %>">Return to Topic</a>,
  	<a href="/forum/index.wc">Return to Topic List</a>
 </p>
 

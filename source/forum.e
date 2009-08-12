@@ -43,8 +43,6 @@ function index(map data, map invars)
 	map:put(data, "threads", 
 		forum_db:get_thread_list(map:get(invars, "page"), map:get(invars, "per_page")))
 
-	log:log("Page: %d Per Page: %d", { map:get(invars, "page"), map:get(invars, "per_page") })
-	
 	return { TEXT, t_index:template(data) }
 end function
 wc:add_handler(routine_id("index"), -1, "forum", "index", index_invars)
@@ -55,7 +53,6 @@ sequence basic_invars = {
 
 function view(map data, map invars)
 	integer topic_id = map:get(invars, "id")
-	forum_db:inc_view_counter(topic_id)
 
 	object messages = forum_db:get_topic_messages(topic_id)
 	if atom(messages) then
@@ -64,6 +61,8 @@ function view(map data, map invars)
 	if length(messages) = 0 then
 		crash("Message topic id is invalid")
 	end if
+
+	forum_db:inc_view_counter(topic_id)
 	
 	for i = 1 to length(messages) do
 		messages[i] = append(messages[i], format_body(messages[i][MSG_BODY]))
@@ -164,7 +163,7 @@ end function
 -- 
 
 function save(map:map data, map:map vars)
-	if not has_role("post") then
+	if not has_role("user") then
 		return { TEXT, t_security:template(data) }
 	end if
 
@@ -176,8 +175,6 @@ function save(map:map data, map:map vars)
 		crash("Couldn't create new post")
 	end if
 	
-	log:log("topic_id = %s", { post[MSG_TOPIC_ID] })
-
 	map:put(data, "ok", 1)
 	map:put(data, "subject", post[MSG_SUBJECT])
 	map:put(data, "topic_id", post[MSG_TOPIC_ID])
@@ -269,8 +266,6 @@ function update(map data, map invars)
 	message[MSG_BODY] = map:get(invars, "body")
 
 	forum_db:update(message)
-	
-	log:log("Update SQL: = '%s'", { last_statements[$] })
 	
 	map:put(data, "subject", message[MSG_SUBJECT])
 	map:put(data, "topic_id", message[MSG_TOPIC_ID])

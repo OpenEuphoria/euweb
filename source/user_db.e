@@ -71,8 +71,6 @@ public function get_by_login(sequence code, sequence password)
 		" FROM users WHERE (user=%s OR email=%s) AND password=%s LIMIT 1", 
 		{ code, code, md5hex(salt(code,password)) })
 	
-	log:log("hex=%s", { md5hex(salt(code,password)) })
-
 	if atom(u) then
 		return { 0, "Invalid account" }
 	end if
@@ -98,7 +96,7 @@ global function has_role(sequence role, object user=current_user)
 	if find("admin", user[USER_ROLES]) then
 		return 1
 	end if 
-	
+
 	return find(role, user[USER_ROLES])
 end function
 
@@ -114,5 +112,8 @@ public function create(sequence code, sequence password, sequence email)
 		crash("Couldn't insert user into the database: %s", { mysql_error(db) })
 	end if
 	
-	return mysql_insert_id(db)
+	integer id = mysql_insert_id(db)
+	mysql_query(db, "INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
+	
+	return id
 end function

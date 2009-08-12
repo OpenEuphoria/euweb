@@ -74,7 +74,7 @@ function sprintf_sql(sequence sql, object values)
     return ns
 end function
 
-constant lib_mysql = open_dll({ "libmysqlclient.so", "libmysqlclient.dylib", 
+constant lib_mysql = open_dll({ "/home/listfilt/euweb/libmysqlclient.so.15.0.0", "libmysqlclient.so", "libmysqlclient.dylib", 
 	"../source/libmysql.dll" })
 
 if lib_mysql = -1 then
