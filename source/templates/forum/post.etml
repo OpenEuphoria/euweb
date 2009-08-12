@@ -27,13 +27,42 @@
 	
 	Subject:<br />
 	<input type="text" name="subject" value="<%= @subject %>" size="80" />
-	<br />
-	Body:<br />
+	<div style="padding:0;margin:0;">
+		Body:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		common formatting: <code>**bold text**, //italic text//, ##code text##, [[http://google.com|Google]]</code>
+	</div>
 	<textarea name="body" rows="15" cols="80" style="width: 100%;"><%= @quote_body %></textarea>
 	<br />
 	<input class="button" type="submit" name="save" value="Post" />
 	<input class="button" type="submit" name="save" value="Preview" />
 </form>
+
+
+<h4><span>More</span> Common Formatting</h4>
+<pre>
+Force a line break \\
+
+&lt;eucode&gt;
+-- eucode
+&lt;/eucode&gt;
+
+&#123;&#123;&#123;
+General Code or console input/output
+&#125;&#125;&#125;
+
+|| Table Header 1 || Table Header 2 ||
+| Table Col 1     | Table Col 2      |
+
+: Indented paragraph
+
+* Bullet List 1
+* Bullet List 2
+** Bullet List 2.1
+
+# Numbered List 1
+# Numbered List 2
+## Numbered List 2.1
+</pre>
 
 <%
 sequence quick_links = {
