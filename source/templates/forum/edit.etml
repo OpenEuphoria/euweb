@@ -2,7 +2,14 @@
 
 <%- euweb:head title="Forum Edit" active="forum" %>
 
-<h3>Edit Forum Message</h3>
+<% if length(@body_formatted) then %>
+	<h3><span>Preview</span> Message</h3>
+
+	<%= @body_formatted %>
+<% end if %>
+
+
+<h3><span>Edit</span> Forum Message</h3>
 
 <%- euweb:errors %>
 
@@ -15,7 +22,8 @@
 	Body:<br />
 	<textarea name="body" rows="15" cols="80" style="width: 100%;"><%= @body %></textarea>
 	<br />
-	<input type="submit" name="save" value="Save" />
+	<input class="button" type="submit" name="save" value="Save" />
+	<input class="button" type="submit" name="save" value="Preview" />
 </form>
 
 <%

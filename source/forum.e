@@ -110,7 +110,12 @@ function post(map data, map invars)
 	map:put(data, "parent_id", -1)
 	map:put(data, "topic_id", -1)
 
-	if id > 0 then
+	if sequence(map:get(data, "body_formatted")) then
+		
+		map:copy(invars, data)
+		map:put(data, "quote_body", find_replace("\r\n", map:get(invars, "body"), "\n"))
+
+	elsif id > 0 then
 		object msg = forum_db:get(id)
 		if atom(msg) then
 			crash("Couldn't retrieve message %d, %s", { id, mysql_error(db) })
@@ -131,8 +136,9 @@ function post(map data, map invars)
 		map:put(data, "body", msg[MSG_BODY])
 		if quote or fork then
 			map:put(data, "quote", 1)
-			map:put(data, "quote_body", sprintf("[quote %s]\n%s\n[/quote]\n", {
-				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }))
+			map:put(data, "quote_body", find_replace("\r\n", 
+					sprintf("[quote %s]\n%s\n[/quote]\n", {
+				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }), "\n"))
 		else
 		end if
 	end if
@@ -182,6 +188,11 @@ function save(map:map data, map:map vars)
 		return { TEXT, t_security:template(data) }
 	end if
 
+	if equal(map:get(vars, "save"), "Preview") then
+		map:put(data, "body_formatted", format_body(map:get(vars, "body")))
+		return post(data, vars)
+	end if
+
 	object post = forum_db:create(map:get(vars, "parent_id"),
 		map:get(vars, "topic_id"), map:get(vars, "subject"),
 		map:get(vars, "body"))
@@ -217,10 +228,20 @@ function edit(map data, map invars)
 
 	message[MSG_BODY] = find_replace("\r\n", message[MSG_BODY], "\n")
 
+	if sequence(map:get(data, "body_formatted")) then
+		
+		map:copy(invars, data)
+		map:put(data, "body", find_replace("\r\n", map:get(invars, "body"), "\n"))
+
+	else
+
+		map:put(data, "subject", message[MSG_SUBJECT])
+		map:put(data, "body", message[MSG_BODY])
+
+	end if
+
 	map:put(data, "id", message[MSG_ID])
 	map:put(data, "topic_id", message[MSG_TOPIC_ID])
-	map:put(data, "subject", message[MSG_SUBJECT])
-	map:put(data, "body", message[MSG_BODY])
 
 	return { TEXT, t_edit:template(data) }
 end function
@@ -275,6 +296,11 @@ function update(map data, map invars)
 		if not equal(message[MSG_POST_BY_ID], current_user[USER_ID]) then 
 			return { TEXT, t_security:template(data) }
 		end if
+	end if
+	
+	if equal(map:get(invars, "save"), "Preview") then
+		map:put(data, "body_formatted", format_body(map:get(invars, "body")))
+		return edit(data, invars)
 	end if
 	
 	message[MSG_SUBJECT] = map:get(invars, "subject")

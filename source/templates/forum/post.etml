@@ -2,13 +2,19 @@
 
 <%- euweb:head title="Forum Post" active="forum" %>
 
+<% if length(@body_formatted) then %>
+	<h3><span>Preview</span> Message</h3>
+
+	<%= @body_formatted %>
+<% end if %>
+
 <% if length(@subject) > 0 then %>
 	
-	<h3>Reply to '<%= @subject %>'</h3>
+	<h3><span>Reply</span> to '<%= @subject %>'</h3>
 
 <% else %>
 
-	<h3>New Message</h3>
+	<h3><span>New</span> Message</h3>
 
 <% end if %>
 
@@ -25,7 +31,8 @@
 	Body:<br />
 	<textarea name="body" rows="15" cols="80" style="width: 100%;"><%= @quote_body %></textarea>
 	<br />
-	<input type="submit" name="save" value="Post" />
+	<input class="button" type="submit" name="save" value="Post" />
+	<input class="button" type="submit" name="save" value="Preview" />
 </form>
 
 <%
