@@ -3,6 +3,7 @@
 -- 
 
 -- StdLib includes
+include std/datetime.e as dt
 include std/error.e
 include std/map.e
 include std/net/http.e
@@ -12,10 +13,13 @@ include std/types.e
 include webclay/webclay.e as wc
 include webclay/validate.e as valid
 include webclay/logging.e as log
+include webclay/url.e as url
 
 -- Templates
 include templates/user/profile.etml as t_profile
 include templates/user/login_form.etml as t_login_form
+include templates/user/login_ok.etml as t_login_ok
+include templates/user/logout_ok.etml as t_logout_ok
 include templates/user/signup.etml as t_signup
 include templates/user/signup_ok.etml as t_signup_ok
 
@@ -47,6 +51,47 @@ public function login_form(map data, map invars)
 end function
 wc:add_handler(routine_id("login_form"), -1, "user", "login")
 wc:add_handler(routine_id("login_form"), -1, "login", "index")
+
+sequence login_invars = {
+	{ wc:SEQUENCE, "code", "" },
+	{ wc:SEQUENCE, "password", "" }
+}
+
+public function validate_do_login(integer data, map vars)
+	sequence errors = wc:new_errors("user", "login")
+	
+	sequence code = map:get(vars, "code")
+	if length(code) < 4 then
+		errors = wc:add_error(errors, "code", "User code must be at least 4 characters long")
+	end if
+	
+	sequence password = map:get(vars, "password")
+	if length(password) < 5 then
+		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
+	end if
+	
+	if not has_errors(errors) then
+		sequence u = user_db:get_by_login(code, password)
+		if atom(u[1]) and u[1] = 0 then
+			errors = wc:add_error(errors, "form", u[2])
+		end if
+	end if
+
+	return errors	
+end function
+
+public function do_login(map data, map invars)
+	datetime rightnow = dt:now(), expire
+
+	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
+	set_user_ip(current_user, server_var("REMOTE_ADDR"))
+	expire = dt:add(rightnow, 1, YEARS)
+
+    wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+
+	return { TEXT, t_login_ok:template(data) }
+end function
+wc:add_handler(routine_id("do_login"), routine_id("validate_do_login"), "user", "do_login")
 
 public function signup(map data, map invars)
 	map:copy(invars, data)
@@ -115,4 +160,15 @@ end function
 public function do_signup(map data, map invars)
 	return { TEXT, t_signup_ok:template(data) }
 end function
-wc:add_handler(routine_id("do_signup"), routine_id("validate_do_signup"), "user", "do_signup")
+wc:add_handler(routine_id("do_signup"), routine_id("validate_do_signup"), "user", "do_signup", 
+	signup_invars)
+
+public function logout(map data, map invars)
+	datetime past = datetime:now()
+	past = datetime:add(past, -2, YEARS)
+	wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", past)
+	current_user = 0
+	return { TEXT, t_logout_ok:template(data) }
+end function
+wc:add_handler(routine_id("logout"), -1, "user", "logout")
+wc:add_handler(routine_id("logout"), -1, "logout", "index")

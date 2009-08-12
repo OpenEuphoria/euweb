@@ -116,7 +116,7 @@ function pad_message(sequence message)
 end function
 
 
-global function md5(sequence message)
+public function md5(sequence message)
     -- Given a string, returns a 16-byte hash of it.
 
     init_md5()
@@ -138,3 +138,12 @@ global function md5(sequence message)
 
 end function
 
+public function md5hex(sequence message)
+  sequence smd5 = md5(message), hmd5 = ""
+  
+  for x = 1 to length(smd5) do
+    hmd5 &= sprintf("%x",smd5[x])
+  end for
+
+  return hmd5
+end function

@@ -1,0 +1,13 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="User Signup OK" active="home" %>
+
+<h3><span>User</span> Login OK</h3>
+
+<p>
+    You are now logged into OpenEuphoria.org!
+</p>
+
+<br class="clear" />
+
+<%- euweb:foot %>

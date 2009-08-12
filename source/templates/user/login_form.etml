@@ -4,6 +4,8 @@
 
 <h3><span>User</span> Login</h3>
 
+<%- euweb:errors %>
+
 <form method="post" action="/user/do_login.wc">
 <table class="form">
 	<tr>
