@@ -214,7 +214,7 @@ function edit(map data, map invars)
 	object message = forum_db:get(map:get(invars, "id"))
 
 	-- A forum admin can edit any message, no need for further checks
-	if not has_role("forum_admin") then
+	if not has_role("forum_moderator") then
 		-- You must be at least a user
 		if not has_role("user") then
 			return { TEXT, t_security:template(data) }
@@ -286,7 +286,7 @@ function update(map data, map invars)
 	object message = forum_db:get(map:get(invars, "id"))
 	
 	-- A forum admin can edit any message, no need for further checks
-	if not has_role("forum_admin") then
+	if not has_role("forum_moderator") then
 		-- You must be at least a user
 		if not has_role("user") then
 			return { TEXT, t_security:template(data) }
