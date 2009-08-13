@@ -9,7 +9,7 @@
 <form method="post" action="/user/do_login.wc">
 <table class="form">
 	<tr>
-		<th>Code:</th>
+		<th>User code:</th>
 		<td><input type="text" name="code" /></td>
 	</tr>
 	<tr>
