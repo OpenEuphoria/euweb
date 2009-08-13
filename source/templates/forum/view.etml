@@ -14,7 +14,6 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 
 <%- euweb:errors %>
 
-
 <% for i = 1 to length(messages) do
 	sequence message = messages[i]
 	sequence div_class = "normal"

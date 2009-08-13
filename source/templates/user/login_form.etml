@@ -20,7 +20,7 @@
 		<th>&nbsp;</th>
 		<td>
 			<input class="button" type="submit" name="login" value="Login" />
-			<input class="button" type="submit" name="forgot_password" value="Forgot Password" />
+			<input class="button" type="submit" name="login" value="Forgot Password" />
 		</td>
 	</tr>
 </table>

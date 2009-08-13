@@ -35,11 +35,11 @@ function salt(sequence salt, sequence message)
 end function
 
 public function is_code_used(sequence code)
-	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE user=%s LIMIT 1", { code }), 0)
+	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE LOWER(user)=LOWER(%s) LIMIT 1", { code }), 0)
 end function
 
 public function is_email_used(sequence email)
-	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE email=%s LIMIT 1", { email }), 0)
+	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE LOWER(email)=LOWER(%s) LIMIT 1", { email }), 0)
 end function
 
 function get_roles(integer id)
@@ -67,12 +67,21 @@ public function get(integer id)
 end function
 
 public function get_by_login(sequence code, sequence password)
-	object u = mysql_query_one(db, "SELECT " & select_fields & 
-		" FROM users WHERE (user=%s OR email=%s) AND password=%s LIMIT 1", 
-		{ code, code, md5hex(salt(code,password)) })
+	object u
+	
+	-- try the new method first, it's hoped that it will become the most common
+	u = mysql_query_one(db, "SELECT " & select_fields & 
+		" FROM users WHERE (LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)) AND password=SHA1(%s)",
+		{ code, code, password })
 	
 	if atom(u) then
-		return { 0, "Invalid account" }
+		u = mysql_query_one(db, "SELECT " & select_fields & 
+			" FROM users WHERE user=%s AND password=%s LIMIT 1", 
+			{ code, md5hex(salt(code,password)) })
+		
+		if atom(u) then
+			return { 0, "Invalid account" }
+		end if
 	end if
 	
 	if equal(u[USER_DISABLED], "1") then
@@ -85,7 +94,7 @@ public function get_by_login(sequence code, sequence password)
 end function
 
 public function get_by_code(sequence code)
-	object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE user=%s", { code })
+	object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)", { code, code })
     if atom(user) then
     	return 0
 	end if
@@ -153,3 +162,40 @@ public procedure set_password(sequence uname, sequence password)
 	mysql_query(db, "UPDATE users SET password=%s WHERE user=%s", { 
 		md5hex(salt(uname,password)), uname })
 end procedure
+
+public function is_old_account(sequence user)
+	object o = mysql_query_object(db, "SELECT LENGTH(password) FROM users WHERE user=%s", { user[USER_NAME] })
+	if sequence(o) then
+		if defaulted_value(o, 0) < 40 then
+			return 1
+		end if
+	end if
+	
+	return 0
+end function
+
+public function update_security(sequence uname, sequence security_question, sequence security_answer,
+		sequence password)
+	object result = mysql_query(db, `UPDATE users SET security_question=%s, 
+		security_answer=SHA1(LOWER(%s)), password=SHA1(%s) WHERE LOWER(user)=LOWER(%s)`, {
+			security_question, security_answer, password, uname})
+
+	if result then
+		return 0
+	end if
+	
+	return 1
+end function
+
+public function get_security_question(sequence uname)
+	return mysql_query_object(db, "SELECT security_question FROM users WHERE user=%s", { uname })
+end function
+
+public function is_security_ok(sequence uname, sequence security_answer)
+	return sequence(mysql_query_object(db, "SELECT id FROM users WHERE user=%s AND security_answer=SHA1(LOWER(%s))", {
+		uname, security_answer }))
+end function
+
+public function update_password(sequence uname, sequence password)
+	return mysql_query(db, "UPDATE users SET password=SHA1(%s) WHERE user=%s", { password, uname })
+end function

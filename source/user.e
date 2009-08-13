@@ -22,6 +22,10 @@ include templates/user/login_ok.etml as t_login_ok
 include templates/user/logout_ok.etml as t_logout_ok
 include templates/user/signup.etml as t_signup
 include templates/user/signup_ok.etml as t_signup_ok
+include templates/user/old_account.etml as t_old_account
+include templates/user/update_ok.etml as t_update_ok
+include templates/user/forgot_password.etml as t_forgot_password
+include templates/user/forgot_password_ok.etml as t_forgot_password_ok
 
 -- Local includes
 include config.e 
@@ -82,30 +86,68 @@ public function validate_do_login(integer data, map vars)
 	sequence errors = wc:new_errors("user", "login")
 	
 	sequence code = map:get(vars, "code")
-	sequence password = map:get(vars, "password")
-	sequence u = user_db:get_by_login(code, password)
-	if atom(u[1]) and u[1] = 0 then
-		errors = wc:add_error(errors, "form", u[2])
+	
+	-- Only do data validation if doing a login, the other option here is that
+	-- the user has forgotten their password.
+	
+	if equal(map:get(vars, "login"), "Login") then
+		sequence password = map:get(vars, "password")
+		sequence u = user_db:get_by_login(code, password)
+		if atom(u[1]) and u[1] = 0 then
+			errors = wc:add_error(errors, "form", u[2])
+		end if
+	else
+		object u = user_db:get_by_code(code)
+		if atom(u) then
+			errors = wc:add_error(errors, "form", "Invalid user code")
+		elsif is_old_account(u) then
+			errors = wc:add_error(errors, "user", `User account is an old account and 
+				does not support password resetting. You must contact a system 
+				administrator for assistance`)
+		end if
 	end if
 
 	return errors	
 end function
 
 public function do_login(map data, map invars)
-	datetime rightnow = dt:now(), expire
+	if equal(map:get(invars, "login"), "Forgot Password") or 
+		sequence(map:get(invars, "security_answer", 0)) 
+	then
+		object u = user_db:get_by_code(map:get(invars, "code"))
+		
+		map:put(data, "re_public_key", RECAPTCHA_PUBLIC_KEY)
+		map:put(data, "security_question", user_db:get_security_question(u[USER_NAME]))
+		map:put(data, "security_answer", map:get(invars, "security_answer", ""))
+		map:put(data, "code", u[USER_NAME])
+		
+		return { TEXT, t_forgot_password:template(data) }
 
-	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
-	set_user_ip(current_user, server_var("REMOTE_ADDR"))
-	expire = dt:add(rightnow, 1, YEARS)
+	elsif sequence(map:get(invars, "update_account")) then
+		map:copy(invars, data)
 
-    wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+		return { TEXT, t_old_account:template(data) }
+	else
+		datetime rightnow = dt:now(), expire
 
-	return { TEXT, t_login_ok:template(data) }
+		current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
+		set_user_ip(current_user, server_var("REMOTE_ADDR"))
+		expire = dt:add(rightnow, 1, YEARS)
+
+	    wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+
+		if user_db:is_old_account(current_user) then
+			return { TEXT, t_old_account:template(data) }
+		else
+			return { TEXT, t_login_ok:template(data) }
+		end if
+	end if
 end function
 wc:add_handler(routine_id("do_login"), routine_id("validate_do_login"), "user", "do_login")
 
 public function signup(map data, map invars)
 	map:copy(invars, data)
+	map:put(data, "re_public_key", RECAPTCHA_PUBLIC_KEY)
 
 	return { TEXT, t_signup:template(data) }
 end function
@@ -153,7 +195,7 @@ function validate_do_signup(integer data, map:map vars)
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
 		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", { 
-			urlencode(RECAPTCHA_PK), urlencode(server_var("REMOTE_ADDR")),
+			urlencode(RECAPTCHA_PRIVATE_KEY), urlencode(server_var("REMOTE_ADDR")),
 			urlencode(map:get(vars, "recaptcha_challenge_field")),
 			urlencode(map:get(vars, "recaptcha_response_field")) })
 
@@ -194,3 +236,105 @@ public function logout(map data, map invars)
 end function
 wc:add_handler(routine_id("logout"), -1, "user", "logout")
 wc:add_handler(routine_id("logout"), -1, "logout", "index")
+
+sequence update_account_invars = {
+	{ wc:SEQUENCE, "security_question" },
+	{ wc:SEQUENCE, "security_answer" },
+	{ wc:SEQUENCE, "password" },
+	{ wc:SEQUENCE, "password_confirm" }
+}
+
+function validate_update_account(integer data, map:map vars)
+	sequence errors = wc:new_errors("user", "do_login")
+	
+	sequence security_question = map:get(vars, "security_question")
+	if length(security_question) = 0 then
+		errors = wc:add_error(errors, "security_question", "Security question cannot be empty.")
+	end if
+	
+	sequence security_answer = map:get(vars, "security_answer")
+	if length(security_answer) = 0 then
+		errors = wc:add_error(errors, "security_answer", "Security answer cannot be empty.")
+	end if
+
+	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
+	if length(password) < 5 then
+		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
+	elsif not equal(password, password_confirm) then
+		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
+	end if
+	
+	return errors
+end function
+
+public function update_account(map data, map invars)
+	user_db:update_security(current_user[USER_NAME], map:get(invars, "security_question"),
+		map:get(invars, "security_answer"), map:get(invars, "password"))
+	
+	return { TEXT, t_update_ok:template(data) }
+end function
+wc:add_handler(routine_id("update_account"), routine_id("validate_update_account"),
+	"user", "update_account", update_account_invars)
+
+sequence forgot_password_invars = {
+	{ wc:SEQUENCE, "code", "" },
+ 	{ wc:SEQUENCE, "security_answer", "" },
+	{ wc:SEQUENCE, "password", "" },
+	{ wc:SEQUENCE, "password_confirm", "" },
+	{ wc:SEQUENCE, "recaptcha_challenge_field", "" },
+	{ wc:SEQUENCE, "recaptcha_response_field", "" }
+}
+
+public function validate_forgot_password(integer data, map vars)
+	sequence errors = wc:new_errors("user", "do_login")
+	
+	sequence code = map:get(vars, "code")
+	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
+	sequence security_answer = map:get(vars, "security_answer")
+
+	if length(password) < 5 then
+		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
+	elsif not equal(password, password_confirm) then
+		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
+	end if
+	
+	if not is_security_ok(code, security_answer) then
+		errors = wc:add_error(errors, "security_answer", "Security answer is incorrect")
+	end if
+	
+	-- No reason to do the costly tests if we already have errors.
+	if not has_errors(errors) then
+		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
+		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", { 
+			urlencode(RECAPTCHA_PRIVATE_KEY), urlencode(server_var("REMOTE_ADDR")),
+			urlencode(map:get(vars, "recaptcha_challenge_field")),
+			urlencode(map:get(vars, "recaptcha_response_field")) })
+		
+		log:log("re_url=%s", { postdata })
+
+		object recaptcha_result = get_url(recaptcha_url, postdata)
+		if length(recaptcha_result) < 2 then
+	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
+		elsif not match("true", recaptcha_result[2]) = 1 then
+			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response was incorrect.")
+		end if
+	end if
+
+	return errors
+end function
+
+public function forgot_password(map data, map invars)
+	user_db:update_password(map:get(invars, "code"), map:get(invars, "password"))
+
+	datetime rightnow = dt:now(), expire
+
+	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
+	set_user_ip(current_user, server_var("REMOTE_ADDR"))
+	expire = dt:add(rightnow, 1, YEARS)
+
+	wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+
+	return { TEXT, t_forgot_password_ok:template(data) }
+end function
+wc:add_handler(routine_id("forgot_password"), routine_id("validate_forgot_password"),
+	"user", "forgot_password", forgot_password_invars)

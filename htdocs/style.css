@@ -444,6 +444,7 @@ max-width: 2.5em;
 
 table.form th {
 	text-align: right;
+	padding: 3px 0px 3px 0px;
 }
 
 div.error_box {

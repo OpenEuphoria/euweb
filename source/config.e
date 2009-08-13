@@ -23,8 +23,9 @@
 
 	public constant AUTO_LOGIN_UID = 0 -- 0 disables, otherwise set to your UID
 	
-	public constant RECAPTCHA_PK = "" -- reCAPTCHA private key. Can be empty but
-									  -- user signup will not validate the user
+	-- reCAPTCHA keys
+	public constant RECAPTCHA_PRIVATE_KEY = ""
+	public constant RECAPTCHA_PUBLIC_KEY = ""
 
 */
 

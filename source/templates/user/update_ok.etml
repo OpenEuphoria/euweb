@@ -1,0 +1,14 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="User Update OK" active="home" %>
+
+<h3><span>User</span> Update OK</h3>
+
+<p>
+    Your account is now updated for the latest security enhancement.
+    Thank you for taking the time to do so.
+</p>
+
+<br class="clear" />
+
+<%- euweb:foot %>
