@@ -131,7 +131,9 @@ end function
 
 public function set_user_ip(sequence user, sequence ip)
 	datetime rnd = datetime:now()
-	sequence sk = ip & user[USER_NAME] & datetime:format(rnd, "%Y%m%d%H%M%S")
+	sequence sk = datetime:format(rnd, "%S.#%m") & ip & 
+		datetime:format(rnd, "%S%Y&(*") & user[USER_NAME] &
+		datetime:format(rnd, "%s$%M!%H#%Y@%m*%de.<\"")
 
 	mysql_query(db, "UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
 		sk, ip, user[USER_ID] })
