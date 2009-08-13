@@ -1,6 +1,6 @@
 <%@ include templates/euweb.etag as euweb %>
 
-<%- euweb:head title="User Signup OK" active="home" %>
+<%- euweb:head title="User Login OK" active="home" %>
 
 <h3><span>User</span> Login OK</h3>
 
