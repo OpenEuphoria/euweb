@@ -2,17 +2,20 @@
 <%@ include templates/euweb.etag as euweb %>
 <%@ include forum_db.e %>
 
-<%- euweb:head title="Forum View" active="forum" %>
-
-<%- euweb:errors %>
-
 <%
 sequence messages = @messages
 sequence topic_id = messages[1][MSG_TOPIC_ID]
 sequence subject = messages[1][MSG_SUBJECT]
 integer is_forum_admin = has_role("forum_moderator")
+sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
+%>
 
-for i = 1 to length(messages) do
+<%- euweb:head title=!page_title active="forum" %>
+
+<%- euweb:errors %>
+
+
+<% for i = 1 to length(messages) do
 	sequence message = messages[i]
 	sequence div_class = "normal"
 	integer is_owner = 0
