@@ -35,6 +35,24 @@ sequence profile_invars = {
 }
 
 public function profile(map data, map invars)
+	sequence uname = map:get(invars, "user")
+
+	-- If the current user is an admin, check on the query string for admin
+	-- actions that may take place
+	if has_role("user_admin") then
+		if sequence(map:get(invars, "remove_role")) then
+			user_db:remove_role(uname, map:get(invars, "remove_role"))
+		elsif sequence(map:get(invars, "add_role")) then
+			user_db:add_role(uname, map:get(invars, "add_role"))
+		elsif sequence(map:get(invars, "disabled_reason")) then
+			user_db:disable(uname, map:get(invars, "disabled_reason"))
+		elsif sequence(map:get(invars, "enable")) then
+			user_db:enable(uname)
+		elsif sequence(map:get(invars, "password")) then
+			user_db:set_password(uname, map:get(invars, "password"))
+		end if
+	end if
+
 	object user = user_db:get_by_code(map:get(invars, "user"))
 	if atom(user) then
 		crash("User %s could not be located", { map:get(invars, "user") })

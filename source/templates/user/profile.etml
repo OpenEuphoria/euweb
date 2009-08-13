@@ -13,6 +13,12 @@ sequence user = @user
 		<th>Code:</th>
 		<td><%= user[USER_NAME] %></td>
 	</tr>
+	<% if has_role("user_admin") then %>
+		<tr>
+			<th>Email:</th>
+			<td><a href="mailto:<%= user[USER_EMAIL] %>"><%= user[USER_EMAIL] %></a> (shown only to user admin's)</td>
+		</tr>
+	<% end if %>
 	<tr>
 		<th>Last Login:</th>
 		<td><%= user[USER_LAST_LOGIN_AT] %></td>
@@ -26,5 +32,60 @@ sequence user = @user
 	bio, a form to contact the member, location, etc... All of these, the user
 	can opt-in/out of.
 </p>
+
+<% if has_role("user_admin") then 
+	sequence uid = user[USER_ID]
+	sequence uname = user[USER_NAME]
+	%>
+
+	<h4><span>User</span> Admin</h4>
+	
+	<p>
+		<strong>User status:</strong>
+		<% if equal(user[USER_DISABLED], "1") then %>
+			disabled, <strong>reason:</strong> '<%= user[USER_DISABLED_REASON] %>'<br />
+			<a href="/user/profile.wc?user=<%= uname %>&amp;enable=1">enable</a>
+		<% else %>
+			active
+		<% end if %>
+	</p>
+
+	<h5><span>User</span> Roles</h5>
+	<ul>
+	<% for i = 1 to length(user[USER_ROLES]) do 
+		sequence role = user[USER_ROLES][i]
+		%>
+			<li>
+				<%= role %> - 
+				<a href="/user/profile.wc?user=<%= uname %>&amp;remove_role=<%= role %>">remove</a>
+				</li>
+	<% end for %>
+	</ul>
+	<br />
+	<form method="GET" action="/user/profile.wc">
+		<input type="hidden" name="user" value="<%= uname %>" />
+		Add role: <input type="text" name="add_role" />
+		<input class="button" type="submit" value="Add" />
+	</form>
+	
+	<br />
+
+	<h5><span>Disable</span> User</h5>
+	<form method="GET" action="/user/profile.wc">
+		<input type="hidden" name="user" value="<%= uname %>" />
+		Reason: <input type="text" name="disabled_reason" size="80" />
+		<input class="button" type="submit" value="Disable" />
+	</form>
+	
+	<br />
+
+	<h5><span>Set</span> Password</h5>
+	<form method="GET" action="/user/profile.wc">
+		<input type="hidden" name="user" value="<%= uname %>" />
+		New password: <input type="password" name="password" />
+		<input class="button" type="submit" value="Set" />
+	</form>
+
+<% end if %>
 
 <%- euweb:foot %>

@@ -85,7 +85,14 @@ public function get_by_login(sequence code, sequence password)
 end function
 
 public function get_by_code(sequence code)
-	return mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE user=%s", { code })
+	object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE user=%s", { code })
+    if atom(user) then
+    	return 0
+	end if
+	
+	user &= { get_roles(defaulted_value(user[USER_ID], 0)) }
+
+	return user
 end function
 
 global function has_role(sequence role, object user=current_user)
@@ -117,3 +124,32 @@ public function create(sequence code, sequence password, sequence email)
 	
 	return id
 end function
+
+public procedure remove_role(sequence uname, sequence role)
+	mysql_query(db, "DELETE ur FROM user_roles ur, users u WHERE u.user=%s AND ur.user_id=u.id AND ur.role_name=%s",
+		{ uname, role })
+end procedure
+
+public procedure add_role(sequence uname, sequence role)
+	object uid = mysql_query_object(db, "SELECT id FROM users WHERE user=%s", { uname })
+	if atom(uid) then
+		return
+	end if
+
+	mysql_query(db, "INSERT INTO user_roles (user_id, role_name) VALUES (%s,%s)",
+		{ uid, role })
+end procedure
+
+public procedure disable(sequence uname, sequence reason)
+	mysql_query(db, "UPDATE users SET disabled=1, disabled_reason=%s WHERE user=%s", {
+		reason, uname })
+end procedure
+
+public procedure enable(sequence uname)
+	mysql_query(db, "UPDATE users SET disabled=0 WHERE user=%s", { uname })
+end procedure
+
+public procedure set_password(sequence uname, sequence password)
+	mysql_query(db, "UPDATE users SET password=%s WHERE user=%s", { 
+		md5hex(salt(uname,password)), uname })
+end procedure
