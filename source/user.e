@@ -27,6 +27,7 @@ include templates/user/signup_ok.etml as t_signup_ok
 include config.e 
 include db.e
 include format.e
+include fuzzydate.e
 include user_db.e
 
 sequence profile_invars = {
@@ -38,6 +39,8 @@ public function profile(map data, map invars)
 	if atom(user) then
 		crash("User %s could not be located", { map:get(invars, "user") })
 	end if
+
+	user[USER_LAST_LOGIN_AT] = fuzzy_ago(sqlDateTimeToDateTime(user[USER_LAST_LOGIN_AT]))
 
 	map:put(data, "user", user)
 
@@ -61,20 +64,10 @@ public function validate_do_login(integer data, map vars)
 	sequence errors = wc:new_errors("user", "login")
 	
 	sequence code = map:get(vars, "code")
-	if length(code) < 4 then
-		errors = wc:add_error(errors, "code", "User code must be at least 4 characters long")
-	end if
-	
 	sequence password = map:get(vars, "password")
-	if length(password) < 5 then
-		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
-	end if
-	
-	if not has_errors(errors) then
-		sequence u = user_db:get_by_login(code, password)
-		if atom(u[1]) and u[1] = 0 then
-			errors = wc:add_error(errors, "form", u[2])
-		end if
+	sequence u = user_db:get_by_login(code, password)
+	if atom(u[1]) and u[1] = 0 then
+		errors = wc:add_error(errors, "form", u[2])
 	end if
 
 	return errors	

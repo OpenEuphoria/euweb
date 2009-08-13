@@ -116,7 +116,7 @@ line-height: 1.8em;
 #header
 {
 width:100%;
-height:122px;
+height:64px;
 background: #440000 url('images/n1.gif') repeat-x;
 }
 
@@ -124,7 +124,7 @@ background: #440000 url('images/n1.gif') repeat-x;
 {
 position: relative;
 width: 950px;
-height:122px;
+height:64px;
 margin: 0 auto;
 }
 
@@ -174,7 +174,7 @@ float: left;
 {
 margin-left: 0.5em;
 display: block;
-padding: 1.1em 1.4em 1.0em 1.4em;
+padding: 0.25em 1.4em;
 background: #fff url('images/n4.gif') repeat-x;
 border: solid 1px #fff;
 color: #616161;
@@ -502,6 +502,7 @@ div.error_box {
 
 #main_inner img {
 	border: 0;
+	vertical-align: text-bottom;
 }
 
 #main_inner .quote {
