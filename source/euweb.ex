@@ -30,12 +30,9 @@ procedure app(object data, object vars)
         sequence user_cookie = wc:cookie("euweb_sessinfo")
     
         if length(user_cookie) then
-            object u = user_db:get(defaulted_value(user_cookie, 0))
+            object u = user_db:get_by_sess_id(user_cookie, server_var("REMOTE_ADDR"))
             if sequence(u) then
-                -- ensure we have the correct user by checking the IP
-                if equal(u[USER_IP_ADDR], server_var("REMOTE_ADDR")) then
-                    current_user = u
-                end if
+                current_user = u
             end if
         end if
     end if

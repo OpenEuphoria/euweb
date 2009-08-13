@@ -8,6 +8,7 @@ include std/convert.e
 include std/error.e
 include std/get.e
 include std/sequence.e
+include std/datetime.e
 
 include webclay/logging.e as log
 include db.e
@@ -66,6 +67,18 @@ public function get(integer id)
 	return user
 end function
 
+public function get_by_sess_id(sequence sess_id, sequence ip)
+	object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE sess_id=%s AND ip_addr=%s", {
+		sess_id, ip })
+	if atom(user) then
+		return 0
+	end if
+	
+	user &= { get_roles(defaulted_value(user[USER_ID], 0)) }
+	
+	return user
+end function
+
 public function get_by_login(sequence code, sequence password)
 	object u
 	
@@ -116,10 +129,15 @@ global function has_role(sequence role, object user=current_user)
 	return find(role, user[USER_ROLES])
 end function
 
-public procedure set_user_ip(sequence user, sequence ip)
-	mysql_query(db, "UPDATE users SET ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
-		ip, user[USER_ID] })
-end procedure
+public function set_user_ip(sequence user, sequence ip)
+	datetime rnd = datetime:now()
+	sequence sk = ip & user[USER_NAME] & datetime:format(rnd, "%Y%m%d%H%M%S")
+
+	mysql_query(db, "UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
+		sk, ip, user[USER_ID] })
+	
+	return mysql_query_object(db, "SELECT sess_id FROM users WHERE id=%s", { user[USER_ID] })
+end function
 
 public function create(sequence code, sequence password, sequence email)
 	if mysql_query(db, "INSERT INTO users (user, password, email) VALUES (%s,%s,%s)", {

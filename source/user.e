@@ -34,6 +34,14 @@ include format.e
 include fuzzydate.e
 include user_db.e
 
+procedure _login(sequence u)
+	datetime rightnow = dt:now(), expire
+	sequence sess_id = set_user_ip(u, server_var("REMOTE_ADDR"))
+	expire = dt:add(rightnow, 1, YEARS)
+
+	wc:add_cookie("euweb_sessinfo", sess_id, "/", expire)
+end procedure
+
 sequence profile_invars = {
 	{ wc:SEQUENCE, "user" }
 }
@@ -128,13 +136,9 @@ public function do_login(map data, map invars)
 
 		return { TEXT, t_old_account:template(data) }
 	else
-		datetime rightnow = dt:now(), expire
-
 		current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
-		set_user_ip(current_user, server_var("REMOTE_ADDR"))
-		expire = dt:add(rightnow, 1, YEARS)
-
-	    wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+		
+		_login(current_user)
 
 		if user_db:is_old_account(current_user) then
 			return { TEXT, t_old_account:template(data) }
@@ -214,13 +218,8 @@ public function do_signup(map data, map invars)
 	user_db:create(map:get(invars, "code"), map:get(invars, "password"),
 		map:get(invars, "email"))
 	
-	datetime rightnow = dt:now(), expire
-
 	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
-	set_user_ip(current_user, server_var("REMOTE_ADDR"))
-	expire = dt:add(rightnow, 1, YEARS)
-
-    wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+	_login(current_user)
 
 	return { TEXT, t_signup_ok:template(data) }
 end function
@@ -230,7 +229,7 @@ wc:add_handler(routine_id("do_signup"), routine_id("validate_do_signup"), "user"
 public function logout(map data, map invars)
 	datetime past = datetime:now()
 	past = datetime:add(past, -2, YEARS)
-	wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", past)
+	wc:add_cookie("euweb_sessinfo", "logout", "/", past)
 	current_user = 0
 	return { TEXT, t_logout_ok:template(data) }
 end function
@@ -326,13 +325,8 @@ end function
 public function forgot_password(map data, map invars)
 	user_db:update_password(map:get(invars, "code"), map:get(invars, "password"))
 
-	datetime rightnow = dt:now(), expire
-
 	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
-	set_user_ip(current_user, server_var("REMOTE_ADDR"))
-	expire = dt:add(rightnow, 1, YEARS)
-
-	wc:add_cookie("euweb_sessinfo", current_user[USER_ID], "/", expire)
+	_login(current_user)
 
 	return { TEXT, t_forgot_password_ok:template(data) }
 end function
