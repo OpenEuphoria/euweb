@@ -599,3 +599,80 @@ div.LEVELTOC div.toc_4 { padding-left: 60px; }
 
 a.forum_message {padding-right: 20px;background: url("/images/new.png") top right no-repeat;}
 a:visited.forum_message {background: 0;padding-right: 0px;}
+
+.wiki table {
+margin-top: 5px;
+border-collapse: collapse;
+border: 2px solid #607080;
+}
+
+.wiki th {
+text-align: right; 
+}
+
+.wiki table th {
+background-color: #607080;
+color: white;
+        
+}
+
+.wiki table tr {
+padding: 3px 0px 3px 0px;
+border-bottom: 1px solid #dfdfef;
+background-color: #efefff;
+}
+
+.wiki table td {
+padding: 3px 3px 3px 3px;
+border-width: 0px 1px 0px 1px;
+border-style: solid;
+border-color: white;
+}
+
+.wiki div.embedded {
+margin: 4px 4px 4px 4px;
+padding: 4px 4px 4px 4px;
+border-width: 2px 2px 2px 2px;
+border-color: #506070;
+border-style: solid;
+}
+    
+
+.wiki div.floatright {
+float: right;
+margin: 4px 4px 4px 4px;
+padding: 4px 4px 4px 4px;
+border-width: 2px 2px 2px 2px;
+border-color: #506070;
+border-style: solid;
+}
+    
+.wiki div.floatleft {
+float: left;
+margin: 4px 4px 4px 4px;
+padding: 4px 4px 4px 4px;
+border-width: 2px 2px 2px 2px;
+border-color: #506070;
+border-style: solid;
+}
+
+.wiki ul.toolbar {
+list-style: none;
+margin: 0px 2px 0px 2px;
+padding: 3px 0px 3px 0px;
+font-family: sans-serif;
+font-weight: bold;
+}
+.wiki ul.toolbar li {
+display: inline;
+border-style: solid solid solid solid;
+border-width: 1px 1px 1px 1px;
+border-color: #8090a0;
+padding: 1px 3px 1px 3px;
+background-color: #f0f0f0;
+}
+
+.wiki div.notsaved {
+font-family: sans-serif;
+background-color: red;
+}
