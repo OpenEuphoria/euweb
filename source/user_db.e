@@ -121,12 +121,20 @@ global function has_role(sequence role, object user=current_user)
 	if atom(user) then 
 		return 0
 	end if
-		
-	if find("admin", user[USER_ROLES]) then
-		return 1
-	end if 
 
-	return find(role, user[USER_ROLES])
+	if length(user) >= USER_ROLES and sequence(user[USER_ROLES]) then
+		if find("admin", user[USER_ROLES]) then
+			return 1
+		end if 
+
+		return find(role, user[USER_ROLES])
+	else
+		-- user must be just a user name
+		object o = mysql_query_object(db, `SELECT ur.role_name 
+			FROM user_roles ur, users u 
+			WHERE u.id=ur.user_id AND ur.role_name=%s AND u.user=%s`, { role, user })
+		return sequence(o)
+	end if
 end function
 
 public function set_user_ip(sequence user, sequence ip)

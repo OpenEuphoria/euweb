@@ -207,3 +207,16 @@ Pages
 
 {{{user_profile}}}
 <a href="/user/profile/<%= #user %>.wc"><%= #user %></a>
+<%
+if equal(#show_public_roles, "1") then
+	if has_role("admin", #user) then
+		%>
+		(admin)
+		<%
+	elsif has_role("forum_moderator", #user) then
+		%>
+		(moderator)
+		<% 
+	end if
+end if 
+%>
