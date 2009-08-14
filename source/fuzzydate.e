@@ -3,6 +3,8 @@ include std/sequence.e
 include std/text.e
 include std/datetime.e as dt
 
+include db.e
+
 constant SECS_PER_MINUTE=60, SECS_PER_HOUR=SECS_PER_MINUTE*60,
          SECS_PER_DAY=SECS_PER_HOUR*24, SECS_PER_WEEK=SECS_PER_DAY*7,
          SECS_PER_MONTH=SECS_PER_DAY*30, SECS_PER_YEAR=SECS_PER_DAY*365
@@ -53,5 +55,9 @@ public function fuzzy_ago(dt:datetime d1)
 	end if
 
 	return fuzzyDateDiff(d1, dt:now()) & " ago"
+end function
+
+public function fuzzy_ago_seq(sequence d)
+	return fuzzy_ago(sqlDateTimeToDateTime(d))
 end function
 

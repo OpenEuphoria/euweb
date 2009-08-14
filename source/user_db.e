@@ -223,3 +223,8 @@ end function
 public procedure update_last_login(sequence user)
  	mysql_query(db, "UPDATE users SET login_time=CURRENT_TIMESTAMP WHERE user=%s", { user[USER_NAME] })
 end procedure
+
+public function get_recent_users(integer limit=10)
+	return mysql_query_rows(db, "SELECT user, login_time FROM users ORDER BY login_time DESC LIMIT %d", {
+		limit })
+end function
