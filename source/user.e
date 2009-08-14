@@ -50,6 +50,10 @@ sequence profile_invars = {
 }
 
 public function profile(map data, map invars)
+	if atom(current_user) then
+		return { TEXT, t_security:template(data) }
+	end if
+
 	sequence uname = map:get(invars, "user")
 
 	-- If the current user is an admin, check on the query string for admin
@@ -382,7 +386,8 @@ sequence profile_save_invars = {
 	{ wc:SEQUENCE, "full_name", "" },
 	{ wc:SEQUENCE, "location", "" },
 	{ wc:SEQUENCE, "show_email", "off" },
-	{ wc:SEQUENCE, "forum_default_view", 1 }
+	{ wc:SEQUENCE, "forum_default_view", 1 },
+	{ wc:SEQUENCE, "password", "" }
 }
 
 function validate_profile_save(map data, map vars)
@@ -402,6 +407,13 @@ function validate_profile_save(map data, map vars)
 	if not valid:valid_email(map:get(vars, "email")) then
 		errors = wc:add_error(errors, "email", "Email is invalid")
 	end if
+
+	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
+	if length(password) < 5 then
+		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
+	elsif not equal(password, password_confirm) then
+		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
+	end if
 	
 	return errors
 end function
@@ -416,6 +428,10 @@ function profile_save(map data, map vars)
 			map:get(vars, "email"),
 			map:get(vars, "user")
 		})
+
+	if length(map:get(vars, "password")) then
+		user_db:update_password(map:get(vars, "user"), map:get(vars, "password"))
+	end if
 
 	map:put(data, "user", map:get(vars, "user"))
 

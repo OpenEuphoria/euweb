@@ -12,6 +12,14 @@ include templates/euweb.etag as euweb
 	<input type="hidden" name="user" value="<%= @user %>" />
 	<table class="form">
 		<tr>
+			<th>&nbsp;</th>
+			<td>
+				Full name and Location are <strong>not required</strong>. If you fill them
+				in, other authenticated users will be able to know your name and location. If
+				you do not wish for other users to know this information, leave it blank.
+			</td>
+		</tr>
+		<tr>
 			<th>Full name:</th>
 			<td><input type="text" name="full_name" value="<%= @full_name %>" size="40" /></td>
 		</tr>
@@ -29,7 +37,7 @@ include templates/euweb.etag as euweb
 			</td>
 		</tr>
 		<tr>
-			<th>Forum default view:</th>
+			<th nowrap="nowrap">Forum default view:</th>
 			<td>
 				<select name="forum_default_view">
 					<option value="1"
@@ -40,6 +48,22 @@ include templates/euweb.etag as euweb
 					>Subject list</option>
 				</select>
 			</td>
+		</tr>
+		<tr>
+			<th>&nbsp;</th>
+			<td>
+				You only need to fill in New Password and Confirm password <strong>if</strong> you
+				wish to change your password. Leaving these fields blank is fine and will keep your
+				existing password.
+			</td>
+		</tr>
+		<tr>
+			<th>New password:</th>
+			<td><input type="password" name="password" /></td>
+		</tr>
+		<tr>
+			<th>Confirm password:</th>
+			<td><input type="password" name="password_confirm" /></td>
 		</tr>
 		<tr>
 			<th>&nbsp;</th>
