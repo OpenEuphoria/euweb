@@ -145,8 +145,8 @@ function post(map data, map invars)
 				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }), "\n")
 			
 			if fork then
-				body = sprintf("**Forked from [[%s/forum/%s.wc|%s]]**\n\n", {
-					ROOT_URL, msg[MSG_ID], msg[MSG_SUBJECT]
+				body = sprintf("**Forked from [[%s/forum/%s.wc#%s|%s]]**\n\n", {
+					ROOT_URL, msg[MSG_ID], msg[MSG_ID], msg[MSG_SUBJECT]
 				}) & body
 			end if
 
