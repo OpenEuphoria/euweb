@@ -45,7 +45,7 @@ include templates/euweb.etag as euweb
 					>Topic list</option>
 					<option value="2"
 						<% if equal(@forum_default_view, "2") then %>selected="selected"<% end if %>
-					>Subject list</option>
+					>Message list</option>
 				</select>
 			</td>
 		</tr>
