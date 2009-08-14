@@ -25,6 +25,7 @@ include templates/forum/edit.etml as t_edit
 include templates/forum/edit_ok.etml as t_edit_ok
 
 -- Local includes
+include config.e
 include db.e
 include format.e
 include forum_db.e
@@ -109,6 +110,7 @@ function post(map data, map invars)
 	map:put(data, "id", -1)
 	map:put(data, "parent_id", -1)
 	map:put(data, "topic_id", -1)
+	map:put(data, "fork_id", -1)
 
 	if sequence(map:get(data, "body_formatted")) then
 		
@@ -131,15 +133,24 @@ function post(map data, map invars)
 			map:put(data, "parent_id", id)
 			map:put(data, "subject", subject)
 			map:put(data, "topic_id", defaulted_value(msg[MSG_TOPIC_ID], 0))
+		else
+			map:put(data, "fork_id", id)
 		end if
 
 		map:put(data, "body", msg[MSG_BODY])
 		if quote or fork then
+			sequence body 
 			map:put(data, "quote", 1)
-			map:put(data, "quote_body", find_replace("\r\n", 
-					sprintf("[quote %s]\n%s\n[/quote]\n", {
-				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }), "\n"))
-		else
+			body = find_replace("\r\n", sprintf("[quote %s]\n%s\n[/quote]\n", {
+				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }), "\n")
+			
+			if fork then
+				body = sprintf("**Forked from [[%s/forum/%s.wc|%s]]**\n\n", {
+					ROOT_URL, msg[MSG_ID], msg[MSG_SUBJECT]
+				}) & body
+			end if
+
+			map:put(data, "quote_body", body)
 		end if
 	end if
 
@@ -151,6 +162,8 @@ sequence save_invars = {
 	{ wc:INTEGER, "id", 	   -1 },
 	{ wc:INTEGER, "topic_id",  -1 },
 	{ wc:INTEGER, "parent_id", -1 },
+	{ wc:INTEGER, "fork_id",   -1 },
+	{ wc:INTEGER, "fork",   	0 },
 	{ wc:SEQUENCE, "subject"	  },
 	{ wc:SEQUENCE, "body"   	  }
 }
@@ -205,6 +218,12 @@ function save(map:map data, map:map vars)
 	map:put(data, "subject", post[MSG_SUBJECT])
 	map:put(data, "topic_id", post[MSG_TOPIC_ID])
 	map:put(data, "id", post[MSG_ID])
+	
+	if map:get(vars, "fork", 0) then
+		integer forked_id = map:get(vars, "fork_id")
+		forum_db:update_forked_body(defaulted_value(post[MSG_ID], 0), forked_id, 
+			post[MSG_SUBJECT])
+	end if
 
 	return { TEXT, t_post_ok:template(data) }
 end function

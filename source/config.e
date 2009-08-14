@@ -20,6 +20,9 @@
 	public constant DB_USER = "me"
 	public constant DB_PASS = "secret"
 	public constant DB_NAME = "database_name"
+	
+	-- Do NOT include the trailing slash
+	public constant ROOT_URL = "http://localhost"
 
 	public constant AUTO_LOGIN_UID = 0 -- 0 disables, otherwise set to your UID
 	

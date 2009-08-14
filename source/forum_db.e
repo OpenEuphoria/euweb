@@ -10,6 +10,7 @@ include std/get.e
 
 include webclay/logging.e as log
 
+include config.e
 include db.e
 
 --**
@@ -162,4 +163,12 @@ public procedure remove_post(integer id)
 	if mysql_query(db, "DELETE FROM messages WHERE topic_id=%d", { id }) then
 		crash("Couldn't remove children from forum post: %s", { mysql_error(db) })
 	end if
+end procedure
+
+public procedure update_forked_body(integer fork_id, integer orig_id, sequence subject)
+	sequence fork_message = sprintf("\n\\\\**Forked into: [[%s/forum/%d.wc|%s]]**", { 
+		ROOT_URL, fork_id, subject })
+	
+	mysql_query(db, `UPDATE messages SET body = CONCAT(body, %s) WHERE id=%d`, {
+		fork_message, orig_id })
 end procedure
