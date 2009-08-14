@@ -136,7 +136,8 @@
 						for i = 1 to length(users) do
 							sequence u = users[i]
 							%>
-							<li><%- user_profile user=!u[1] %>, <%= fuzzy_ago_seq(u[2]) %></li>
+							<li><%- user_profile user=!u[1] %><br />
+							&nbsp;&nbsp;&nbsp;&#187 <%= fuzzy_ago_seq(u[2]) %></li>
 						<% end for %>
 					</ul>
 				<% end if %>
