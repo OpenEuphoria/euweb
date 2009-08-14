@@ -1,0 +1,51 @@
+<%@ 
+include templates/euweb.etag as euweb 
+%>
+
+<%- euweb:head title="User Profile" active="home" %>
+
+<h3><span>Edit</span> <%= @user_name %>'s profile</h3>
+
+<%- euweb:errors %>
+
+<form method="post" action="/user/profile_save.wc">
+	<input type="hidden" name="user" value="<%= @user %>" />
+	<table class="form">
+		<tr>
+			<th>Full name:</th>
+			<td><input type="text" name="full_name" value="<%= @full_name %>" size="40" /></td>
+		</tr>
+		<tr>
+			<th>Location:</th>
+			<td><input type="text" name="location" value="<%= @location %>" size="40" /></td>
+		</tr>
+		<tr>
+			<th>Email:</th>
+			<td>
+				<input type="text" name="email" size="40" value="<%= @email %>" />
+				<input type="checkbox" name="show_email" 
+					<% if equal(@show_email, "1") then %>checked="checked"<% end if %> />
+				Show Email to other authenticated users?
+			</td>
+		</tr>
+		<tr>
+			<th>Forum default view:</th>
+			<td>
+				<select name="forum_default_view">
+					<option value="1"
+						<% if equal(@forum_default_view, "1") then %>selected="selected"<% end if %>
+					>Topic list</option>
+					<option value="2"
+						<% if equal(@forum_default_view, "2") then %>selected="selected"<% end if %>
+					>Subject list</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>&nbsp;</th>
+			<td><input type="submit" class="button" name="post" value="Save" /></td>
+		</tr>
+	</table>
+</form>
+
+<%- euweb:foot %>

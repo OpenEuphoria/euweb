@@ -16,7 +16,10 @@ include webclay/logging.e as log
 include webclay/url.e as url
 
 -- Templates
+include templates/security.etml as t_security
 include templates/user/profile.etml as t_profile
+include templates/user/profile_edit.etml as t_profile_edit
+include templates/user/profile_edit_ok.etml as t_profile_edit_ok
 include templates/user/login_form.etml as t_login_form
 include templates/user/login_ok.etml as t_login_ok
 include templates/user/logout_ok.etml as t_logout_ok
@@ -73,6 +76,17 @@ public function profile(map data, map invars)
 	user[USER_LAST_LOGIN_AT] = fuzzy_ago(sqlDateTimeToDateTime(user[USER_LAST_LOGIN_AT]))
 
 	map:put(data, "user", user)
+	map:put(data, "user_id", user[USER_ID])
+	map:put(data, "user_name", user[USER_NAME])
+	map:put(data, "user_location", user[USER_LOCATION])
+	map:put(data, "user_full_name", user[USER_FULL_NAME])
+	map:put(data, "user_show_email", user[USER_SHOW_EMAIL])
+	map:put(data, "user_email", user[USER_EMAIL])
+	map:put(data, "user_last_seen", user[USER_LAST_LOGIN_AT])
+	map:put(data, "user_disabled", user[USER_DISABLED])
+	map:put(data, "user_disabled_reason", user[USER_DISABLED_REASON])
+	map:put(data, "user_ip_addr", user[USER_IP_ADDR])
+	map:put(data, "user_roles", user[USER_ROLES])
 
 	return { TEXT, t_profile:template(data) }
 end function
@@ -309,8 +323,6 @@ public function validate_forgot_password(integer data, map vars)
 			urlencode(map:get(vars, "recaptcha_challenge_field")),
 			urlencode(map:get(vars, "recaptcha_response_field")) })
 		
-		log:log("re_url=%s", { postdata })
-
 		object recaptcha_result = get_url(recaptcha_url, postdata)
 		if length(recaptcha_result) < 2 then
 	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
@@ -332,3 +344,82 @@ public function forgot_password(map data, map invars)
 end function
 wc:add_handler(routine_id("forgot_password"), routine_id("validate_forgot_password"),
 	"user", "forgot_password", forgot_password_invars)
+
+sequence profile_edit_invars = {
+	{ wc:SEQUENCE, "user", "" }
+}
+
+function profile_edit(map data, map invars)
+	object u = user_db:get_by_code(map:get(invars, "user"))
+	if atom(u) then
+		crash("Invalid user code %s", { map:get(invars, "user") })
+	end if
+	
+	if not has_role("user_admin") then
+		if not equal(current_user[USER_ID], u[USER_ID]) then
+			return { TEXT, t_security:template(data) }
+		end if
+	end if
+	
+	map:put(data, "id", u[USER_ID])
+	map:put(data, "user", u[USER_NAME])
+	map:put(data, "full_name", u[USER_FULL_NAME])
+	map:put(data, "location", u[USER_LOCATION])
+	map:put(data, "email", u[USER_EMAIL])
+	map:put(data, "show_email", u[USER_SHOW_EMAIL])
+	map:put(data, "forum_default_view", u[USER_FORUM_DEFAULT_VIEW])
+
+	if map:has(invars, "post") then
+		map:copy(invars, data) 
+	end if
+
+	return { TEXT, t_profile_edit:template(data) }
+end function
+wc:add_handler(routine_id("profile_edit"), -1, "user", "profile_edit", profile_edit_invars)
+
+sequence profile_save_invars = {
+	{ wc:SEQUENCE, "user", "" },
+	{ wc:SEQUENCE, "full_name", "" },
+	{ wc:SEQUENCE, "location", "" },
+	{ wc:SEQUENCE, "show_email", "off" },
+	{ wc:SEQUENCE, "forum_default_view", 1 }
+}
+
+function validate_profile_save(map data, map vars)
+	sequence errors = wc:new_errors("user", "profile_edit")
+	
+	object u = user_db:get_by_code(map:get(vars, "user"))
+	if atom(u) then
+		errors = wc:add_error(errors, "form", "Invalid user code")
+	end if
+	
+	if not has_role("user_admin") then
+		if not equal(current_user[USER_ID], u[USER_ID]) then
+			errors = wc:add_error(errors, "form", "You are not authorized to edit this profile")
+		end if
+	end if
+
+	if not valid:valid_email(map:get(vars, "email")) then
+		errors = wc:add_error(errors, "email", "Email is invalid")
+	end if
+	
+	return errors
+end function
+
+function profile_save(map data, map vars)
+	object r = mysql_query(db, `UPDATE users SET name=%s, location=%s, forum_default_view=%s,
+		show_email=%d, email=%s, login_time=login_time WHERE user=%s`, { 
+			map:get(vars, "full_name"), 
+			map:get(vars, "location"), 
+			map:get(vars, "forum_default_view"),
+			equal("on", map:get(vars, "show_email")),
+			map:get(vars, "email"),
+			map:get(vars, "user")
+		})
+
+	map:put(data, "user", map:get(vars, "user"))
+
+	return { TEXT, t_profile_edit_ok:template(data) }
+end function
+wc:add_handler(routine_id("profile_save"), routine_id("validate_profile_save"), 
+	"user", "profile_save", profile_save_invars)

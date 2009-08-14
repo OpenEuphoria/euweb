@@ -1,41 +1,73 @@
-<%@ include templates/euweb.etag as euweb %>
+<%@ 
+include templates/euweb.etag as euweb 
+
+function or_unknown(object o)
+	if sequence(o) and length(o) > 0 then
+		return o
+	else
+		return "unknown"
+	end if
+end function
+
+%>
 
 <%- euweb:head title="User Profile" active="home" %>
 
 <%
 sequence user = @user
+
 %>
 
-<h3><span><%= user[USER_NAME] %></span>'s profile</h3>
+<h3><span><%= @user_name %></span>'s profile</h3>
 
 <table class="data">
 	<tr>
-		<th>Code:</th>
-		<td><%= user[USER_NAME] %></td>
+		<th>User code:</th>
+		<td><%= @user_name %></td>
 	</tr>
-	<% if has_role("user_admin") then %>
+	<tr>
+		<th>Name:</th>
+		<td><%= _h(or_unknown(@user_full_name)) %></td>
+	</tr>
+	<tr>
+		<th>Location:</th>
+		<td><%= _h(or_unknown(@user_location)) %></td>
+	</tr>
+	<% if equal(@user_show_email, "1") or has_role("user_admin") then %>
 		<tr>
 			<th>Email:</th>
-			<td><a href="mailto:<%= user[USER_EMAIL] %>"><%= user[USER_EMAIL] %></a> (shown only to user admin's)</td>
+			<td>
+				<a href="mailto:<%= @user_email %>"><%= @user_email %></a>
+				<% if equal(@user_show_email, "0") then %>
+					(visible to admin's only)
+				<% end if %>
+			</td>
 		</tr>
 	<% end if %>
 	<tr>
+		<th>Wiki page:</th>
+		<td>
+			<a href="http://openeuphoria.org/wiki/euwiki.cgi?<%= @user_name %>"><%= @user_name %></a>
+		</td>
+	</tr>
+	<tr>
 		<th>Last Seen:</th>
-		<td><%= user[USER_LAST_LOGIN_AT] %></td>
+		<td><%= @user_last_seen %></td>
 	</tr>
 </table>
 
 <br class="clear" />
 
-<p>
-	More will be available on the profile page in the future such as name, 
-	bio, a form to contact the member, location, etc... All of these, the user
-	can opt-in/out of.
-</p>
+<% if has_role("admin") or (sequence(current_user) and equal(current_user[USER_ID], @user_id)) then %>
+	<p>
+		<a href="/user/profile_edit.wc?user=<%= @user_name %>">edit profile</a>
+	</p>
+<% end if %>
+
 
 <% if has_role("user_admin") then 
-	sequence uid = user[USER_ID]
-	sequence uname = user[USER_NAME]
+	sequence uid = @user_id
+	sequence uname = @user_name
 	%>
 
 	<h4><span>User</span> Admin</h4>

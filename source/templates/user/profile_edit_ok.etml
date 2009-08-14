@@ -1,0 +1,17 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="Profile Save OK" active="home" %>
+
+<h3><span>Profile</span> Save OK</h3>
+
+<p>
+    Profile has been saved!
+</p>
+
+<p>
+	<a href="/user/profile/<%= @user %>.wc">Return to profile</a>
+</p>
+
+<br class="clear" />
+
+<%- euweb:foot %>

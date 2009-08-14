@@ -15,10 +15,12 @@ include db.e
 include md5.e
 
 global object current_user = 0
-global enum USER_ID, USER_NAME, USER_EMAIL, USER_LAST_LOGIN_AT, USER_DISABLED, 
-	USER_DISABLED_REASON, USER_IP_ADDR, USER_ROLES
+global enum USER_ID, USER_NAME, USER_FULL_NAME, USER_LOCATION, USER_EMAIL, USER_SHOW_EMAIL, 
+	USER_LAST_LOGIN_AT, USER_DISABLED, USER_DISABLED_REASON, USER_IP_ADDR, USER_FORUM_DEFAULT_VIEW,
+	USER_ROLES
 
-constant select_fields = "id, user, email, login_time, disabled, disabled_reason, ip_addr"
+constant select_fields = `id, user, name, location, email, show_email, login_time, disabled, 
+	disabled_reason, ip_addr, forum_default_view`
 
 function salt(sequence salt, sequence message)
   integer s = 1, m = 1, ret
