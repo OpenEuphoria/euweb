@@ -409,12 +409,16 @@ function validate_profile_save(map data, map vars)
 	end if
 
 	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
-	if length(password) < 5 then
-		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
-	elsif not equal(password, password_confirm) then
-		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
-	end if
 	
+	-- Only validate password if they have supplied a new one.
+	if length(password) > 0 then
+		if length(password) < 5 then
+			errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
+		elsif not equal(password, password_confirm) then
+			errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
+		end if
+	end if
+
 	return errors
 end function
 
