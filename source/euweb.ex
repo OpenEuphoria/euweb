@@ -33,6 +33,7 @@ procedure app(object data, object vars)
             object u = user_db:get_by_sess_id(user_cookie, server_var("REMOTE_ADDR"))
             if sequence(u) then
                 current_user = u
+                user_db:update_last_login(u)
             end if
         end if
     end if

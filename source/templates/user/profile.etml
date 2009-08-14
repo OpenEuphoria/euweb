@@ -20,7 +20,7 @@ sequence user = @user
 		</tr>
 	<% end if %>
 	<tr>
-		<th>Last Login:</th>
+		<th>Last Seen:</th>
 		<td><%= user[USER_LAST_LOGIN_AT] %></td>
 	</tr>
 </table>

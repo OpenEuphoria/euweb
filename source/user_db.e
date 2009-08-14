@@ -219,3 +219,7 @@ end function
 public function update_password(sequence uname, sequence password)
 	return mysql_query(db, "UPDATE users SET password=SHA1(%s) WHERE user=%s", { password, uname })
 end function
+
+public procedure update_last_login(sequence user)
+ 	mysql_query(db, "UPDATE users SET login_time=CURRENT_TIMESTAMP WHERE user=%s", { user[USER_NAME] })
+end procedure
