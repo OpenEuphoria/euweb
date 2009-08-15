@@ -690,3 +690,13 @@ border-right: #8090a0 1px solid; padding-right: 3px; border-top:
 1px; border-left: #8090a0 1px solid; padding-top: 1px; border-bottom:
 #8090a0 1px solid; background-color: #f0f0f0
 }
+.wiki div.notsaved {
+font-family: sans-serif;
+background-color: red;
+}	  
+.wiki ins.diff {
+background-color: rgb(200, 255, 200);
+}
+.wiki del.diff {
+background-color: rgb(255, 200, 200);
+}
