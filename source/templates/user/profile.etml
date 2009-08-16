@@ -13,111 +13,123 @@ end function
 
 <%- euweb:head title="User Profile" active="home" %>
 
-<%
-sequence user = @user
-
-%>
-
-<h3><span><%= @user_name %></span>'s profile</h3>
-
-<table class="data">
-	<tr>
-		<th>User code:</th>
-		<td><%= @user_name %></td>
-	</tr>
-	<tr>
-		<th>Name:</th>
-		<td><%= _h(or_unknown(@user_full_name)) %></td>
-	</tr>
-	<tr>
-		<th>Location:</th>
-		<td><%= _h(or_unknown(@user_location)) %></td>
-	</tr>
-	<% if equal(@user_show_email, "1") or has_role("user_admin") then %>
-		<tr>
-			<th>Email:</th>
-			<td>
-				<a href="mailto:<%= @user_email %>"><%= @user_email %></a>
-				<% if equal(@user_show_email, "0") then %>
-					(visible to admin's only)
-				<% end if %>
-			</td>
-		</tr>
-	<% end if %>
-	<tr>
-		<th>Wiki page:</th>
-		<td>
-			<a href="http://openeuphoria.org/wiki/euwiki.cgi?<%= @user_name %>"><%= @user_name %></a>
-		</td>
-	</tr>
-	<tr>
-		<th>Last Seen:</th>
-		<td><%= @user_last_seen %></td>
-	</tr>
-</table>
-
-<br class="clear" />
-
-<% if has_role("admin") or (sequence(current_user) and equal(current_user[USER_ID], @user_id)) then %>
+<% if @invalid_profile then %>
+	<h3><span>Invalid</span> user</h3>
 	<p>
-		<a href="/user/profile_edit.wc?user=<%= @user_name %>">edit profile</a>
+		<%= _h(@user_name) %> is an invalid user.
 	</p>
-<% end if %>
+	
+	<p>
+		<strong>Note:</strong> This may be due to the importing
+		of very old messages that had no associated user account.
+	</p>
+<% else %>
+	<%
+	sequence user = @user
 
-
-<% if has_role("user_admin") then 
-	sequence uid = @user_id
-	sequence uname = @user_name
 	%>
 
-	<h4><span>User</span> Admin</h4>
-	
-	<p>
-		<strong>User status:</strong>
-		<% if equal(user[USER_DISABLED], "1") then %>
-			disabled, <strong>reason:</strong> '<%= user[USER_DISABLED_REASON] %>'<br />
-			<a href="/user/profile.wc?user=<%= uname %>&amp;enable=1">enable</a>
-		<% else %>
-			active
+	<h3><span><%= @user_name %></span>'s profile</h3>
+
+	<table class="data">
+		<tr>
+			<th>User code:</th>
+			<td><%= @user_name %></td>
+		</tr>
+		<tr>
+			<th>Name:</th>
+			<td><%= _h(or_unknown(@user_full_name)) %></td>
+		</tr>
+		<tr>
+			<th>Location:</th>
+			<td><%= _h(or_unknown(@user_location)) %></td>
+		</tr>
+		<% if equal(@user_show_email, "1") or has_role("user_admin") then %>
+			<tr>
+				<th>Email:</th>
+				<td>
+					<a href="mailto:<%= @user_email %>"><%= @user_email %></a>
+					<% if equal(@user_show_email, "0") then %>
+						(visible to admin's only)
+					<% end if %>
+				</td>
+			</tr>
 		<% end if %>
-	</p>
+		<tr>
+			<th>Wiki page:</th>
+			<td>
+				<a href="http://openeuphoria.org/wiki/euwiki.cgi?<%= @user_name %>"><%= @user_name %></a>
+			</td>
+		</tr>
+		<tr>
+			<th>Last Seen:</th>
+			<td><%= @user_last_seen %></td>
+		</tr>
+	</table>
 
-	<h5><span>User</span> Roles</h5>
-	<ul>
-	<% for i = 1 to length(user[USER_ROLES]) do 
-		sequence role = user[USER_ROLES][i]
+	<br class="clear" />
+
+	<% if has_role("admin") or (sequence(current_user) and equal(current_user[USER_ID], @user_id)) then %>
+		<p>
+			<a href="/user/profile_edit.wc?user=<%= @user_name %>">edit profile</a>
+		</p>
+	<% end if %>
+
+
+	<% if has_role("user_admin") then 
+		sequence uid = @user_id
+		sequence uname = @user_name
 		%>
-			<li>
-				<%= role %> - 
-				<a href="/user/profile.wc?user=<%= uname %>&amp;remove_role=<%= role %>">remove</a>
-				</li>
-	<% end for %>
-	</ul>
-	<br />
-	<form method="GET" action="/user/profile.wc">
-		<input type="hidden" name="user" value="<%= uname %>" />
-		Add role: <input type="text" name="add_role" />
-		<input class="button" type="submit" value="Add" />
-	</form>
+
+		<h4><span>User</span> Admin</h4>
 	
-	<br />
+		<p>
+			<strong>User status:</strong>
+			<% if equal(user[USER_DISABLED], "1") then %>
+				disabled, <strong>reason:</strong> '<%= user[USER_DISABLED_REASON] %>'<br />
+				<a href="/user/profile.wc?user=<%= uname %>&amp;enable=1">enable</a>
+			<% else %>
+				active
+			<% end if %>
+		</p>
 
-	<h5><span>Disable</span> User</h5>
-	<form method="GET" action="/user/profile.wc">
-		<input type="hidden" name="user" value="<%= uname %>" />
-		Reason: <input type="text" name="disabled_reason" size="80" />
-		<input class="button" type="submit" value="Disable" />
-	</form>
+		<h5><span>User</span> Roles</h5>
+		<ul>
+		<% for i = 1 to length(user[USER_ROLES]) do 
+			sequence role = user[USER_ROLES][i]
+			%>
+				<li>
+					<%= role %> - 
+					<a href="/user/profile.wc?user=<%= uname %>&amp;remove_role=<%= role %>">remove</a>
+					</li>
+		<% end for %>
+		</ul>
+		<br />
+		<form method="GET" action="/user/profile.wc">
+			<input type="hidden" name="user" value="<%= uname %>" />
+			Add role: <input type="text" name="add_role" />
+			<input class="button" type="submit" value="Add" />
+		</form>
 	
-	<br />
+		<br />
 
-	<h5><span>Set</span> Password</h5>
-	<form method="GET" action="/user/profile.wc">
-		<input type="hidden" name="user" value="<%= uname %>" />
-		New password: <input type="password" name="password" />
-		<input class="button" type="submit" value="Set" />
-	</form>
+		<h5><span>Disable</span> User</h5>
+		<form method="GET" action="/user/profile.wc">
+			<input type="hidden" name="user" value="<%= uname %>" />
+			Reason: <input type="text" name="disabled_reason" size="80" />
+			<input class="button" type="submit" value="Disable" />
+		</form>
+	
+		<br />
 
+		<h5><span>Set</span> Password</h5>
+		<form method="GET" action="/user/profile.wc">
+			<input type="hidden" name="user" value="<%= uname %>" />
+			New password: <input type="password" name="password" />
+			<input class="button" type="submit" value="Set" />
+		</form>
+
+	<% end if %>
 <% end if %>
 
 <%- euweb:foot %>

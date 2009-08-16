@@ -74,8 +74,13 @@ public function profile(map data, map invars)
 
 	object user = user_db:get_by_code(map:get(invars, "user"))
 	if atom(user) then
-		crash("User %s could not be located", { map:get(invars, "user") })
+		map:put(data, "invalid_profile", 1)
+		map:put(data, "user_name", map:get(invars, "user"))
+
+		return { TEXT, t_profile:template(data) }
 	end if
+	
+	map:put(data, "invalid_profile", 0)
 
 	user[USER_LAST_LOGIN_AT] = fuzzy_ago(sqlDateTimeToDateTime(user[USER_LAST_LOGIN_AT]))
 

@@ -206,7 +206,7 @@ Pages
 	>oldest</a>
 
 {{{user_profile}}}
-<a href="/user/profile/<%= #user %>.wc"><%= #user %></a>
+<a href="/user/profile/<%= _h(#user) %>.wc"><%= _h(#user) %></a>
 <%
 if equal(#show_public_roles, "1") then
 	if has_role("admin", #user) then
