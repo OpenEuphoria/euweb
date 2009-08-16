@@ -10,11 +10,11 @@
 <table class="form">
 	<tr>
 		<th>User code:</th>
-		<td><input type="text" name="code" /></td>
+		<td><input type="text" id="code" name="code" /></td>
 	</tr>
 	<tr>
 		<th>Password:</th>
-		<td><input type="password" name="password" /></td>
+		<td><input type="password" id="password" name="password" /></td>
 	</tr>
 	<tr>
 		<th>&nbsp;</th>
@@ -25,6 +25,10 @@
 	</tr>
 </table>
 </form>
+
+<script type="text/javascript">
+	$('code').focus();
+</script>
 
 <br class="clear" />
 

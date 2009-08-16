@@ -25,7 +25,10 @@
 	<table class="form">
 		<tr>
 			<th nowrap="nowrap">Security Question:</th>
-			<td><input type="text" name="security_question" size="60" value="<%= @security_question %>" /></td>
+			<td>
+				<input type="text" id="security_question" name="security_question" size="60" 
+					value="<%= @security_question %>" />
+			</td>
 		</tr>
 		<tr>
 			<th>&nbsp;</th>
@@ -74,5 +77,9 @@
 		</tr>
 	</table>
 </form>
+
+<script type="text/javascript">
+	$('security_question').focus();
+</script>
 
 <%- euweb:foot %>

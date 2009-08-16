@@ -28,7 +28,7 @@
 	<input type="hidden" name="fork_id" value="<%= sprintf("%d", { @fork_id }) %>" />
 	
 	Subject:<br />
-	<input type="text" name="subject" value="<%= @subject %>" size="80" />
+	<input type="text" id="subject" name="subject" value="<%= @subject %>" size="80" />
 	<div style="padding:0;margin:0;">
 		Body:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		common formatting: <code>**bold text**, //italic text//, ##code text##, [[http://google.com|Google]]</code>
@@ -39,6 +39,9 @@
 	<input class="button" type="submit" name="save" value="Preview" />
 </form>
 
+<script type="text/javascript">
+	$('subject').focus();
+</script>
 
 <h4><span>More</span> Common Formatting</h4>
 <pre>

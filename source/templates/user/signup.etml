@@ -10,7 +10,7 @@
 <table class="form">
 	<tr>
 		<th nowrap="nowrap">User Code:</th>
-		<td><input type="text" name="code" value="<%= @code %>"/></td>
+		<td><input type="text" id="code" name="code" value="<%= @code %>"/></td>
 	</tr>
 	<tr>
 		<th>&nbsp;</th>
@@ -90,6 +90,10 @@
 	</tr>
 </table>
 </form>
+
+<script type="text/javascript">
+	$('code').focus();
+</script>
 
 <br class="clear" />
 
