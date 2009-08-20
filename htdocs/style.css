@@ -700,3 +700,12 @@ background-color: rgb(200, 255, 200);
 .wiki del.diff {
 background-color: rgb(255, 200, 200);
 }
+.post pre {
+margin-top: -20px;
+padding-left: 15px;
+margin-left: 20px;
+border-left: 2px solid #8090a0;
+margin-right: 10px;
+background-color: #d0e0f0;
+padding-bottom: 15px;
+}
