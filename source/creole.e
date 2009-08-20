@@ -1728,22 +1728,25 @@ function get_eucode(sequence pRawText, atom pFrom)
 	sequence lText
 	sequence lLine
 	object lPattern
-
+	
 	pFrom += length("<eucode>")
 
 	lFinal = eu:match("</eucode>", pRawText, pFrom)
 	if lFinal = 0 then
 		lFinal = eu:match("\n\n", pRawText, pFrom)
 		if lFinal = 0 then
+			lEndCode = length(pRawText)
 			lFinal = length(pRawText) + 1
+		else
+			lEndCode = lFinal
+			lFinal += 2
 		end if
+	else
+		lEndCode = lFinal
+		lFinal += length("</eucode>")
 	end if
 
 	if lFinal > 0 then
-		lEndCode = lFinal
-		if lFinal + 9 < length(pRawText) then
-			lFinal += 9
-		end if
 
 		lEndPos = pFrom
 		if lEndPos <= length(pRawText) then
@@ -1782,7 +1785,7 @@ function get_eucode(sequence pRawText, atom pFrom)
 		lText = ""
 		lFinal = pFrom
 	end if
-	return {lFinal, lText}
+	return {lFinal - 1, lText}
 end function
 
 ------------------------------------------------------------------------------
