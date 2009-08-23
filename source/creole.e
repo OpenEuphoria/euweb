@@ -1728,6 +1728,7 @@ function get_eucode(sequence pRawText, atom pFrom)
 	sequence lText
 	sequence lLine
 	object lPattern
+	integer leadline
 	
 	pFrom += length("<eucode>")
 
@@ -1758,11 +1759,17 @@ function get_eucode(sequence pRawText, atom pFrom)
 
 		lText = ""
 		lLine = ""
+		leadline = 1
 		while lEndPos < lEndCode do
 			if pRawText[lEndPos] = '\n' then
 				lLine = pRawText[lStartPos .. lEndPos]
 			elsif (lEndPos + 1 = lEndCode) then
 				lLine = pRawText[lStartPos .. lEndPos] & '\n'
+			end if
+			if leadline and length(lLine) > 0 then
+				lStartPos = lEndPos + 1
+				lLine = trim(lLine)
+				leadline = 0
 			end if
 			lEndPos += 1
 			if length(lLine) > 0 then
@@ -2023,8 +2030,16 @@ function get_nowiki(sequence pRawText, atom pFrom)
 		lType = 1 -- inline because end tag not on a line by itself.
 	end if
 
-	if lType != 1 and pRawText[lEndPos - 1] = ' ' then
-		lEndPos -= 1 -- eat leading space at block style end
+	if lType != 1 then
+		if pRawText[lEndPos - 1] = ' ' then
+			lEndPos -= 1 -- eat leading space at block style end
+		end if
+		while lStartPos < lEndPos and pRawText[lStartPos]  = ' ' do
+			lStartPos += 1 -- eat leading spaces in block style.
+		end while
+		if pRawText[lStartPos] = '\n' then
+			lStartPos += 1 -- eat first new-line in block style.
+		end if
 	end if
 
 	if lType = 0 then
@@ -2152,13 +2167,14 @@ function get_link(sequence pRawText, atom pFrom)
 	end if
 
 	if length(lURL) > 0 then
-		lPos = eu:find(':', lURL)
+		lPos = eu:find(':', lURL) + begins('/', lURL)
 		if lPos = 0 then
+			
 			-- Internal link.
 			lText = Generate_Final(InternalLink, {lURL, call_func(vParser_rid, {lDisplayText, 2})})
 
 		else
-			if match("://", lURL) > 0 or match("mailto:", lURL) = 1 then
+			if match("://", lURL) > 0 or match("mailto:", lURL) = 1 or begins('/', lURL) then
 				-- assume it is an normal link
 				if lParseText then
 					lText = Generate_Final(NormalLink, {lURL, call_func(vParser_rid, {lDisplayText, 2})})
