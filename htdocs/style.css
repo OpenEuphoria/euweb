@@ -640,7 +640,7 @@ border-style: solid;
 
 .wiki div.floatright {
 float: right;
-margin: 4px 4px 4px 4px;
+margin: 4px 4px 4px 12px;
 padding: 4px 4px 4px 4px;
 border-width: 2px 2px 2px 2px;
 border-color: #506070;
