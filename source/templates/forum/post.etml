@@ -2,25 +2,29 @@
 
 <%- euweb:head title="Forum Post" active="forum" %>
 
-<% if length(@body_formatted) then %>
-	<h3><span>Preview</span> Message</h3>
-
-	<%= @body_formatted %>
-<% end if %>
-
-<% if length(@subject) > 0 then %>
-	
-	<h3><span>Reply</span> to '<%= @subject %>'</h3>
-
-<% else %>
-
-	<h3><span>New</span> Message</h3>
-
-<% end if %>
-
-<%- euweb:errors %>
 
 <form method="post" action="/forum/save.wc">
+    <% if length(@body_formatted) then %>
+    	<h3><span>Preview</span> Message</h3>
+
+    	<%= @body_formatted %>
+	    
+        <input class="button" type="submit" name="save" value="Post" />
+        <br />&nbsp;
+    <% end if %>
+
+    <% if length(@subject) > 0 then %>
+	
+    	<h3><span>Reply</span> to '<%= @subject %>'</h3>
+
+    <% else %>
+
+    	<h3><span>New</span> Message</h3>
+
+    <% end if %>
+
+    <%- euweb:errors %>
+
 	<input type="hidden" name="id" value="<%= sprintf("%d", { @id }) %>" />
 	<input type="hidden" name="topic_id" value="<%= sprintf("%d", { @topic_id }) %>" />
 	<input type="hidden" name="parent_id" value="<%= sprintf("%d", { @parent_id }) %>" />

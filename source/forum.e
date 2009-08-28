@@ -100,7 +100,7 @@ function post(map data, map invars)
 	if not has_role("user") then
 		return { TEXT, t_security:template(data) }
 	end if
-
+    
 	integer id = map:get(invars, "parent_id")
 	integer fork = map:get(invars, "fork")
 	integer quote = map:get(invars, "quote")
