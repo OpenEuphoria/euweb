@@ -1,0 +1,41 @@
+<%@ include templates/euweb.etag as euweb %>
+<%- euweb:head title="Downloads" active="download" %>
+
+<h3>Download <span>Open</span>Euphoria</h3>
+
+<p>
+	The current release of Euphoria 4.x is <a href="#4.x">4.0 beta 1</a>.<br />
+    The current release of Euphoria 3.x is <a href="#3.x">3.1.1</a>.
+</p>
+
+<h4><span>Open</span>Euphoria 4.0b1</h4>
+<a name="4.x"></a>
+<p>
+	Released: 8/11/2009
+    <ul>
+    	<li>
+        	<strong>Binary Releases</strong>
+            <ul>
+            	<li>Windows Installer: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b1/euphoria_40b1.exe/download">euphoria_4.0b1.exe</a></li>
+                <li>Linux: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b1/euphoria-4.0b1.tar.gz/download">euphoria-4.0b1.tar.gz</a></li>
+            </ul>
+        </li>
+        
+        <li>
+        	<strong>Source Only Releases</strong>
+            <ul>
+                <li>Windows: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b1/euphoria-src-4.0b1.zip/download">euphoria-src-4.0b1.zip</a></li>
+                <li>Unix Variants: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b1/euphoria-src-4.0b1.tar.gz/download">euphoria-src-4.0b1.tar.gz</a></li>
+            </ul>
+        </li>
+    </ul>
+</p>
+
+<h4>Previous versions of <span>Euphoria</span></h4>
+<a name="3.x"></a>
+<p>
+    3.1.1 is the latest 3.x release of Euphoria. Versions prior to 4.0 can
+    be downloaded from <a href="http://www.rapideuphoria.com/v20.htm">RapidEuphoria.com</a>.
+</p>
+
+<%- euweb:foot %>
