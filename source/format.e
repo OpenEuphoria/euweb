@@ -126,18 +126,119 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 
 end function
 
+
 function markup_quotes(sequence text)
-	integer pos = 1
-	while pos >= 1 with entry do
-		text = replace(text, "<div class=\"quote\"><strong>", pos, pos + 6)
-		pos = find_from(']', text, pos)
-		text = replace(text, " said:</strong><br />", pos)
-	entry
-		pos = match_from("[quote", text, pos)
+ 	integer pos
+ 	integer epos
+ 	integer nextpos = 1
+ 	integer repcnt = 0
+ 	integer namepos
+ 	integer nameend 
+ 	integer inname
+
+	while 1 do
+		pos = match_from("[quote", text, nextpos)
+		if pos = 0 then
+			exit
+		end if
+		
+		epos = pos + 6
+		inname = 0
+		nameend = 0
+		-- scan for the close of this quote-open tag
+		while epos <= length(text) do
+			if text[epos] = ']' then
+				exit
+			end if
+			
+			if text[epos] = '\n' then
+				-- should not happen in valid code.
+				-- assume that the closing bracket was missing
+				-- so assume it should be right here.
+				epos -= 1
+				nameend = epos
+				exit
+			end if
+			
+			if text[epos] = '[' then
+				-- should not happen in valid code.
+				-- assume that the closing bracket was missing
+				-- so go back to start of tag and pretend missing
+				-- bracket is after the first word in the tag.
+				epos = pos + 6
+				inname = 0
+				while epos <= length(text) do
+					if find(text[epos] , " \t") then
+						if inname then
+							epos -= 1
+							nameend = epos
+							exit	
+						end if
+					else
+						if not inname then
+							inname = 1
+							namepos = epos
+						end if
+					end if
+					epos += 1
+				end while
+				if epos > length(text) then
+					epos = length(text)
+				end if
+				exit
+			end if
+			
+			if not inname then
+				if not find(text[epos], " \t") then
+					inname = 1
+					namepos = epos
+				end if
+			end if
+			epos += 1
+		end while
+		
+		if inname then
+			if nameend = 0 then
+				nameend = epos - 1
+			end if
+		end if
+		
+		if inname then
+			text = text[1..pos-1] & "<div class=\"quote\"><strong>" & 
+			       text[namepos .. nameend] & " </strong>said:<br />" & 
+			       text[epos + 1 .. $]
+			nextpos = pos + 27 + 21 + nameend - namepos + 1
+		else
+			text = text[1..pos-1] & "<div class=\"quote:\"><strong>quote</strong><br />" & 
+			       text[epos + 1 .. $]
+			nextpos = pos + 48
+		end if
+		repcnt += 1
 	end while
-
-	text = find_replace("[/quote]", text, "</div>")
-
+	
+	while 1 do
+		pos = match("[/quote]", text)
+		if pos then
+			if repcnt > 0 then
+				text = text[1 .. pos - 1] & "</div>" & text[ pos + 8 .. $]
+				repcnt -= 1
+			else
+				-- too many end tags, so remove the excess.
+				text = text[1 .. pos - 1] & text[ pos + 8 .. $]
+			end if
+		else
+			if repcnt = 0 then	
+				exit
+			end if
+			-- Missing one or more end of quote tags.
+			while repcnt > 0 do
+				text &= "</div>"
+				repcnt -= 1
+			end while
+		end if
+		
+	end while
+	
 	return text
 end function
 
