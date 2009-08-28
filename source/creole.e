@@ -3137,7 +3137,7 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 					lExtract = get_options(pRawText, lPos)
 					lPos = lExtract[1]
 					lChar = -1
-					break
+					break "Tagger"
 				end if
 
 				if compare_next({"("}, pRawText, lPos) > 0 then
@@ -3154,7 +3154,7 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 					lPos = lExtract[1]
 					lText &= lExtract[2]
 					lChar = -1
-					break
+					break "Tagger"
 				end if
 
 				if compare_next({"{"}, pRawText, lPos) != 0 then
@@ -3187,7 +3187,7 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 					lPos = lExtract[1]
 					lText &= lExtract[2]
 					lChar = -1
-					break
+					break "Tagger"
 				end if
 				
 				if compare_next({"["}, pRawText, lPos) != 0 then
@@ -3238,7 +3238,7 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 						lText &= TAG_ENDPARA
 					end if
 					lText &= Generate_Final(HorizontalLine, {})
-					break
+					break "Tagger"
 				end if
 
 				if compare_next({"-"}, pRawText, lPos) > 0 then
@@ -3863,6 +3863,3 @@ global function creole_parse(object pRawText, object pFinalForm_Generator = -1, 
 		end if
 	end if
 end function
-
---init()
-	   
