@@ -101,6 +101,17 @@ function post(map data, map invars)
 		return { TEXT, t_security:template(data) }
 	end if
     
+    if map:get(data, "has_errors") then
+        -- Copy all input data right over to the template data
+        map:copy(invars, data)
+        
+        -- We use a different source than name for the body, so we must
+        -- set it manually.
+        map:put(data, "quote_body", map:get(invars, "body"))
+
+        return { TEXT, t_post:template(data) }
+    end if
+    
 	integer id = map:get(invars, "parent_id")
 	integer fork = map:get(invars, "fork")
 	integer quote = map:get(invars, "quote")
