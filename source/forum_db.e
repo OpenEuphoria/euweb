@@ -107,9 +107,7 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	sequence sql
 	sequence params
 	datetime now = datetime:now()
-	if length(subject) = 0 then
-		subject = "no subject"
-	end if
+
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
 				subject, body, post_by, last_post_at, last_edit_at) 
