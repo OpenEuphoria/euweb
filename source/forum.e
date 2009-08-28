@@ -123,6 +123,9 @@ function post(map data, map invars)
 			crash("Couldn't retrieve message %d, %s", { id, mysql_error(db) })
 		end if
 		
+		if length(post[MSG_SUBJECT]) = 0 then
+			post[MSG_SUBJECT] = "no subject"
+		end if
 		sequence subject = msg[MSG_SUBJECT]
 		
 		if not match("Re:", subject) then
@@ -214,6 +217,9 @@ function save(map:map data, map:map vars)
 		crash("Couldn't create new post")
 	end if
 	
+	if length(post[MSG_SUBJECT]) = 0 then
+		post[MSG_SUBJECT] = "no subject"
+	end if
 	map:put(data, "ok", 1)
 	map:put(data, "subject", post[MSG_SUBJECT])
 	map:put(data, "topic_id", post[MSG_TOPIC_ID])
@@ -323,6 +329,10 @@ function update(map data, map invars)
 	end if
 	
 	message[MSG_SUBJECT] = map:get(invars, "subject")
+	if length(post[MSG_SUBJECT]) = 0 then
+		post[MSG_SUBJECT] = "no subject"
+	end if
+	
 	message[MSG_BODY] = map:get(invars, "body")
 
 	forum_db:update(message)
@@ -351,6 +361,9 @@ function remove_post(map data, map invars)
 	
 	map:put(data, "id", message[MSG_ID])
 	map:put(data, "topic_id", message[MSG_TOPIC_ID])
+	if length(post[MSG_SUBJECT]) = 0 then
+		post[MSG_SUBJECT] = "no subject"
+	end if
 	map:put(data, "subject", message[MSG_SUBJECT])
 	
 	return { TEXT, t_remove:template(data) }
