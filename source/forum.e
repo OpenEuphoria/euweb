@@ -179,7 +179,7 @@ sequence save_invars = {
 --	   
 
 function validate_save(integer data, map:map vars)
-	sequence errors = wc:new_errors("forum", "view")
+	sequence errors = wc:new_errors("forum", "post")
 
 	if not valid:not_empty(map:get(vars, "subject")) then
 		errors = wc:add_error(errors, "subject", "Subject is empty!")
