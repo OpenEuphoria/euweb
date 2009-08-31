@@ -7,7 +7,7 @@
 
 <%
 sequence quick_links = {
-	{ "/news/index.wc", "News Home" },
+	{ "/news/index.wc", "News Home" }
 }
 
 if has_role("news_admin") then
