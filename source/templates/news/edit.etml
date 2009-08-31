@@ -1,0 +1,32 @@
+<%@ include templates/euweb.etag as euweb %>
+<%@ include std/text.e %>
+
+<%
+sequence quick_links = {
+	{ "/news/index.wc", "News Home" },
+}
+
+if has_role("news_admin") then
+	quick_links = append(quick_links, { "/news/post.wc", "Post News" })
+end if
+%>
+
+<%- euweb:head title="News Edit" active="home" %>
+
+<%- euweb:errors %>
+
+<form method="POST" action="/news/save.wc">
+	<input type="hidden" name="id" value="<%= sprintf("%d", @id) %>" />
+	Subject:<br />
+	<input type="text" id="subject" name="subject" size="60" value="<%= _h(@subject) %>" /><br />
+	Content:<br />
+	<textarea name="content" rows="20" cols="80"><%= _h(@content) %></textarea><br />
+	<input type="submit" value="Save" />
+</form>
+
+<script type="text/javascript">
+	$('subject').focus();
+</script>
+
+<%- euweb:foot quick_links=!quick_links %>
+

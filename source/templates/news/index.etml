@@ -8,10 +8,9 @@
 <%
 sequence quick_links = {
 	{ "/news/index.wc", "News Home" },
-	{ "/news/popular.wc", "Popular News" }
 }
 
-if has_role("user") then
+if has_role("news_admin") then
 	quick_links = append(quick_links, { "/news/post.wc", "Post News" })
 end if
 %>

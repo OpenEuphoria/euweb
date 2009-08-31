@@ -3,6 +3,7 @@
 
 namespace news_db
 
+include std/datetime.e
 include std/error.e
 include std/get.e
 include std/map.e
@@ -65,3 +66,27 @@ end function
 public function get(integer id)
 	return mysql_query_one(db, "SELECT * FROM news WHERE id=%d", { id })
 end function
+
+--**
+-- Save an article
+
+public procedure save(integer id, sequence subject, sequence content)
+	if mysql_query(db, "UPDATE news SET subject=%s, content=%s WHERE id=%d", 
+		{ subject, content, id })
+	then
+		crash("Could not update news article.")
+	end if
+end procedure
+
+public function insert(sequence subject, sequence content)
+	if mysql_query(db, `INSERT INTO news 
+		(submitted_by_id, approved, approved_by_id, publish_at, subject, content) VALUES (
+		%s, 1, %s, %T, %s, %s)`, { current_user[USER_ID], current_user[USER_ID], datetime:now(), 
+		subject, content })
+	then
+		crash("Could not create news article.")
+	end if
+
+	return mysql_insert_id(db)
+end function
+

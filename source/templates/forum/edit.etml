@@ -8,7 +8,6 @@
 	<%= @body_formatted %>
 <% end if %>
 
-
 <h3><span>Edit</span> Forum Message</h3>
 
 <%- euweb:errors %>

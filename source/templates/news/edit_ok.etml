@@ -1,0 +1,25 @@
+<%@ include templates/euweb.etag as euweb %>
+<%@ include std/text.e %>
+
+<%
+sequence quick_links = {
+	{ "/news/index.wc", "News Home" },
+}
+
+if has_role("news_admin") then
+	quick_links = append(quick_links, { "/news/post.wc", "Post News" })
+end if
+%>
+
+<%- euweb:head title="News Saved" active="home" %>
+
+<h3><span>News</span> Article Saved!</h3>
+
+<p>
+	News article '<%= _h(@subject) %>' has been saved!
+</p>
+<p>
+	Return to <a href="/news/index.wc">news list</a>
+</p>
+
+<%- euweb:foot quick_links=!quick_links %>

@@ -7,13 +7,13 @@ include std/datetime.e as dt
 include std/error.e
 include std/map.e
 include std/net/http.e
+include std/net/url.e
 include std/types.e
 
 -- Webclay includes
 include webclay/webclay.e as wc
 include webclay/validate.e as valid
 include webclay/logging.e as log
-include webclay/url.e as url
 
 -- Templates
 include templates/security.etml as t_security
@@ -222,9 +222,9 @@ function validate_do_signup(integer data, map:map vars)
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
 		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", { 
-			urlencode(RECAPTCHA_PRIVATE_KEY), urlencode(server_var("REMOTE_ADDR")),
-			urlencode(map:get(vars, "recaptcha_challenge_field")),
-			urlencode(map:get(vars, "recaptcha_response_field")) })
+			url:encode(RECAPTCHA_PRIVATE_KEY), url:encode(server_var("REMOTE_ADDR")),
+			url:encode(map:get(vars, "recaptcha_challenge_field")),
+			url:encode(map:get(vars, "recaptcha_response_field")) })
 
 		object recaptcha_result = get_url(recaptcha_url, postdata)
 		if length(recaptcha_result) < 2 then
@@ -328,9 +328,9 @@ public function validate_forgot_password(integer data, map vars)
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
 		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", { 
-			urlencode(RECAPTCHA_PRIVATE_KEY), urlencode(server_var("REMOTE_ADDR")),
-			urlencode(map:get(vars, "recaptcha_challenge_field")),
-			urlencode(map:get(vars, "recaptcha_response_field")) })
+			url:encode(RECAPTCHA_PRIVATE_KEY), url:encode(server_var("REMOTE_ADDR")),
+			url:encode(map:get(vars, "recaptcha_challenge_field")),
+			url:encode(map:get(vars, "recaptcha_response_field")) })
 		
 		object recaptcha_result = get_url(recaptcha_url, postdata)
 		if length(recaptcha_result) < 2 then
