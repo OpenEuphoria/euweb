@@ -13,6 +13,8 @@ include webclay/webclay.e as wc
 include webclay/validate.e as valid
 include webclay/logging.e as log
 
+include edbi/edbi.e
+
 -- Templates
 include templates/security.etml as t_security
 include templates/forum/index.etml as t_index
@@ -67,7 +69,7 @@ function view(map data, map invars)
 
 	object messages = forum_db:get_topic_messages(topic_id)
 	if atom(messages) then
-		crash("Couldn't get message: %s", { mysql_error(db) })
+		crash("Couldn't get message: %s", { edbi:error_message() })
 	end if
 	if length(messages) = 0 then
 		crash("Message topic id is invalid")
@@ -77,10 +79,9 @@ function view(map data, map invars)
 	
 	for i = 1 to length(messages) do
 		messages[i] = append(messages[i], format_body(messages[i][MSG_BODY]))
-		messages[i][MSG_CREATED_AT] = fuzzy_ago(sqlDateTimeToDateTime(messages[i][MSG_CREATED_AT]))
+		messages[i][MSG_CREATED_AT] = fuzzy_ago(messages[i][MSG_CREATED_AT])
 		if length(messages[i][MSG_LAST_EDIT_AT]) then
-			messages[i][MSG_LAST_EDIT_AT] = fuzzy_ago(sqlDateTimeToDateTime(
-				messages[i][MSG_LAST_EDIT_AT]))
+			messages[i][MSG_LAST_EDIT_AT] = fuzzy_ago(messages[i][MSG_LAST_EDIT_AT])
 		end if
 	end for
 	

@@ -44,12 +44,12 @@ end function
 			<th>Location:</th>
 			<td><%= _h(or_unknown(@user_location)) %></td>
 		</tr>
-		<% if equal(@user_show_email, "1") or has_role("user_admin") then %>
+		<% if @user_show_email or has_role("user_admin") then %>
 			<tr>
 				<th>Email:</th>
 				<td>
 					<a href="mailto:<%= @user_email %>"><%= @user_email %></a>
-					<% if equal(@user_show_email, "0") then %>
+					<% if @user_show_email = 0 then %>
 						(visible to admin's only)
 					<% end if %>
 				</td>
@@ -69,44 +69,40 @@ end function
 
 	<br class="clear" />
 
-	<% if has_role("admin") or (sequence(current_user) and equal(current_user[USER_ID], @user_id)) then %>
+	<% if has_role("admin") or (sequence(current_user) and current_user[USER_ID] = @user_id) then %>
 		<p>
 			<a href="/user/profile_edit.wc?user=<%= @user_name %>">edit profile</a>
 		</p>
 	<% end if %>
 
 
-	<% if has_role("user_admin") then 
-		sequence uid = @user_id
-		sequence uname = @user_name
-		%>
-
+	<% if has_role("user_admin") then %>
 		<h4><span>User</span> Admin</h4>
 	
 		<p>
 			<strong>User status:</strong>
-			<% if equal(user[USER_DISABLED], "1") then %>
+			<% if user[USER_DISABLED] then %>
 				disabled, <strong>reason:</strong> '<%= user[USER_DISABLED_REASON] %>'<br />
-				<a href="/user/profile.wc?user=<%= uname %>&amp;enable=1">enable</a>
+				<a href="/user/profile.wc?user=<%= @user_name %>&amp;enable=1">enable</a>
 			<% else %>
 				active
 			<% end if %>
 		</p>
 
-		<h5><span>User</span> Roles</h5>
+		<h5><span>User</span> Roles (<%= _h(length(user[USER_ROLES])) %>)</h5>
 		<ul>
-		<% for i = 1 to length(user[USER_ROLES]) do 
-			sequence role = user[USER_ROLES][i]
-			%>
+			<% for i = 1 to length(user[USER_ROLES]) do 
+				sequence role = user[USER_ROLES][i]
+				%>
 				<li>
 					<%= role %> - 
-					<a href="/user/profile.wc?user=<%= uname %>&amp;remove_role=<%= role %>">remove</a>
-					</li>
-		<% end for %>
+					<a href="/user/profile.wc?user=<%= @user_name %>&amp;remove_role=<%= role %>">remove</a>
+				</li>
+			<% end for %>
 		</ul>
 		<br />
 		<form method="GET" action="/user/profile.wc">
-			<input type="hidden" name="user" value="<%= uname %>" />
+			<input type="hidden" name="user" value="<%= @user_name %>" />
 			Add role: <input type="text" name="add_role" />
 			<input class="button" type="submit" value="Add" />
 		</form>
@@ -115,7 +111,7 @@ end function
 
 		<h5><span>Disable</span> User</h5>
 		<form method="GET" action="/user/profile.wc">
-			<input type="hidden" name="user" value="<%= uname %>" />
+			<input type="hidden" name="user" value="<%= @user_name %>" />
 			Reason: <input type="text" name="disabled_reason" size="80" />
 			<input class="button" type="submit" value="Disable" />
 		</form>
@@ -124,7 +120,7 @@ end function
 
 		<h5><span>Set</span> Password</h5>
 		<form method="GET" action="/user/profile.wc">
-			<input type="hidden" name="user" value="<%= uname %>" />
+			<input type="hidden" name="user" value="<%= @user_name %>" />
 			New password: <input type="password" name="password" />
 			<input class="button" type="submit" value="Set" />
 		</form>
@@ -133,3 +129,4 @@ end function
 <% end if %>
 
 <%- euweb:foot %>
+

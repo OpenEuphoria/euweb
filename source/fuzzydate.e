@@ -57,7 +57,3 @@ public function fuzzy_ago(dt:datetime d1)
 	return fuzzyDateDiff(d1, dt:now()) & " ago"
 end function
 
-public function fuzzy_ago_seq(sequence d)
-	return fuzzy_ago(sqlDateTimeToDateTime(d))
-end function
-

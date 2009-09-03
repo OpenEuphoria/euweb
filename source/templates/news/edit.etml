@@ -16,7 +16,7 @@ end if
 <%- euweb:errors %>
 
 <form method="POST" action="/news/save.wc">
-	<input type="hidden" name="id" value="<%= sprintf("%d", @id) %>" />
+	<input type="hidden" name="id" value="<%= _h(@id) %>" />
 	Subject:<br />
 	<input type="text" id="subject" name="subject" size="60" value="<%= _h(@subject) %>" /><br />
 	Content:<br />

@@ -8,52 +8,29 @@ include std/datetime.e as dt
 include std/error.e
 include std/get.e
 
-include config.e
-public include mysql.e
+public include edbi/edbi.e
 
-public atom db = 0
+include config.e
+
+public db_handle db = 0
+
+edbi:set_driver_path(DB_DRIVERS_PATH)
 
 public procedure open()
-    db = mysql_init()
-    if not mysql_real_connect(db, DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT) 
-    then
-        crash("Couldn't connect to the database. See config.e for parameters.")
-    end if
+	db = edbi:open(DB_URL)
 end procedure
 
 public procedure close()
     if not db = 0 then
-        mysql_close(db)
+		edbi:close(db)
     end if
 end procedure
-
---
--- Convert a date to a  SQL date and time
---
-
-public function dateTimeToSQL(dt:datetime d)
-    return dt:format(d, "%Y-%m-%d %H:%M:%S")
-end function
-
-public function sqlDateTimeToDateTime(sequence sD)
-    if length(sD) = 0 then
-        return dt:new()
-    end if
-
-    return dt:new(
-        defaulted_value(sD[1..4], 0),
-        defaulted_value(sD[6..7], 0),
-        defaulted_value(sD[9..10], 0),
-        defaulted_value(sD[12..13], 0),
-        defaulted_value(sD[15..16], 0),
-        defaulted_value(sD[18..19], 0))
-end function
 
 --
 -- Return a count of records of the supplied database
 -- 
 
 public function record_count(sequence table)
- 	return defaulted_value(mysql_query_object(db, "SELECT COUNT(*) FROM " & table), 0)
+	return edbi:query_object("SELECT COUNT(*) FROM " & table)
 end function
 

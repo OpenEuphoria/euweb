@@ -30,8 +30,8 @@ for i = 1 to length(articles) do
 			<%= article[PUBLISH_AT] %></li>
 			<% if has_role("news_admin") then %>
 				<li>
-					<a href="/news/edit.wc?id=<%= article[ID] %>">Edit</a>,
-					<a href="/news/remove.wc?id=<%= article[ID] %>">Remove</a>
+					<a href="/news/edit.wc?id=<%= _h(article[ID]) %>">Edit</a>,
+					<a href="/news/remove.wc?id=<%= _h(article[ID]) %>">Remove</a>
 				</li>
 			<% end if %>
 		</ul>					

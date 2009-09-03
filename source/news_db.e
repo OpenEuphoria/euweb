@@ -8,14 +8,12 @@ include std/error.e
 include std/get.e
 include std/map.e
 
--- Webclay includes
 include webclay/webclay.e as wc
 include webclay/validate.e as valid
 include webclay/logging.e as log
 
 include db.e
 
--- Templates
 include templates/news/index.etml as t_index
 
 --**
@@ -35,7 +33,7 @@ sequence index_invars = {
 public enum ID,SUBMITTED_BY_ID,APPROVED,APPROVED_BY_ID,PUBLISH_AT,SUBJECT,CONTENT,AUTHOR_NAME
 
 public function article_count()
-	return db:record_count( dbtable )
+	return db:record_count(dbtable)
 end function
 
 --**
@@ -51,9 +49,9 @@ public function get_article_list(integer page, integer per_page)
 		ORDER BY publish_at DESC
 		LIMIT %d OFFSET %d`
 
-	object data = mysql_query_rows(db, sql, { per_page, (page - 1) * per_page })
+	object data = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
 	if atom(data) then
-		crash("Couldn't query the " & dbtable & " table: %s", { mysql_error(db) })
+		crash("Couldn't query the " & dbtable & " table: %s", { edbi:error_message() })
 	end if
 
 	return data
@@ -64,14 +62,14 @@ end function
 --
 
 public function get(integer id)
-	return mysql_query_one(db, "SELECT * FROM news WHERE id=%d", { id })
+	return edbi:query_row("SELECT * FROM news WHERE id=%d", { id })
 end function
 
 --**
 -- Save an article
 
 public procedure save(integer id, sequence subject, sequence content)
-	if mysql_query(db, "UPDATE news SET subject=%s, content=%s WHERE id=%d", 
+	if edbi:execute("UPDATE news SET subject=%s, content=%s WHERE id=%d", 
 		{ subject, content, id })
 	then
 		crash("Could not update news article.")
@@ -79,7 +77,7 @@ public procedure save(integer id, sequence subject, sequence content)
 end procedure
 
 public function insert(sequence subject, sequence content)
-	if mysql_query(db, `INSERT INTO news 
+	if edbi:execute(`INSERT INTO news 
 		(submitted_by_id, approved, approved_by_id, publish_at, subject, content) VALUES (
 		%s, 1, %s, %T, %s, %s)`, { current_user[USER_ID], current_user[USER_ID], datetime:now(), 
 		subject, content })
@@ -87,6 +85,6 @@ public function insert(sequence subject, sequence content)
 		crash("Could not create news article.")
 	end if
 
-	return mysql_insert_id(db)
+	return edbi:last_insert_id(db)
 end function
 

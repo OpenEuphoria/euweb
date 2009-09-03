@@ -10,6 +10,8 @@ include std/get.e
 include std/sequence.e
 include std/datetime.e
 
+include edbi/edbi.e
+
 include webclay/logging.e as log
 include db.e
 include md5.e
@@ -25,6 +27,7 @@ constant select_fields = `id, user, name, location, email, show_email, login_tim
 function salt(sequence salt, sequence message)
   integer s = 1, m = 1, ret
   sequence new = ""
+
   while m < length(message) do
     if s > length(salt) then
       s = 1
@@ -34,32 +37,33 @@ function salt(sequence salt, sequence message)
     s += 1
     m += 1
   end while
+
   return new
 end function
 
 public function is_code_used(sequence code)
-	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE LOWER(user)=LOWER(%s) LIMIT 1", { code }), 0)
+	return edbi:query_object("SELECT COUNT(id) FROM users WHERE LOWER(user)=LOWER(%s) LIMIT 1", { code })
 end function
 
 public function is_email_used(sequence email)
-	return defaulted_value(mysql_query_object(db, "SELECT COUNT(id) FROM users WHERE LOWER(email)=LOWER(%s) LIMIT 1", { email }), 0)
+	return edbi:query_object("SELECT COUNT(id) FROM users WHERE LOWER(email)=LOWER(%s) LIMIT 1", { email })
 end function
 
 function get_roles(integer id)
-	object roles = mysql_query_rows(db, "SELECT role_name FROM user_roles WHERE user_id=%d", { id })
+	object roles = edbi:query_rows("SELECT role_name FROM user_roles WHERE user_id=%d", { id })
 	if atom(roles) then
 		return {}
-	else
-		for i = 1 to length(roles) do
-			roles[i] = roles[i][1] 
-		end for
-
-		return roles
 	end if
+	
+	for i = 1 to length(roles) do
+		roles[i] = roles[i][1] 
+	end for
+
+	return roles
 end function
 
 public function get(integer id)
-    object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE id=%d", { id })
+    object user = edbi:query_row("SELECT " & select_fields & " FROM users WHERE id=%d", { id })
     if atom(user) then
     	return 0
 	end if
@@ -70,27 +74,25 @@ public function get(integer id)
 end function
 
 public function get_by_sess_id(sequence sess_id, sequence ip)
-	object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE sess_id=%s AND ip_addr=%s", {
+	object user = edbi:query_row("SELECT " & select_fields & " FROM users WHERE sess_id=%s AND ip_addr=%s", {
 		sess_id, ip })
 	if atom(user) then
 		return 0
 	end if
 	
-	user &= { get_roles(defaulted_value(user[USER_ID], 0)) }
+	user &= { get_roles(user[USER_ID]) }
 	
 	return user
 end function
 
 public function get_by_login(sequence code, sequence password)
-	object u
-	
 	-- try the new method first, it's hoped that it will become the most common
-	u = mysql_query_one(db, "SELECT " & select_fields & 
+	object u = edbi:query_row("SELECT " & select_fields & 
 		" FROM users WHERE (LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)) AND password=SHA1(%s)",
 		{ code, code, password })
 	
 	if atom(u) then
-		u = mysql_query_one(db, "SELECT " & select_fields & 
+		u = edbi:query_row("SELECT " & select_fields & 
 			" FROM users WHERE user=%s AND password=%s LIMIT 1", 
 			{ code, md5hex(salt(code,password)) })
 		
@@ -99,22 +101,22 @@ public function get_by_login(sequence code, sequence password)
 		end if
 	end if
 	
-	if equal(u[USER_DISABLED], "1") then
+	if u[USER_DISABLED] then
 		return { 0, "Your account is disabled. Reason: " & u[USER_DISABLED_REASON] }
 	end if
 	
-	u &= { get_roles(defaulted_value(u[USER_ID], -1)) }
+	u &= { get_roles(u[USER_ID]) }
 
 	return u
 end function
 
 public function get_by_code(sequence code)
-	object user = mysql_query_one(db, "SELECT " & select_fields & " FROM users WHERE LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)", { code, code })
+	object user = edbi:query_row("SELECT " & select_fields & " FROM users WHERE LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)", { code, code })
     if atom(user) then
     	return 0
 	end if
 	
-	user &= { get_roles(defaulted_value(user[USER_ID], 0)) }
+	user &= { get_roles(user[USER_ID]) }
 
 	return user
 end function
@@ -132,7 +134,7 @@ global function has_role(sequence role, object user=current_user)
 		return find(role, user[USER_ROLES])
 	else
 		-- user must be just a user name
-		object o = mysql_query_object(db, `SELECT ur.role_name 
+		object o = edbi:query_object(`SELECT ur.role_name 
 			FROM user_roles ur, users u 
 			WHERE u.id=ur.user_id AND ur.role_name=%s AND u.user=%s`, { role, user })
 		return sequence(o)
@@ -145,58 +147,58 @@ public function set_user_ip(sequence user, sequence ip)
 		datetime:format(rnd, "%S%Y&(*") & user[USER_NAME] &
 		datetime:format(rnd, "%s$%M!%H#%Y@%m*%de.<\"")
 
-	mysql_query(db, "UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
+	edbi:execute("UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
 		sk, ip, user[USER_ID] })
 	
-	return mysql_query_object(db, "SELECT sess_id FROM users WHERE id=%s", { user[USER_ID] })
+	return edbi:query_object("SELECT sess_id FROM users WHERE id=%s", { user[USER_ID] })
 end function
 
 public function create(sequence code, sequence password, sequence email)
-	if mysql_query(db, "INSERT INTO users (user, password, email) VALUES (%s,%s,%s)", {
+	if edbi:execute("INSERT INTO users (user, password, email) VALUES (%s,%s,%s)", {
 		code, md5hex(salt(code,password)), email })
 	then
-		crash("Couldn't insert user into the database: %s", { mysql_error(db) })
+		crash("Couldn't insert user into the database: %s", { edbi:error_message() })
 	end if
 	
-	integer id = mysql_insert_id(db)
-	mysql_query(db, "INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
+	integer id = edbi:last_insert_id(db)
+	edbi:execute("INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
 	
 	return id
 end function
 
 public procedure remove_role(sequence uname, sequence role)
-	mysql_query(db, "DELETE ur FROM user_roles ur, users u WHERE u.user=%s AND ur.user_id=u.id AND ur.role_name=%s",
+	edbi:execute("DELETE ur FROM user_roles ur, users u WHERE u.user=%s AND ur.user_id=u.id AND ur.role_name=%s",
 		{ uname, role })
 end procedure
 
 public procedure add_role(sequence uname, sequence role)
-	object uid = mysql_query_object(db, "SELECT id FROM users WHERE user=%s", { uname })
+	object uid = edbi:query_object("SELECT id FROM users WHERE user=%s", { uname })
 	if atom(uid) then
 		return
 	end if
 
-	mysql_query(db, "INSERT INTO user_roles (user_id, role_name) VALUES (%s,%s)",
+	edbi:execute("INSERT INTO user_roles (user_id, role_name) VALUES (%s,%s)",
 		{ uid, role })
 end procedure
 
 public procedure disable(sequence uname, sequence reason)
-	mysql_query(db, "UPDATE users SET disabled=1, disabled_reason=%s WHERE user=%s", {
+	edbi:execute("UPDATE users SET disabled=1, disabled_reason=%s WHERE user=%s", {
 		reason, uname })
 end procedure
 
 public procedure enable(sequence uname)
-	mysql_query(db, "UPDATE users SET disabled=0 WHERE user=%s", { uname })
+	edbi:execute("UPDATE users SET disabled=0 WHERE user=%s", { uname })
 end procedure
 
 public procedure set_password(sequence uname, sequence password)
-	mysql_query(db, "UPDATE users SET password=%s WHERE user=%s", { 
+	edbi:execute("UPDATE users SET password=%s WHERE user=%s", { 
 		md5hex(salt(uname,password)), uname })
 end procedure
 
 public function is_old_account(sequence user)
-	object o = mysql_query_object(db, "SELECT LENGTH(password) FROM users WHERE user=%s", { user[USER_NAME] })
+	object o = edbi:query_object("SELECT LENGTH(password) FROM users WHERE user=%s", { user[USER_NAME] })
 	if sequence(o) then
-		if defaulted_value(o, 0) < 40 then
+		if o < 40 then
 			return 1
 		end if
 	end if
@@ -206,7 +208,7 @@ end function
 
 public function update_security(sequence uname, sequence security_question, sequence security_answer,
 		sequence password)
-	object result = mysql_query(db, `UPDATE users SET security_question=%s, 
+	object result = edbi:execute(`UPDATE users SET security_question=%s, 
 		security_answer=SHA1(LOWER(%s)), password=SHA1(%s) WHERE LOWER(user)=LOWER(%s)`, {
 			security_question, security_answer, password, uname})
 
@@ -218,23 +220,24 @@ public function update_security(sequence uname, sequence security_question, sequ
 end function
 
 public function get_security_question(sequence uname)
-	return mysql_query_object(db, "SELECT security_question FROM users WHERE user=%s", { uname })
+	return edbi:query_object("SELECT security_question FROM users WHERE user=%s", { uname })
 end function
 
 public function is_security_ok(sequence uname, sequence security_answer)
-	return sequence(mysql_query_object(db, "SELECT id FROM users WHERE user=%s AND security_answer=SHA1(LOWER(%s))", {
+	return sequence(edbi:query_object("SELECT id FROM users WHERE user=%s AND security_answer=SHA1(LOWER(%s))", {
 		uname, security_answer }))
 end function
 
 public function update_password(sequence uname, sequence password)
-	return mysql_query(db, "UPDATE users SET password=SHA1(%s) WHERE user=%s", { password, uname })
+	return edbi:execute("UPDATE users SET password=SHA1(%s) WHERE user=%s", { password, uname })
 end function
 
 public procedure update_last_login(sequence user)
- 	mysql_query(db, "UPDATE users SET login_time=CURRENT_TIMESTAMP WHERE user=%s", { user[USER_NAME] })
+ 	edbi:execute("UPDATE users SET login_time=CURRENT_TIMESTAMP WHERE user=%s", { user[USER_NAME] })
 end procedure
 
 public function get_recent_users(integer limit=10)
-	return mysql_query_rows(db, "SELECT user, login_time FROM users ORDER BY login_time DESC LIMIT %d", {
+	return edbi:query_rows("SELECT user, login_time FROM users ORDER BY login_time DESC LIMIT %d", {
 		limit })
 end function
+

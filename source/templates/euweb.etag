@@ -137,7 +137,7 @@
 							sequence u = users[i]
 							%>
 							<li><%- user_profile user=!u[1] %><br />
-							&nbsp;&nbsp;&nbsp;&#187 <%= fuzzy_ago_seq(u[2]) %></li>
+							&nbsp;&nbsp;&nbsp;&#187 <%= fuzzy_ago(u[2]) %></li>
 						<% end for %>
 					</ul>
 				<% end if %>
@@ -154,9 +154,12 @@
 <div id="footer" class="fluid">
 	Copyright &copy; <%= datetime:format(datetime:now(), "%Y") %> by The OpenEuphoria Group. All rights reserved.
 	<br />
- 	<a href="http://www.openeuphoria.org/"><img src="/images/poweredby-euphoria.png" /></a>
-	<br />
 	<a href="/about.wc">About Website</a>
+	<br />
+ 	<a href="http://www.openeuphoria.org/"><img style="vertical-align: middle;" src="/images/poweredby-euphoria.png" /></a>
+	<a href="http://sourceforge.net/projects/rapideuphoria/"
+		><img style="vertical-align: middle;" src="http://sflogo.sourceforge.net/sflogo.php?group_id=182827&type=1" 
+			width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
 </div>
 
 </body>

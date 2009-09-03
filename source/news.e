@@ -2,15 +2,14 @@
 -- == News module
 -- 
 
--- StdLib includes
 include std/map.e
 include std/search.e
 
--- Webclay includes
 include webclay/webclay.e as wc
 include webclay/logging.e as log
 
--- Local includes
+include edbi/edbi.e
+
 include templates/security.etml as t_security
 include templates/news/index.etml as t_index
 include templates/news/edit.etml as t_edit
@@ -33,7 +32,7 @@ function index(map data, map invars)
 	object arts = news_db:get_article_list(map:get(invars, "page"), map:get(invars, "per_page"))
 	for i = 1 to length(arts) do
 		arts[i][news_db:CONTENT] = format_body(arts[i][news_db:CONTENT])
-		arts[i][news_db:PUBLISH_AT] = fuzzy_ago(sqlDateTimeToDateTime(arts[i][news_db:PUBLISH_AT]))
+		arts[i][news_db:PUBLISH_AT] = fuzzy_ago(arts[i][news_db:PUBLISH_AT])
 	end for
 
 	map:put(data, "articles", arts)

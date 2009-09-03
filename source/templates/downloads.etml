@@ -12,13 +12,15 @@
 <a name="4.x"></a>
 <p>
 	Released: 8/31/2009
+
     <ul>
     	<li>
         	<strong>Binary Releases</strong>
             <ul>
-            	<li>Windows Installer: <a href="<http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-src-4.0b2.zip/download">euphoria-4.0b2.exe</a></li>
-				<li>Windows Installer w/OpenWatcom: <a href="<http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-src-4.0b2.zip/download">euphoria-4.0b2-ow.exe</a></li>
-                <li>Linux: <a href="<http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-src-4.0b2.tar.gz/download">euphoria-4.0b2.tar.gz</a></li>
+            	<li>Windows Installer: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-40b2.exe/download">euphoria-40b2.exe</a></li>
+				<li>Windows Installer bundled w/OpenWatcom: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-40b2-ow.exe/download">euphoria-40b2-ow.exe</a></li>
+                <li>Linux: <a href="http://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-4.0b2.tar.gz/download">euphoria-4.0b2.tar.gz</a></li>
+                <li>OS X: <a href="https://sourceforge.net/projects/rapideuphoria/files/Rapid%20Euphoria/4.0b2/euphoria-trunk-osx.tar.gz/download">euphoria-trunk-osx.tar.gz</a></li>
             </ul>
         </li>
         

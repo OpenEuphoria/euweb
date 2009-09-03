@@ -15,11 +15,8 @@
 
 	An example config file would be:
 
-	public constant DB_HOST = "localhost"
-	public constant DB_PORT = 3306
-	public constant DB_USER = "me"
-	public constant DB_PASS = "secret"
-	public constant DB_NAME = "database_name"
+	public constant DB_DRIVERS_PATH = "drivers"
+	public constant DB_URL = "mysql://user:password@localhost:3306/database_name"
 	
 	-- Do NOT include the trailing slash
 	public constant ROOT_URL = "http://localhost"

@@ -1,3 +1,5 @@
+without warning
+
 include std/get.e
 
 -- WebClay includes
@@ -17,11 +19,10 @@ include user_db.e
 -- Module includes
 include about.e
 include download.e
-include forum.e
-include greeter.e
+--include forum.e
 include news.e
 include security.e
-include wiki.e
+--include wiki.e
 include user.e
 
 procedure app(object data, object vars)
@@ -45,18 +46,13 @@ db:open()
 -- For developers use. Define AUTO_LOGIN_UID in your config file and 
 -- populate it with your user.id value from the database.
 
-include user_db.e
 if AUTO_LOGIN_UID > 0 then
-
-    current_user = user_db:get(AUTO_LOGIN_UID)
-
+	current_user = user_db:get(AUTO_LOGIN_UID)
 end if
-
-
-
 
 -- Handle the request
 wc:handle_request(routine_id("app"))
 
 -- Close our database
 db:close()
+

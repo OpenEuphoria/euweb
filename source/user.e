@@ -82,7 +82,7 @@ public function profile(map data, map invars)
 	
 	map:put(data, "invalid_profile", 0)
 
-	user[USER_LAST_LOGIN_AT] = fuzzy_ago(sqlDateTimeToDateTime(user[USER_LAST_LOGIN_AT]))
+	user[USER_LAST_LOGIN_AT] = fuzzy_ago(user[USER_LAST_LOGIN_AT])
 
 	map:put(data, "user", user)
 	map:put(data, "user_id", user[USER_ID])
@@ -428,7 +428,7 @@ function validate_profile_save(map data, map vars)
 end function
 
 function profile_save(map data, map vars)
-	object r = mysql_query(db, `UPDATE users SET name=%s, location=%s, forum_default_view=%s,
+	object r = edbi:execute(`UPDATE users SET name=%s, location=%s, forum_default_view=%s,
 		show_email=%d, email=%s, login_time=login_time WHERE user=%s`, { 
 			map:get(vars, "full_name"), 
 			map:get(vars, "location"), 
@@ -448,3 +448,4 @@ function profile_save(map data, map vars)
 end function
 wc:add_handler(routine_id("profile_save"), routine_id("validate_profile_save"), 
 	"user", "profile_save", profile_save_invars)
+
