@@ -22,7 +22,7 @@ include download.e
 include forum.e
 include news.e
 include security.e
---include wiki.e
+include wiki.e
 include user.e
 
 procedure app(object data, object vars)

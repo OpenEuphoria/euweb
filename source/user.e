@@ -59,9 +59,11 @@ public function profile(map data, map invars)
 	-- If the current user is an admin, check on the query string for admin
 	-- actions that may take place
 	if has_role("user_admin") then
+		log:log("User adim, yes")
 		if sequence(map:get(invars, "remove_role")) then
 			user_db:remove_role(uname, map:get(invars, "remove_role"))
 		elsif sequence(map:get(invars, "add_role")) then
+			log:log("add_role, yes")
 			user_db:add_role(uname, map:get(invars, "add_role"))
 		elsif sequence(map:get(invars, "disabled_reason")) then
 			user_db:disable(uname, map:get(invars, "disabled_reason"))

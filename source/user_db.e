@@ -9,6 +9,7 @@ include std/error.e
 include std/get.e
 include std/sequence.e
 include std/datetime.e
+include std/text.e
 
 include edbi/edbi.e
 
@@ -74,8 +75,7 @@ public function get(integer id)
 end function
 
 public function get_by_sess_id(sequence sess_id, sequence ip)
-	object user = edbi:query_row("SELECT " & select_fields & " FROM users WHERE sess_id=%s AND ip_addr=%s", {
-		sess_id, ip })
+	object user = edbi:query_row("SELECT " & select_fields & " FROM users WHERE sess_id=%s", { sess_id })
 	if atom(user) then
 		return 0
 	end if
@@ -147,10 +147,10 @@ public function set_user_ip(sequence user, sequence ip)
 		datetime:format(rnd, "%S%Y&(*") & user[USER_NAME] &
 		datetime:format(rnd, "%s$%M!%H#%Y@%m*%de.<\"")
 
-	edbi:execute("UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%s", { 
+	edbi:execute("UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%d", { 
 		sk, ip, user[USER_ID] })
 	
-	return edbi:query_object("SELECT sess_id FROM users WHERE id=%s", { user[USER_ID] })
+	return edbi:query_object("SELECT sess_id FROM users WHERE id=%d", { user[USER_ID] })
 end function
 
 public function create(sequence code, sequence password, sequence email)
@@ -173,12 +173,9 @@ end procedure
 
 public procedure add_role(sequence uname, sequence role)
 	object uid = edbi:query_object("SELECT id FROM users WHERE user=%s", { uname })
-	if atom(uid) then
-		return
+	if uid > 0 then
+		edbi:execute("INSERT INTO user_roles (user_id, role_name) VALUES (%d,%s)", { uid, role })
 	end if
-
-	edbi:execute("INSERT INTO user_roles (user_id, role_name) VALUES (%s,%s)",
-		{ uid, role })
 end procedure
 
 public procedure disable(sequence uname, sequence reason)
@@ -224,7 +221,7 @@ public function get_security_question(sequence uname)
 end function
 
 public function is_security_ok(sequence uname, sequence security_answer)
-	return sequence(edbi:query_object("SELECT id FROM users WHERE user=%s AND security_answer=SHA1(LOWER(%s))", {
+	return sequence(edbi:query_object("SELECT user FROM users WHERE user=%s AND security_answer=SHA1(LOWER(%s))", {
 		uname, security_answer }))
 end function
 
