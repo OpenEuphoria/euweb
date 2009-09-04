@@ -8,7 +8,7 @@
 </div>
 
 <p class="centered">
-	<a href="/forum/<%= @topic_id %>.wc#<%= @id %>">Return to Topic</a>,
+	<a href="/forum/<%= _h(@topic_id) %>.wc#<%= _h(@id) %>">Return to Topic</a>,
  	<a href="/forum/index.wc">Return to Topic List</a>
 </p>
 

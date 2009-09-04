@@ -25,11 +25,11 @@
 
     <%- euweb:errors %>
 
-	<input type="hidden" name="id" value="<%= sprintf("%d", { @id }) %>" />
-	<input type="hidden" name="topic_id" value="<%= sprintf("%d", { @topic_id }) %>" />
-	<input type="hidden" name="parent_id" value="<%= sprintf("%d", { @parent_id }) %>" />
-	<input type="hidden" name="fork" value="<%= sprintf("%d", { @fork }) %>" />
-	<input type="hidden" name="fork_id" value="<%= sprintf("%d", { @fork_id }) %>" />
+	<input type="hidden" name="id" value="<%= _h(@id) %>" />
+	<input type="hidden" name="topic_id" value="<%= _h(@topic_id) %>" />
+	<input type="hidden" name="parent_id" value="<%= _h(@parent_id) %>" />
+	<input type="hidden" name="fork" value="<%= _h(@fork) %>" />
+	<input type="hidden" name="fork_id" value="<%= _h(@fork_id) %>" />
 	
 	Subject:<br />
 	<input type="text" id="subject" name="subject" value="<%= @subject %>" size="80" />
@@ -84,3 +84,4 @@ end if
 %>
 
 <%- euweb:foot quick_links=!quick_links %>
+

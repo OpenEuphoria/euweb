@@ -22,16 +22,16 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap">
-                <a href="/forum/<%= thread[THREAD_TOPIC_ID] %>.wc"><img alt="threaded view" src="/images/threaded.png" /></a>
+                <a href="/forum/<%= _h(thread[THREAD_TOPIC_ID]) %>.wc"><img alt="threaded view" src="/images/threaded.png" /></a>
             </td>
             <td>
-                <a class="forum_message" href="/forum/<%= thread[THREAD_ID] %>.wc?last_id=<%= thread[THREAD_LAST_POST_ID] %>"><%= _h(thread[THREAD_SUBJECT]) %></a><br />
+                <a class="forum_message" href="/forum/<%= _h(thread[THREAD_ID]) %>.wc?last_id=<%= _h(thread[THREAD_LAST_POST_ID]) %>"><%= _h(thread[THREAD_SUBJECT]) %></a><br />
                 &nbsp;&nbsp;&nbsp;by 
                 <%- euweb:user_profile user=!thread[THREAD_AUTHOR_NAME] %>
                 <%= thread[THREAD_CREATED_AT] %>
             </td>
-            <td align="center"><%= thread[THREAD_REPLIES] %></td>
-            <td align="center"><%= thread[THREAD_VIEWS] %></td>
+            <td align="center"><%= _h(thread[THREAD_REPLIES]) %></td>
+            <td align="center"><%= _h(thread[THREAD_VIEWS]) %></td>
             <td>
                 <% if length(thread[THREAD_LAST_POST_BY]) then %>
                     by 
@@ -48,8 +48,8 @@
 <div class="centered">
     <%- euweb:paginator base="/forum/index.wc" page=@page per_page=@per_page total=@thread_count %>
     <br />
-    <%= sprintf("%d", @message_count) %> messages in
-    <%= sprintf("%d", @thread_count) %> threads,
+    <%= _h(@message_count) %> messages in
+    <%= _h(@thread_count) %> threads,
 </div>
 
 <%
@@ -63,3 +63,4 @@ end if
 %>
 
 <%- euweb:foot quick_links=!quick_links %>
+

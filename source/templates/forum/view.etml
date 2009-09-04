@@ -4,7 +4,6 @@
 
 <%
 sequence messages = @messages
-sequence topic_id = messages[1][MSG_TOPIC_ID]
 sequence subject = messages[1][MSG_SUBJECT]
 integer is_forum_admin = has_role("forum_moderator")
 sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
@@ -30,12 +29,12 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 
 	<div class="post forum <%= div_class %>" id="<%= message[MSG_ID] %>">				
 		<h3><%= sprintf("%d", i) %>. <%= _h(message[MSG_SUBJECT]) %></h3>
-		<a name="<%= message[MSG_ID] %>"></a>
+		<a name="<%= _h(message[MSG_ID]) %>"></a>
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!message[MSG_AUTHOR_NAME] show_public_roles=1 %> 
 			<%= message[MSG_CREATED_AT] %></li>
 			<li class="comments">
-				<%= message[MSG_VIEWS] %> views
+				<%= _h(message[MSG_VIEWS]) %> views
 			</li>
 			<% if not equal(message[MSG_CREATED_AT], message[MSG_LAST_EDIT_AT]) then %>
 			<li class="edited">
@@ -48,25 +47,25 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 
 		<div class="post_tools">
 			<% if has_role("user") then %>
-				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>">reply</a>,
-				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1">reply with quote</a>,
-				<a href="/forum/post.wc?parent_id=<%= message[MSG_ID] %>&quote=1&fork=1">fork</a>
+				<a href="/forum/post.wc?parent_id=<%= _h(message[MSG_ID]) %>">reply</a>,
+				<a href="/forum/post.wc?parent_id=<%= _h(message[MSG_ID]) %>&quote=1">reply with quote</a>,
+				<a href="/forum/post.wc?parent_id=<%= _h(message[MSG_ID]) %>&quote=1&fork=1">fork</a>
 				<% if is_owner or is_forum_admin then %>
 					&nbsp;&nbsp;&nbsp;&#187;
-					<a href="/forum/edit.wc?id=<%= message[MSG_ID] %>">edit</a>
+					<a href="/forum/edit.wc?id=<%= _h(message[MSG_ID]) %>">edit</a>
 				<% end if %>
 				<% if is_forum_admin then %>
 					&nbsp;&nbsp;&nbsp;&nbsp;&#187;
-					<a href="/forum/remove.wc?id=<%= message[MSG_ID] %>">remove</a>
+					<a href="/forum/remove.wc?id=<%= _h(message[MSG_ID]) %>">remove</a>
 				<% end if %>
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 				<a href="/forum/post.wc">new topic</a>
 			<% end if %>
 			<% if not equal(message[MSG_PARENT_ID], "0") then %>
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
-				<a href="#<%= message[MSG_PARENT_ID] %>"
-					onclick="Effect.ScrollTo('<%= message[MSG_PARENT_ID] %>', { duration: 0.25 }  ); 
-					new Effect.Highlight($('<%= message[MSG_PARENT_ID] %>'), 
+				<a href="#<%= _h(message[MSG_PARENT_ID]) %>"
+					onclick="Effect.ScrollTo('<%= _h(message[MSG_PARENT_ID]) %>', { duration: 0.25 }  ); 
+					new Effect.Highlight($('<%= _h(message[MSG_PARENT_ID]) %>'), 
 						{ startcolor: '#ffff99', endcolor: '#ffffff', queue: 'end' }); return false;"
 				>goto parent</a>
 			 <% end if %>
@@ -89,5 +88,4 @@ end if
 %>
 
 <%- euweb:foot quick_links=!quick_links %>
-
 

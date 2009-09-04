@@ -46,11 +46,9 @@ function index(map data, map invars)
 	
 	object threads = forum_db:get_thread_list(map:get(invars, "page"), map:get(invars, "per_page"))
 	for i = 1 to length(threads) do
-		threads[i][THREAD_CREATED_AT] = fuzzy_ago(sqlDateTimeToDateTime(
-			threads[i][THREAD_CREATED_AT]))
+		threads[i][THREAD_CREATED_AT] = fuzzy_ago(threads[i][THREAD_CREATED_AT])
 		if length(threads[i][THREAD_LAST_POST_AT]) then
-			threads[i][THREAD_LAST_POST_AT] = fuzzy_ago(sqlDateTimeToDateTime(
-				threads[i][THREAD_LAST_POST_AT]))
+			threads[i][THREAD_LAST_POST_AT] = fuzzy_ago(threads[i][THREAD_LAST_POST_AT])
 		end if
 	end for
 
@@ -132,7 +130,7 @@ function post(map data, map invars)
 	elsif id > 0 then
 		object msg = forum_db:get(id)
 		if atom(msg) then
-			crash("Couldn't retrieve message %d, %s", { id, mysql_error(db) })
+			crash("Couldn't retrieve message %d, %s", { id, edbi:error_message() })
 		end if
 		
 		sequence subject = msg[MSG_SUBJECT]
@@ -144,7 +142,7 @@ function post(map data, map invars)
 		if fork = 0 then
 			map:put(data, "parent_id", id)
 			map:put(data, "subject", subject)
-			map:put(data, "topic_id", defaulted_value(msg[MSG_TOPIC_ID], 0))
+			map:put(data, "topic_id", msg[MSG_TOPIC_ID])
 		else
 			map:put(data, "fork_id", id)
 		end if
@@ -157,7 +155,7 @@ function post(map data, map invars)
 				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }), "\n")
 			
 			if fork then
-				body = sprintf("**Forked from [[%s/forum/%s.wc#%s|%s]]**\n\n", {
+				body = sprintf("**Forked from [[%s/forum/%d.wc#%d|%s]]**\n\n", {
 					ROOT_URL, msg[MSG_ID], msg[MSG_ID], msg[MSG_SUBJECT]
 				}) & body
 			end if
@@ -233,8 +231,7 @@ function save(map:map data, map:map vars)
 	
 	if map:get(vars, "fork", 0) then
 		integer forked_id = map:get(vars, "fork_id")
-		forum_db:update_forked_body(defaulted_value(post[MSG_ID], 0), forked_id, 
-			post[MSG_SUBJECT])
+		forum_db:update_forked_body(post[MSG_ID], forked_id, post[MSG_SUBJECT])
 	end if
 
 	return { TEXT, t_post_ok:template(data) }
@@ -359,7 +356,7 @@ function remove_post(map data, map invars)
 
 	object message = forum_db:get(map:get(invars, "id"))
 	if atom(message) then
-		crash("Could not retrieve message from database: %s", { mysql_error(db) })
+		crash("Could not retrieve message from database: %s", { edbi:error_message() })
 	end if
 	
 	map:put(data, "id", message[MSG_ID])

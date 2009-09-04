@@ -19,7 +19,7 @@ include user_db.e
 -- Module includes
 include about.e
 include download.e
---include forum.e
+include forum.e
 include news.e
 include security.e
 --include wiki.e

@@ -13,7 +13,7 @@
 <%- euweb:errors %>
 
 <form method="post" action="/forum/update.wc">
-	<input type="hidden" name="id" value="<%= @id %>" />
+	<input type="hidden" name="id" value="<%= _h(@id) %>" />
 	
 	Subject:<br />
 	<input type="text" id="subject" name="subject" value="<%= @subject %>" size="80" />

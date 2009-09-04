@@ -1,4 +1,3 @@
-<%@ include std/math.e %>
 <%@ include templates/euweb.etag as euweb %>
 <%@ include forum_db.e %>
 
@@ -8,13 +7,13 @@
 
 <h3>Remove Forum Post</h3>
 <p>
-	Are you sure you wish to remove the forum post <%= @id %>, '<%= _h(@subject) %>'?
+	Are you sure you wish to remove the forum post <%= _h(@id) %>, '<%= _h(@subject) %>'?
 </p>
 
 <p class="centered">
- 	<a href="/forum/<%= @topic_id %>.wc#<%= @id %>">No</a>
+ 	<a href="/forum/<%= _h(@topic_id) %>.wc#<%= _h(@id) %>">No</a>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="/forum/remove_confirmed.wc?id=<%= @id %>">Yes</a>
+	<a href="/forum/remove_confirmed.wc?id=<%= _h(@id) %>">Yes</a>
 </p>
 
 <%
@@ -28,3 +27,4 @@ end if
 %>
 
 <%- euweb:foot quick_links=!quick_links %>
+
