@@ -1,0 +1,12 @@
+<%@ include templates/euweb.etag as euweb %>
+
+<%- euweb:head title="Ticket System" active="ticket" %>
+
+<h3><span>Ticket</span> System</h3>
+
+<p>
+Hello World
+</p>
+
+<%- euweb:foot %>
+
