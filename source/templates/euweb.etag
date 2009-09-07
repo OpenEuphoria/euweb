@@ -45,7 +45,9 @@
 				<li><a href="/downloads/index.wc"
 				  <% if equal(#active, "download") then %>class="active"<% end if %>
 				  >Downloads</a></li>
-				<li><a href="http://sourceforge.net/tracker/?group_id=182827&atid=902782">Bug Tracker</a></li>
+				<li><a href="/ticket/index.wc"
+                  <% if equal(#active, "ticket") then %>class="active"<% end if %>
+                  >Tickets</a>
 			</ul>
 		</div>
 		
