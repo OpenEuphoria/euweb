@@ -52,16 +52,21 @@ function real_index(map data, map request, sequence where="")
 	return { TEXT, t_index:template(data) }
 end function
 
-function index(map data, map request)
-	return real_index(data, request)
-end function
-wc:add_handler(routine_id("index"), -1, "ticket", "index", index_vars)
-
 function mine(map data, map request)
 	return real_index(data, request, sprintf("(t.assigned_to_id=%d OR t.submitted_by_id=%d)", 
 		{ current_user[user_db:USER_ID], current_user[user_db:USER_ID] }))
 end function
 wc:add_handler(routine_id("mine"), -1, "ticket", "mine", index_vars)
+
+function opened(map data, map request)
+	return real_index(data, request, "tstate.closed=0")
+end function
+wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
+
+function closed(map data, map request)
+	return real_index(data, request, "tstate.closed=1")
+end function
+wc:add_handler(routine_id("closed"), -1, "ticket", "closed", index_vars)
 
 sequence create_vars = {
 	{ wc:INTEGER, "severity_id" },
@@ -175,6 +180,10 @@ end function
 
 function update(map data, map request)
 	map:put(data, "error_code", 0)
+	
+	if map:get(request, "assigned_to_id") = -1 then
+		map:put(request, "assigned_to_id", 0)
+	end if
 
 	if has_role("developer") then
 		-- Update some ticket values
@@ -209,6 +218,8 @@ function update(map data, map request)
 			map:put(data, "error_message", edbi:error_message())
 		end if
 	end if
+	
+	map:put(data, "id", map:get(request, "id"))
     
 	return { TEXT, t_update_ok:template(data) }
 end function

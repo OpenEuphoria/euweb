@@ -126,7 +126,7 @@ for i = 1 to length(comments) do
 	sequence comment = comments[i] 
 %>
 	<h4>
-		<span>Comment by</span> <%= comment[comment_db:USER] %> 
+		<span>Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %> 
 		<%= _h(comment[comment_db:CREATED_AT]) %>
 	</h4>
 
@@ -134,14 +134,17 @@ for i = 1 to length(comments) do
 <% end for %>
 
 <%
-sequence quick_links = {
-    { "/ticket/index.wc", "Open Tickets" },
-	{ "/ticket/closed.wc", "Closed Tickets" }
-}
+sequence quick_links = {}
 
 if has_role("user") then
     quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+    quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
 end if
+
+quick_links &= { { "/ticket/index.wc", "Open Tickets" }, 
+    { "/ticket/closed.wc", "Closed Tickets" }
+}
+
 %>
 
 <%- euweb:foot quick_links=!quick_links %>

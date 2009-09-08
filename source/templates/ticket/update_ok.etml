@@ -20,7 +20,12 @@
     <h3><span>Ticket</span> Update</h3>
     
     <p>
-        Ticket update was OK
+        Ticket update was OK.
+    </p>
+    
+    <p>
+        <a href="/ticket/<%= _h(@id) %>.wc">View Ticket</a>, 
+        <a href="/ticket/index.wc">Ticket List</a>
     </p>
 
 <% end if %>
@@ -29,8 +34,8 @@
 sequence quick_links = {}
 
 if has_role("user") then
-    quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
     quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+    quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
 end if
 
 quick_links &= { { "/ticket/index.wc", "Open Tickets" }, 

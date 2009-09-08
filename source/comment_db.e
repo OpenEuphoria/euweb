@@ -11,6 +11,7 @@ include edbi/edbi.e
 
 include format.e
 include fuzzydate.e
+include user_db.e
 
 public enum ID, MODULE_ID, ITEM_ID, USER_ID, CREATED_AT, SUBJECT, BODY, USER
 
@@ -33,6 +34,6 @@ end function
 public function add_comment(integer module_id, integer id, sequence subject, sequence comment)
 	return edbi:execute("""INSERT INTO comment 
 		(module_id, item_id, user_id, created_at, subject, body)
-		VALUES (%d, %d, %d, NOW(), %s, %s)""", { module_id, id, current_user[USER_ID], 
+		VALUES (%d, %d, %d, NOW(), %s, %s)""", { module_id, id, current_user[user_db:USER_ID], 
 		subject, comment })
 end function

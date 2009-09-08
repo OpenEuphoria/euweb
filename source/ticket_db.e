@@ -16,7 +16,7 @@ public constant MODULE_ID=1
 public enum ID, CREATED_AT, SUBMITTED_BY_ID, ASSIGNED_TO_ID, SEVERITY_ID, 
 	CATEGORY_ID, STATUS_ID, STATE_ID, REPORTED_RELEASE_ID, SUBJECT, CONTENT,
 	RESOLVED_AT, SVN_REV, SUBMITTED_BY, ASSIGNED_TO, SEVERITY, CATEGORY, STATUS,
-	REPORTED_RELEASE
+	STATE, REPORTED_RELEASE
 
 --**
 -- Get the number of tickets
@@ -30,16 +30,18 @@ constant BASE_QUERY = """SELECT
 	t.category_id, t.status_id, t.state_id, t.reported_release_id, t.subject, t.content, 
 	t.resolved_at, t.svn_rev, tsb.user AS submitted_by, tas.user AS assigned_to,
 	tsev.name AS severity, tcat.name AS category, tstat.name AS status,
-	rel.name AS reported_release
+	tstate.name AS state, rel.name AS reported_release
 FROM
 	ticket AS t, users AS tsb, users AS tas, ticket_severity AS tsev,
-	ticket_category AS tcat, ticket_status AS tstat, releases AS rel
+	ticket_category AS tcat, ticket_status AS tstat, ticket_state AS tstate, 
+	releases AS rel
 WHERE
 	tsb.id = t.submitted_by_id AND
 	tas.id = t.assigned_to_id AND
 	tsev.id = t.severity_id AND
 	tcat.id = t.category_id AND
 	tstat.id = t.status_id AND
+	tstate.id = t.state_id AND
 	rel.id = t.reported_release_id
 """
 
