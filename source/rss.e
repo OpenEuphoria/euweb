@@ -98,15 +98,45 @@ function latest_forum_posts()
 	return rows
 end function
 
+sequence rss_vars = {
+	{ wc:INTEGER, "forum", 0 },
+	{ wc:INTEGER, "ticket", 0 },
+	{ wc:INTEGER, "ticket_comment", 0 },
+	{ wc:INTEGER, "news", 0 }
+}
+
 function rss(map data, map request)
+	object rows = {}
+
+	integer include_forum = map:get(request, "forum")
+	integer include_ticket = map:get(request, "ticket")
+	integer include_ticket_comment = map:get(request, "ticket_comment")
+	integer include_news = map:get(request, "news")
+	
+	if (include_forum + include_ticket + include_ticket_comment + include_news) = 0 then
+		include_forum = 1
+		include_ticket = 1
+		include_ticket_comment = 1
+		include_news = 1
+	end if
+
 	map:put(data, "ROOT_URL", ROOT_URL)
 
-	object rows = latest_tickets()
- 	rows &= latest_ticket_comments()
-	rows &= latest_news()
-	rows &= latest_forum_posts()
+	if include_ticket then
+		rows &= latest_tickets()
+	end if
 
-	-- enum DATE, AUTHOR, VIEW_URL, SUBJECT, CONTENT
+	if include_ticket_comment then
+ 		rows &= latest_ticket_comments()
+	end if
+	
+	if include_news then
+		rows &= latest_news()
+	end if
+
+	if include_forum then
+		rows &= latest_forum_posts()
+	end if
 
 	-- Sort based on date, then take the first 10 items
 	rows = sort_columns(rows, { -DATE })
@@ -122,4 +152,4 @@ function rss(map data, map request)
  
 	return { TEXT, t_rss:template(data) }
 end function
-wc:add_handler(routine_id("rss"), -1, "rss")
+wc:add_handler(routine_id("rss"), -1, "rss", "index", rss_vars)
