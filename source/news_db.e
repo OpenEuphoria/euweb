@@ -79,12 +79,13 @@ end procedure
 public function insert(sequence subject, sequence content)
 	if edbi:execute(`INSERT INTO news 
 		(submitted_by_id, approved, approved_by_id, publish_at, subject, content) VALUES (
-		%s, 1, %s, %T, %s, %s)`, { current_user[USER_ID], current_user[USER_ID], datetime:now(), 
-		subject, content })
+		%d, 1, %d, %T, %s, %s)`, { 
+			current_user[USER_ID], current_user[USER_ID], datetime:now(), 
+			subject, content })
 	then
 		crash("Could not create news article.")
 	end if
 
-	return edbi:last_insert_id(db)
+	return edbi:last_insert_id()
 end function
 
