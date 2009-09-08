@@ -1,0 +1,113 @@
+<%@ 
+  include std/math.e
+  
+  include webclay/escape.e
+  include templates/euweb.etag as euweb
+  include ticket_db.e
+%>
+
+<%- euweb:head title="Ticket Create" active="ticket" %>
+
+<% if length(@error_message) then %>
+
+    <h4><span>Error</span> Message</h4>
+    <p>
+        I am sorry, but an error occurred while processing your request.
+    </p>
+    <p>
+        <%= _h(@error_message) %>
+    </p>
+
+<% else %>
+
+	<h3>Ticket <span>Submission</span> Tips</h3>
+	<p>
+		When submitting a bug request, the best way to ensure it's fixed promptly is to
+		follow these few tips:
+	<ul>
+		<li>
+			Your subject should be a short explanation of the problem, not "It doesn't work."
+		</li>
+		<li>
+			When writing the body of your bug report, if using a SVN version of Euphoria,
+			please include the full output of <code>eui -version</code>.
+		</li>
+		<li>
+			Please include a detailed description of the error.
+		</li>
+		<li>
+			Please include a detailed description on the steps you took to produce the
+			error.
+		</li>
+		<li>
+			If possible, include a small code snipplet that causes the error.
+		</li>
+		<li>
+			Include any revelant parts of the <code>ex.err</code> file.
+		</li>
+		<li>
+			If a web problem, please include an exact URL where the problem occurs.
+		</li>
+		<li>
+			If a documentation problem, please include a section number.
+		</li>
+	</ul>
+	</p>
+
+    <h4><span>Create</span> the Ticket</h4>
+
+	<form method="POST" action="/ticket/do_create.wc">
+		<input type="hidden" name="id" value="<%= _h(@id) %>" />
+		
+		<table class="form">		
+			<tr>
+				<th>Severity:</th>
+				<td>
+					<%- euweb:select include_empty=1 name="severity_id" option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
+				</td>
+				<th>Category:</th>
+				<td>
+					<%- euweb:select include_empty=1 name="category_id" option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
+				</td>
+				<th>Your Release:</th>
+				<td>
+					<%- euweb:select include_empty=1 name="reported_release_id" option_sql="SELECT id,name FROM releases ORDER BY position" %>
+				</td>
+			</tr>
+
+			<tr>
+				<th>Subject:</th>
+				<td colspan="5"><input type="text" name="subject" size="75" style="width: 100%" /></td>
+			</tr>
+
+			<tr>
+				<th>Body:</th>
+				<td colspan="5"><textarea name="body" rows="15" cols="70" style="width: 100%"></textarea></td>
+			</tr>
+			
+			<tr>
+				<th>&nbsp;</th>
+				<td><input type="submit" value="Create Ticket" /></td>
+			</tr>
+		</table>
+	</form>
+
+<script type="text/javascript">
+	$('severity_id').focus();
+</script>
+
+<% end if %>
+
+<%
+sequence quick_links = {
+    { "/ticket/index.wc", "Open Tickets" },
+	{ "/ticket/closed.wc", "Closed Tickets" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
+

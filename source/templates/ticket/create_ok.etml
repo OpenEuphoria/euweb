@@ -1,0 +1,34 @@
+<%@ 
+  include templates/euweb.etag as euweb
+%>
+
+<%- euweb:head title="Ticket Create OK" active="ticket" %>
+
+<% if @error_code then %>
+
+	<h3><span>Error</span> Message</h3>
+	<p>
+		I'm sorry but an error occurred while processing your request: <%= _h(@error_message) %>.
+	</p>
+
+<% else %>
+
+	<h3><span>Ticket</span> Create OK</h3>
+	<p>
+		Your ticket was created.
+	</p>
+
+<% end if %>
+
+<%
+sequence quick_links = {
+    { "/ticket/index.wc", "Open Tickets" },
+	{ "/ticket/closed.wc", "Closed Tickets" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>

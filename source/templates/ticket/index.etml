@@ -1,12 +1,79 @@
-<%@ include templates/euweb.etag as euweb %>
+<%@ 
+  include std/math.e
+  
+  include webclay/escape.e
+  include templates/euweb.etag as euweb
+  include ticket_db.e
+%>
 
 <%- euweb:head title="Ticket System" active="ticket" %>
 
-<h3><span>Ticket</span> System</h3>
+<% if @error_code then %>
 
-<p>
-Hello World
-</p>
+    <h4><span>Error</span> Message</h4>
+    <p>
+        I am sorry, but an error occurred while processing your request.
+    </p>
+    <p>
+        <%= _h(@error_message) %>
+    </p>
 
-<%- euweb:foot %>
+<% else %>
+
+    <h3><span>Ticket</span> System</h3>
+    
+    <table class="list forum">
+    
+        <tr>
+            <th width="1%" nowrap="nowrap">&nbsp;</th>
+            <th width="1%">Category</th>
+            <th width="93%">Subject</th>
+            <th width="1%" nowrap="nowrap">Assigned To</th>
+            <th width="1%">Status</th>
+            <th width="1%">Severity</th>
+            <th width="1%">Release</th>
+            <th width="1%">Age</th>
+        </tr>
+    
+        <%
+        sequence tickets = @tickets
+        for i = 1 to length(tickets) do
+            sequence ticket = tickets[i]
+            %>
+            <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
+                <td nowrap="nowrap">
+                    <a href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"><img alt="ticket detail" src="/images/threaded.png" /></a>
+                </td>
+                <td nowrap="nowrap"><%= _h(ticket[ticket_db:CATEGORY]) %></td>
+                <td><%= _h(ticket[ticket_db:SUBJECT]) %></td>
+                <td nowrap="nowrap"><%= _h(ticket[ticket_db:ASSIGNED_TO]) %></td>
+                <td nowrap="nowrap"><%= _h(ticket[ticket_db:STATUS]) %></td>
+                <td nowrap="nowrap"><%= _h(ticket[ticket_db:SEVERITY]) %></td>
+                <td nowrap="nowrap"><%= _h(ticket[ticket_db:REPORTED_RELEASE]) %></td>
+                <td nowrap="nowrap"><%= _h(ticket[ticket_db:CREATED_AT]) %></td>
+            </tr>
+        <% end for %>
+    </table>
+
+<div class="centered">
+    <%- euweb:paginator base="/ticket/index.wc" page=@page per_page=@per_page total=@ticket_count %>
+</div>
+
+<% end if %>
+    
+<%
+sequence quick_links = {}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
+    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+end if
+
+quick_links &= { { "/ticket/index.wc", "Open Tickets" }, 
+    { "/ticket/closed.wc", "Closed Tickets" }
+}
+
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
 

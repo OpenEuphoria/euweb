@@ -190,6 +190,14 @@ integer current_page = #page
 integer per_page = #per_page
 integer last_page = floor(#total / per_page)
 integer start = current_page
+integer end_page = start + size
+
+if last_page < end_page then
+	end_page = last_page
+end if
+if end_page = 0 then
+	end_page = 1
+end if
 
 if start <= mid_size then
 	start = 1
@@ -202,7 +210,7 @@ end if
 Pages 
 <a href="<%= #base %>?page=1&per_page=<%= sprintf("%d", #per_page) %>">newest</a>
 ...
-<% for i = start to start + size do %>
+<% for i = start to end_page do %>
 <a <% if i = current_page then %>class="current_page"<% end if %> href="<%= #base %>?page=<%= sprintf("%d", i) %>&per_page=<%= sprintf("%d", #per_page) %>"
 ><%= sprintf("%d", i) %></a>,
 <% end for %>
@@ -225,3 +233,33 @@ if equal(#show_public_roles, "1") then
 	end if
 end if 
 %>
+
+{{{select}}}
+<%@ include edbi/edbi.e %>
+<%@ include std/text.e %>
+<%
+  object rows = edbi:query_rows(#option_sql)
+  if not sequence(rows) then
+      rows = {}
+  end if
+  sequence id
+  if length(#id) then
+      id = #id
+  else
+      id = #name
+  end if
+%>
+
+<select id="<%= id %>" name="<%= #name %>">
+	<% if equal(#include_empty, "1") then %>
+		<option value="-1"></option>
+	<% end if %>
+    <% for i = 1 to length(rows) do 
+      object this_id = sprint(rows[i][1])
+      object this_text = rows[i][2]
+    %>
+  <option value="<%= _h(this_id) %>"
+    <% if equal(this_id, #selected) then %>selected="selected"<% end if %>
+    ><%= _h(this_text) %></option>
+  <% end for %>
+</select>
