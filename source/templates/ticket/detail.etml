@@ -90,6 +90,10 @@ integer is_user = sequence(current_user)
 				<% else %>
 					<%= ticket[ticket_db:SVN_REV] %>
 				<% end if %>
+				<% if length(ticket[ticket_db:SVN_REV]) then %>
+					<a href="http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&revision=<%= _h(ticket[ticket_db:SVN_REV]) %>"
+						>view</a>
+				<% end if %>
 			</td>
 		</tr>
 
