@@ -21,10 +21,11 @@ include about.e
 include download.e
 include forum.e
 include news.e
+include rss.e
 include security.e
 include ticket.e
-include wiki.e
 include user.e
+include wiki.e
 
 procedure app(object data, object vars)
     -- Auto Login trumps a cookie that may exist.
@@ -48,7 +49,7 @@ db:open()
 -- populate it with your user.id value from the database.
 
 if AUTO_LOGIN_UID > 0 then
-	current_user = user_db:get(AUTO_LOGIN_UID)
+    current_user = user_db:get(AUTO_LOGIN_UID)
 end if
 
 -- Handle the request
