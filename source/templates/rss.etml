@@ -2,8 +2,7 @@
 include webclay/escape.e 
 include rss.e as rss
 public enum DATE, AUTHOR, URL, TITLE, CONTENT
-%>
-<?xml version="1.0"?>
+%><?xml version="1.0"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
 	<channel>
 		<atom:link href="<%= @ROOT_URL %>/rss.wc" rel="self" type="application/rss+xml" />
@@ -21,8 +20,8 @@ public enum DATE, AUTHOR, URL, TITLE, CONTENT
 			<item>
 				<title><%= _x(item[TITLE]) %></title>
 				<dc:creator><%= _x(item[AUTHOR]) %></dc:creator>
-				<link><%= _x(item[URL]) %></link>
-				<guid><%= _x(item[URL]) %></guid>
+				<link><%= @ROOT_URL %><%= _x(item[URL]) %></link>
+				<guid><%= @ROOT_URL %><%= _x(item[URL]) %></guid>
 				<description><%= _x(item[CONTENT]) %></description>
 				<pubDate><%= _x(item[DATE]) %></pubDate>
 			</item>

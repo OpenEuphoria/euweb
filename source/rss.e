@@ -106,6 +106,7 @@ sequence rss_vars = {
 }
 
 function rss(map data, map request)
+	datetime rightnow = datetime:now()
 	object rows = {}
 
 	integer include_forum = map:get(request, "forum")
@@ -119,8 +120,6 @@ function rss(map data, map request)
 		include_ticket_comment = 1
 		include_news = 1
 	end if
-
-	map:put(data, "ROOT_URL", ROOT_URL)
 
 	if include_ticket then
 		rows &= latest_tickets()
@@ -148,8 +147,11 @@ function rss(map data, map request)
 		rows[i][DATE] = rss_date(rows[i][DATE])
 	end for
 
+	map:put(data, "ROOT_URL", ROOT_URL)
+	map:put(data, "pub_date", rss_date(rightnow))
 	map:put(data, "items", rows)
- 
+
+	wc:add_header("Content-Type", "application/rss+xml") 
 	return { TEXT, t_rss:template(data) }
 end function
 wc:add_handler(routine_id("rss"), -1, "rss", "index", rss_vars)

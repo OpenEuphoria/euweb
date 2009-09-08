@@ -2,29 +2,30 @@ include std/sequence.e
 include std/search.e
 include std/text.e
 
+include config.e
 include creole.e
 include html_gen.e
 
 sequence smilies = {
-	":-)",     "<img src=\"/images/ksk-smile.png\" />",
-	":-P",     "<img src=\"/images/ksk-tongue.png\" />",
-	":-D",     "<img src=\"/images/ksk-grin.png\" />",
-	":-O",     "<img src=\"/images/ksk-shocked.png\" />",
-	":lol:",   "<img src=\"/images/ksk-lol.png\" />",
-	":-/",     "<img src=\"/images/ksk-getlost.png\" />",
-	"^_^",     "<img src=\"/images/ksk-pleased.png\" />",
-	":-|",     "<img src=\"/images/ksk-none.png\" />",
-	":-(",     "<img src=\"/images/ksk-sad.png\" />",
-	";-)",     "<img src=\"/images/ksk-blink.png\" />",
-	">:[]",    "<img src=\"/images/ksk-angry.png\" />",
-	"B-D",     "<img src=\"/images/ksk-cool.png\" />",
-	":'(",     "<img src=\"/images/ksk-cry.png\" />",
-	">:)",     "<img src=\"/images/ksk-evil.png\" />",
-	":-*",     "<img src=\"/images/ksk-kiss.png\" />",
-	":oops:",  "<img src=\"/images/ksk-oops.png\" />",
-	":sick:",  "<img src=\"/images/ksk-unwell.png\" />",
-	":heart:", "<img src=\"/images/ksk-heart.png\" />",
-	":zzz:",   "<img src=\"/images/ksk-zzz.png\" />"
+	":-)",     "<img src=\"" & ROOT_URL & "/images/ksk-smile.png\" />",
+	":-P",     "<img src=\"" & ROOT_URL & "/images/ksk-tongue.png\" />",
+	":-D",     "<img src=\"" & ROOT_URL & "/images/ksk-grin.png\" />",
+	":-O",     "<img src=\"" & ROOT_URL & "/images/ksk-shocked.png\" />",
+	":lol:",   "<img src=\"" & ROOT_URL & "/images/ksk-lol.png\" />",
+	":-/",     "<img src=\"" & ROOT_URL & "/images/ksk-getlost.png\" />",
+	"^_^",     "<img src=\"" & ROOT_URL & "/images/ksk-pleased.png\" />",
+	":-|",     "<img src=\"" & ROOT_URL & "/images/ksk-none.png\" />",
+	":-(",     "<img src=\"" & ROOT_URL & "/images/ksk-sad.png\" />",
+	";-)",     "<img src=\"" & ROOT_URL & "/images/ksk-blink.png\" />",
+	">:[]",    "<img src=\"" & ROOT_URL & "/images/ksk-angry.png\" />",
+	"B-D",     "<img src=\"" & ROOT_URL & "/images/ksk-cool.png\" />",
+	":'(",     "<img src=\"" & ROOT_URL & "/images/ksk-cry.png\" />",
+	">:)",     "<img src=\"" & ROOT_URL & "/images/ksk-evil.png\" />",
+	":-*",     "<img src=\"" & ROOT_URL & "/images/ksk-kiss.png\" />",
+	":oops:",  "<img src=\"" & ROOT_URL & "/images/ksk-oops.png\" />",
+	":sick:",  "<img src=\"" & ROOT_URL & "/images/ksk-unwell.png\" />",
+	":heart:", "<img src=\"" & ROOT_URL & "/images/ksk-heart.png\" />",
+	":zzz:",   "<img src=\"" & ROOT_URL & "/images/ksk-zzz.png\" />"
 }
 
 sequence KnownWikis = { 
