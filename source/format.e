@@ -242,9 +242,11 @@ function markup_quotes(sequence text)
 	return text
 end function
 
-export function format_body(sequence body)
+export function format_body(sequence body, integer format_quotes=1)
 	body = creole_parse(body, routine_id("generate_html"), "0")
-	body = markup_quotes(body)
+	if format_quotes then
+		body = markup_quotes(body)
+	end if
 	body = find_replace("&amp;#", body, "&#")
 
 	for i = 1 to length(smilies) by 2 do

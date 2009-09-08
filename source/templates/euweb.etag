@@ -255,7 +255,7 @@ end if
 		<option value="-1"></option>
 	<% end if %>
     <% for i = 1 to length(rows) do 
-      object this_id = sprint(rows[i][1])
+      object this_id = rows[i][1]
       object this_text = rows[i][2]
     %>
   <option value="<%= _h(this_id) %>"

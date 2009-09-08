@@ -8,10 +8,11 @@ CREATE TABLE ticket_severity (
 	position integer not null
 );
 CREATE INDEX name_idx ON ticket_severity(name);
-INSERT INTO ticket_severity (name, position) VALUES ('Textual Change', 1);
-INSERT INTO ticket_severity (name, position) VALUES ('Minor Inconvience', 2);
-INSERT INTO ticket_severity (name, position) VALUES ('Workaround Exists', 3);
-INSERT INTO ticket_severity (name, position) VALUES ('Blocks Progress', 4);
+INSERT INTO ticket_severity (name, position) VALUES ('Feature Request', 1);
+INSERT INTO ticket_severity (name, position) VALUES ('Textual Change', 2);
+INSERT INTO ticket_severity (name, position) VALUES ('Minor Inconvience', 3);
+INSERT INTO ticket_severity (name, position) VALUES ('Workaround Exists', 4);
+INSERT INTO ticket_severity (name, position) VALUES ('Blocks Progress', 5);
 
 CREATE TABLE ticket_category (
 	id integer not null primary key auto_increment,
@@ -81,8 +82,8 @@ CREATE TABLE ticket (
 	status_id integer not null references ticket_status(id),
 	state_id integer not null references ticket_state(id),
 	reported_release_id integer not null references releases(id),
-	body text not null,
 	subject varchar(120) not null,
+	content text not null,
 	resolved_at datetime,
 	svn_rev varchar(60)
 );

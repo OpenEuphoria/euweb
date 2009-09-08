@@ -56,33 +56,37 @@
 
     <h4><span>Create</span> the Ticket</h4>
 
+	<%- euweb:errors %>
+
 	<form method="POST" action="/ticket/do_create.wc">
 		<input type="hidden" name="id" value="<%= _h(@id) %>" />
-		
+
 		<table class="form">		
 			<tr>
 				<th>Severity:</th>
 				<td>
-					<%- euweb:select include_empty=1 name="severity_id" option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
+					<%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
 				</td>
 				<th>Category:</th>
 				<td>
-					<%- euweb:select include_empty=1 name="category_id" option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
+					<%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
 				</td>
 				<th>Your Release:</th>
 				<td>
-					<%- euweb:select include_empty=1 name="reported_release_id" option_sql="SELECT id,name FROM releases ORDER BY position" %>
+					<%- euweb:select include_empty=1 name="reported_release_id" selected=@reported_release_id 	option_sql="SELECT id,name FROM releases ORDER BY position" %>
 				</td>
 			</tr>
 
 			<tr>
 				<th>Subject:</th>
-				<td colspan="5"><input type="text" name="subject" size="75" style="width: 100%" /></td>
+				<td colspan="5"><input type="text" name="subject" value="<%= _h(@subject) %>" size="75" style="width: 100%" /></td>
 			</tr>
 
 			<tr>
-				<th>Body:</th>
-				<td colspan="5"><textarea name="body" rows="15" cols="70" style="width: 100%"></textarea></td>
+				<th>Content:</th>
+				<td colspan="5">
+					<textarea name="content" rows="15" cols="70" style="width: 100%"
+						><%= _h(@content) %></textarea></td>
 			</tr>
 			
 			<tr>

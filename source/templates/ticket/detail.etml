@@ -1,0 +1,147 @@
+<%@ 
+  include std/math.e
+  
+  include webclay/escape.e
+  include templates/euweb.etag as euweb
+  include comment_db.e
+  include ticket_db.e
+%>
+
+<%- euweb:head title="Ticket Detail" active="ticket" %>
+<%
+object ticket = @ticket
+integer is_dev = has_role("developer")
+integer is_user = sequence(current_user)
+%>
+
+<h3><span>Ticket</span> <%= ticket[ticket_db:SUBJECT] %></h3>
+
+<%- euweb:errors %>
+
+<form method="POST" action="/ticket/update.wc">
+	<input type="hidden" name="id" value="<%= _h(ticket[ticket_db:ID]) %>" />
+
+	<h4>
+	<span>Reported</span> by
+	<%- euweb:user_profile user=!ticket[ticket_db:SUBMITTED_BY] %>
+	</h4>
+
+	<%= ticket[ticket_db:CONTENT] %>
+
+	<h4><span>Details</span></h4>
+
+	<table class="form" style="width: 100%">
+		<tr>
+			<th nowrap="nowrap">Severity:</th>
+			<td nowrap="nowrap">
+				<% if is_dev then %>
+					<%- euweb:select name="severity_id" selected=!ticket[ticket_db:SEVERITY_ID] option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:SEVERITY]) %>
+				<% end if %>
+			</td>
+			<th nowrap="nowrap">Category:</th>
+			<td colspan="3" nowrap="nowrap">
+				<% if is_dev then %>
+					<%- euweb:select name="category_id" selected=!ticket[ticket_db:CATEGORY_ID] option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:CATEGORY]) %>
+				<% end if %>
+			</td>
+			<th nowrap="nowrap">Reported Release:</th>
+			<td nowrap="nowrap">
+				<% if is_dev then %>
+					<%- euweb:select name="reported_release_id" selected=!ticket[ticket_db:REPORTED_RELEASE_ID] option_sql="SELECT id,name FROM releases ORDER BY position" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
+				<% end if %>
+			</td>
+		</tr>
+
+		<tr>
+			<th>Assigned To:</th>
+			<td>
+				<% if is_dev then %>
+					<%- euweb:select name="assigned_to_id" include_empty=1 selected=!ticket[ticket_db:ASSIGNED_TO_ID] option_sql="SELECT u.id,u.user FROM users AS u, user_roles AS ur WHERE u.id=ur.user_id AND ur.role_name='developer' ORDER BY user" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
+				<% end if %>
+			</td>
+			<th>Status:</th>
+			<td>
+				<% if is_dev then %>
+					<%- euweb:select name="status_id" selected=!ticket[ticket_db:STATUS_ID] option_sql="SELECT id,name FROM ticket_status ORDER BY position" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:STATUS]) %>
+				<% end if %>
+			</td>
+			<th>State:</th>
+			<td>
+				<% if is_dev then %>
+					<%- euweb:select name="state_id" selected=!ticket[ticket_db:STATE_ID] option_sql="SELECT id,name FROM ticket_state ORDER BY position" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
+				<% end if %>
+			</td>
+			<th>Fixed in SVN:</th>
+			<td>
+				<% if is_dev then %>
+					<input type="text" name="svn_rev" value="<%= _h(ticket[ticket_db:SVN_REV]) %>" size="15" />
+				<% else %>
+					<%= ticket[ticket_db:SVN_REV] %>
+				<% end if %>
+			</td>
+		</tr>
+
+		<% if is_user then %>
+			<tr>
+				<th nowrap="nowrap">New Comment:</th>
+				<td colspan="7">
+					<textarea name="comment" rows="8" cols="60" style="width: 100%"></textarea>
+				</td>
+			</tr>
+		<% end if %>
+
+		<% if is_dev or is_user then %>
+			<tr>
+				<th>&nbsp;</th>
+				<td colspan="7">
+					<% if is_dev then %>
+						<input type="submit" value="Update Ticket" />
+					<% elsif is_user then %>
+						<input type="submit" value="Add Comment" />
+					<% end if %>
+				</td>
+			</tr>
+		<% end if %>
+	</table>
+</form>
+
+<h4><span>Comments</span></h4>
+
+<% 
+object comments = @comments
+
+for i = 1 to length(comments) do
+	sequence comment = comments[i] 
+%>
+	<h4>
+		<span>Comment by</span> <%= comment[comment_db:USER] %> 
+		<%= _h(comment[comment_db:CREATED_AT]) %>
+	</h4>
+
+	<%= comment[comment_db:BODY] %>
+<% end for %>
+
+<%
+sequence quick_links = {
+    { "/ticket/index.wc", "Open Tickets" },
+	{ "/ticket/closed.wc", "Closed Tickets" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>

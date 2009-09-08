@@ -1,0 +1,42 @@
+<%@ 
+  include webclay/escape.e
+  include templates/euweb.etag as euweb
+%>
+
+<%- euweb:head title="Ticket Update" active="ticket" %>
+
+<% if @error_code then %>
+
+    <h4><span>Error</span> Message</h4>
+    <p>
+        I am sorry, but an error occurred while processing your request.
+    </p>
+    <p>
+        <%= _h(@error_message) %>
+    </p>
+
+<% else %>
+
+    <h3><span>Ticket</span> Update</h3>
+    
+    <p>
+        Ticket update was OK
+    </p>
+
+<% end if %>
+    
+<%
+sequence quick_links = {}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
+    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
+end if
+
+quick_links &= { { "/ticket/index.wc", "Open Tickets" }, 
+    { "/ticket/closed.wc", "Closed Tickets" }
+}
+
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
