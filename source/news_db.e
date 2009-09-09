@@ -16,6 +16,8 @@ include db.e
 
 include templates/news/index.etml as t_index
 
+public constant MODULE_ID=2
+
 --**
 -- Get the number of news items
 -- 
@@ -41,13 +43,12 @@ end function
 -- 
 
 sequence fields = "n.id,n.submitted_by_id,n.approved,n.approved_by_id,n.publish_at,n.subject,n.content,u.user"
+sequence base_sql = `SELECT ` & fields & ` FROM news as n
+	INNER JOIN users as u on n.submitted_by_id = u.id
+	WHERE publish_at < NOW()`
 
 public function get_article_list(integer page, integer per_page)
-	sequence sql = `SELECT ` & fields & ` FROM news as n
-		INNER JOIN users as u on n.submitted_by_id = u.id
-		WHERE publish_at < NOW()
-		ORDER BY publish_at DESC
-		LIMIT %d OFFSET %d`
+	sequence sql = base_sql & "ORDER BY publish_at DESC LIMIT %d OFFSET %d"
 
 	object data = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
 	if atom(data) then
@@ -62,7 +63,7 @@ end function
 --
 
 public function get(integer id)
-	return edbi:query_row("SELECT * FROM news WHERE id=%d", { id })
+	return edbi:query_row(base_sql & " AND n.id=%d", { id })
 end function
 
 --**

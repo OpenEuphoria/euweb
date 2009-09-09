@@ -14,7 +14,9 @@ include templates/security.etml as t_security
 include templates/news/index.etml as t_index
 include templates/news/edit.etml as t_edit
 include templates/news/edit_ok.etml as t_edit_ok
+include templates/news/view.etml as t_view
 
+include comment_db.e
 include news_db.e
 include format.e
 include fuzzydate.e
@@ -105,3 +107,33 @@ function save(map data, map request)
 end function
 wc:add_handler(routine_id("save"), routine_id("validate_save"), "news", "save", save_in)
 
+sequence view_vars = { 
+	{ wc:INTEGER, "id", -1 },
+	{ wc:SEQUENCE, "body", "" },
+	{ wc:INTEGER, "remove_comment", -1 }
+}
+
+function view(map data, map request)
+	object item = news_db:get(map:get(request, "id"))
+	
+	if has_role("user") and length(map:get(request, "body")) then
+		comment_db:add_comment(news_db:MODULE_ID, item[news_db:ID], item[news_db:SUBJECT], 
+			map:get(request, "body"))
+	end if
+	
+	if has_role("forum_moderator") and map:get(request, "remove_comment") > 0 then
+		comment_db:remove_comment(map:get(request, "remove_comment"))
+	end if
+	
+	map:put(data, "item", item)
+	map:put(data, "id", item[news_db:ID])
+	map:put(data, "subject", item[news_db:SUBJECT])
+	map:put(data, "content", format_body(item[news_db:CONTENT], 0))
+	map:put(data, "publish_at", fuzzy_ago(item[news_db:PUBLISH_AT]))
+	map:put(data, "author_name", item[news_db:AUTHOR_NAME])
+
+	map:put(data, "comments", comment_db:get_all(news_db:MODULE_ID, map:get(request, "id")))
+	
+	return { TEXT, t_view:template(data) }
+end function
+wc:add_handler(routine_id("view"), -1, "news", "view", view_vars)

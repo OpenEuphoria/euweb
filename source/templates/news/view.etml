@@ -1,0 +1,57 @@
+<%@ 
+include templates/euweb.etag as euweb 
+include std/text.e
+
+include comment_db.e
+include news_db.e
+%>
+
+<%
+sequence quick_links = {
+	{ "/news/index.wc", "News Home" }
+}
+
+if has_role("news_admin") then
+	quick_links = append(quick_links, { "/news/post.wc", "Post News" })
+end if
+
+%>
+
+<%- euweb:head title="News View" active="home" %>
+
+<%- euweb:errors %>
+
+<h3><%= _h(@subject) %></h3>
+<p>posted by <%- euweb:user_profile user=@author_name %> <%= _h(@publish_at) %>.</p>
+
+<%= @content %>
+
+<h4><span>Comments</span></h4>
+
+<%
+sequence comments = @comments
+for i = 1 to length(comments) do
+	sequence comment = comments[i]
+	%>
+
+	<h5>
+		<%= _h(comment[comment_db:CREATED_AT]) %> <%- euweb:user_profile user=!comment[comment_db:USER] %> said:</strong>
+		<% if has_role("forum_moderator") then %>
+			&#187; <a href="/news/<%= _h(@id) %>.wc?remove_comment=<%= _h(comment[comment_db:ID]) %>">remove</a>
+		<% end if %>
+	</h5>
+
+	<%= comment[comment_db:BODY] %>
+	
+<% end for %>
+
+<% if has_role("user") then %>
+	<h4><span>Leave</span> Comment</h4>
+	<form method="post" action="/news/<%= _h(@id) %>.wc">
+		<textarea name="body" rows="5" cols="80" style="width:100%"></textarea>
+		<br />
+		<input type="submit" value="Leave Comment" />
+	</form>
+<% end if %>
+
+<%- euweb:foot quick_links=!quick_links %>

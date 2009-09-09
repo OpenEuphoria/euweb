@@ -37,3 +37,10 @@ public function add_comment(integer module_id, integer id, sequence subject, seq
 		VALUES (%d, %d, %d, NOW(), %s, %s)""", { module_id, id, current_user[user_db:USER_ID], 
 		subject, comment })
 end function
+
+--**
+-- Remove a comment
+
+public function remove_comment(integer id)
+	return edbi:execute("DELETE FROM comment WHERE id=%d", { id })
+end function
