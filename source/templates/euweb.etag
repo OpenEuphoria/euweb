@@ -57,6 +57,11 @@
 				  		>Downloads</a>
 				</li>
 				<li>
+					<a href="/recent.wc" 
+				  		<% if equal(#active, "recent") then %>class="active"<% end if %>
+				  		>Recent</a>
+				</li>
+				<li>
 					<a href="/ticket/index.wc"
                   		<% if equal(#active, "ticket") then %>class="active"<% end if %>
                   		>Tickets</a>

@@ -130,6 +130,7 @@ for i = 1 to length(comments) do
 	sequence comment = comments[i] 
 %>
 	<h4>
+		<a name="<%= _h(comment[comment_db:ID]) %>"></a>
 		<span>Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %> 
 		<%= _h(comment[comment_db:CREATED_AT]) %>
 	</h4>
