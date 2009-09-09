@@ -18,6 +18,7 @@ include edbi/edbi.e
 include config.e
 include format.e
 include ticket_db.e
+include news_db.e
 
 include templates/rss.etml as t_rss
 
@@ -81,6 +82,25 @@ function latest_news(integer count)
 
 	return rows
 end function
+
+function latest_news_comments(integer count)
+	object rows = edbi:query_rows("""SELECT c.id, c.created_at, u.user, n.subject, c.body,
+		n.id FROM comment AS c, news AS n, users AS u WHERE c.user_id=u.id AND c.module_id=%d
+		AND c.item_id=n.id ORDER BY c.created_at DESC LIMIT %d""", 
+		{ news_db:MODULE_ID, count })
+	
+	for i = 1 to length(rows) do
+		rows[i] = {
+			rows[i][2],
+			rows[i][3],
+			sprintf("/news/%d.wc#%d", { rows[i][6], rows[i][1] }),
+			"News comment: " & rows[i][4],
+			format_body(rows[i][5], 0)
+		}
+	end for
+
+	return rows
+end function
 	
 function latest_forum_posts(integer count)
 	object rows = edbi:query_rows("""SELECT m.topic_id, m.id, m.created_at, m.author_name, 
@@ -102,7 +122,6 @@ end function
 sequence rss_vars = {
 	{ wc:INTEGER, "forum", 0 },
 	{ wc:INTEGER, "ticket", 0 },
-	{ wc:INTEGER, "ticket_comment", 0 },
 	{ wc:INTEGER, "news", 0 },
 	{ wc:INTEGER, "count", 20 }
 }
@@ -114,7 +133,6 @@ function rss(map data, map request)
 	integer count = map:get(request, "count")
 	integer include_forum = map:get(request, "forum")
 	integer include_ticket = map:get(request, "ticket")
-	integer include_ticket_comment = map:get(request, "ticket_comment")
 	integer include_news = map:get(request, "news")
 	
 	-- Don't allow more than 50 no matter what the user says
@@ -122,23 +140,20 @@ function rss(map data, map request)
 		count = 50
 	end if
 	
-	if (include_forum + include_ticket + include_ticket_comment + include_news) = 0 then
+	if (include_forum + include_ticket + include_news) = 0 then
 		include_forum = 1
 		include_ticket = 1
-		include_ticket_comment = 1
 		include_news = 1
 	end if
 
 	if include_ticket then
 		rows &= latest_tickets(count)
-	end if
-
-	if include_ticket_comment then
  		rows &= latest_ticket_comments(count)
 	end if
 	
 	if include_news then
 		rows &= latest_news(count)
+		rows &= latest_news_comments(count)
 	end if
 
 	if include_forum then

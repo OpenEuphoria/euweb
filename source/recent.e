@@ -40,6 +40,14 @@ function recent(map data, map request)
 			SELECT 'ticket comment', t.id, c.created_at, u.user, t.subject, '', c.id FROM
 				comment AS c, ticket AS t, users AS u WHERE c.module_id=1 AND
 				c.item_id=t.id AND u.id=c.user_id
+		UNION ALL
+			SELECT 'news', n.id, n.publish_at, u.user, n.subject, '', 0 
+				FROM news AS n, users AS u
+				WHERE n.submitted_by_id=u.id
+		UNION ALL
+			SELECT 'news comment', n.id, c.created_at, u.user, n.subject, '', c.id FROM
+				comment AS c, news AS n, users AS u WHERE c.module_id=2 AND
+				c.item_id=n.id AND u.id=c.user_id
 		ORDER BY created_at DESC LIMIT %d OFFSET %d
 		"""
 
@@ -52,11 +60,14 @@ function recent(map data, map request)
 	total_count += edbi:query_object("SELECT COUNT(id) FROM news")
 
 	object items = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
+
 	for i = 1 to length(items) do
 		items[i][AGE] = fuzzy_ago(items[i][AGE])
 		switch items[i][TYPE] do
 			case "ticket comment" then
 				items[i][URL] = sprintf("/ticket/%d.wc#%d", { items[i][2], items[i][7] })
+			case "news comment" then
+				items[i][URL] = sprintf("/news/%d.wc#%d", { items[i][2], items[i][7] })
 			case else
 				items[i][URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
 		end switch

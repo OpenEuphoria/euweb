@@ -40,6 +40,7 @@ for i = 1 to length(comments) do
 			&#187; <a href="/news/<%= _h(@id) %>.wc?remove_comment=<%= _h(comment[comment_db:ID]) %>">remove</a>
 		<% end if %>
 	</h5>
+	<a name="<%= _h(comment[comment_db:ID]) %>"></a>
 
 	<%= comment[comment_db:BODY] %>
 	
