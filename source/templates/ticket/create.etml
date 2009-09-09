@@ -76,8 +76,8 @@
 				</td>
 				<th>Your Release:</th>
 				<td>
-					<!-- euweb:select include_empty=1 name="reported_release_id" selected=@reported_release_id 	option_sql="SELECT id,name FROM releases ORDER BY position" -->
-					<input type="text" name="reported_release" value="<%= _h(@reported_release) %>" size="15" />
+					<input type="text" id="reported_release" name="reported_release" value="<%= _h(@reported_release) %>" size="15"  autocomplete="off" />
+					<%- euweb:autocomplete name="reported_release" sql="SELECT name FROM releases ORDER BY position" %>
 				</td>
 			</tr>
 

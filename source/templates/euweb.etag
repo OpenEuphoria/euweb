@@ -264,3 +264,23 @@ end if
     ><%= _h(this_text) %></option>
   <% end for %>
 </select>
+
+{{{autocomplete}}}
+<%
+  object rows = edbi:query_rows(#sql)
+  if not sequence(rows) then
+      rows = {}
+  end if
+%>
+<div id="<%= #name %>_div" style="display:none;border:1px solid black;background-color:white;height:80px;width:120px;overflow:auto;"></div>
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+  new Autocompleter.Local('<%= #name %>','<%= #name %>_div',
+  new Array(
+  <% for i = 1 to length(rows) do %>
+	<% if i > 1 then %>,<% end if %>
+  	"<%= rows[i][1] %>"
+  <% end for %>
+  ), { tokens: new Array(',','\n'), fullSearch: true, partialSearch: true });
+// ]]>
+</script>
