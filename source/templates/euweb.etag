@@ -90,20 +90,17 @@
 
 				<h4><span>Search</span></h4>
 				
-				<form method="get" action="http://google.com/cse">
+				<form method="get" action="/search/results.wc">
 					<div id="search">
-
-						<input type="hidden" name="cx" value="004923656550405328555:5fzsgj0iwy0" />
-						<input type="hidden" name="ie" value="UTF-8" />
-						<input type="text" name="q" />
-						<input type="submit" name="sa" class="button" value="Go" />
+						<input type="text" name="s" value="<%= @search_term %>"/>
+						<input type="submit" class="button" value="Go" />
 						<br class="clear" />
 					</div>
 				</form>
 					
 				<h4><span>Quick</span> Links</h4>
 				<ul class="links">
-				<% 
+				<%
 				object quick_links = #quick_links
  				if sequence(quick_links) and length(quick_links) > 0 then
 					for quickLinkIdx = 1 to length(quick_links) do

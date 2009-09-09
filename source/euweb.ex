@@ -22,6 +22,7 @@ include download.e
 include forum.e
 include news.e
 include rss.e
+include search.e
 include security.e
 include ticket.e
 include user.e

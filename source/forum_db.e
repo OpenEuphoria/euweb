@@ -95,7 +95,7 @@ public function get_topic_messages(integer topic_id)
 	object msg = get(topic_id)
 	if sequence(msg) then
 		messages = edbi:query_rows("SELECT " & message_select_fields &
-			" FROM messages WHERE topic_id=%s ORDER BY id", { msg[MSG_TOPIC_ID] })
+			" FROM messages WHERE topic_id=%d ORDER BY id", { msg[MSG_TOPIC_ID] })
 	end if
 
 	return messages

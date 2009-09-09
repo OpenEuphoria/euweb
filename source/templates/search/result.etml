@@ -1,0 +1,49 @@
+<%@ include templates/euweb.etag as euweb %>
+<%@ include search.e %>
+<%@ include std/net/url.e %>
+
+<%- euweb:head title="Search" active="home" %>
+
+<table class="list forum">
+    <tr>
+        <th width="1%">Score</th>
+        <th width="2%">Type</th>
+        <th width="75%">Subject</th>
+        <th width="2%">Age</th>
+    </tr>
+
+<%
+sequence items = @items
+
+for i = 1 to length(items) do
+    sequence item = items[i]
+%>
+	<tr>
+		<td><%= _h(item[S_SCORE]) %></td>
+		<td><%= item[S_TYPE] %></td>
+		<td>
+			<a href="/<%= item[S_TYPE] %>/<%= _h(item[S_ID]) %>.wc#<%= _h(item[S_ID]) %>"
+				><%= _h(item[S_SUBJECT]) %></a>
+		</td>
+		<td nowrap="nowrap"><%= _h(item[S_DATE]) %></td>
+	</tr>
+<% 
+end for 
+%>
+</table>
+
+<p>
+	<% if @page > 1 then %>
+		&#171;
+		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page - 1) %>&amp;per_page=<%= _h(@per_page) %>">previous page</a>
+		&#187;
+	<% end if %>
+	
+	<% if length(items) = @per_page then %>
+		&#171;
+		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page + 1) %>&amp;per_page=<%= _h(@per_page) %>">next page</a>
+		&#187; 
+	<% end if %>
+</p>
+
+<%- euweb:foot %>
