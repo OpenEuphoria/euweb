@@ -1,31 +1,32 @@
 include std/sequence.e
 include std/search.e
 include std/text.e
+include std/regex.e
 
 include config.e
 include creole.e
 include html_gen.e
 
 sequence smilies = {
-	":-)",     "<img src=\"" & ROOT_URL & "/images/ksk-smile.png\" />",
-	":-P",     "<img src=\"" & ROOT_URL & "/images/ksk-tongue.png\" />",
-	":-D",     "<img src=\"" & ROOT_URL & "/images/ksk-grin.png\" />",
-	":-O",     "<img src=\"" & ROOT_URL & "/images/ksk-shocked.png\" />",
-	":lol:",   "<img src=\"" & ROOT_URL & "/images/ksk-lol.png\" />",
-	":-/",     "<img src=\"" & ROOT_URL & "/images/ksk-getlost.png\" />",
-	"^_^",     "<img src=\"" & ROOT_URL & "/images/ksk-pleased.png\" />",
-	":-|",     "<img src=\"" & ROOT_URL & "/images/ksk-none.png\" />",
-	":-(",     "<img src=\"" & ROOT_URL & "/images/ksk-sad.png\" />",
-	";-)",     "<img src=\"" & ROOT_URL & "/images/ksk-blink.png\" />",
-	">:[]",    "<img src=\"" & ROOT_URL & "/images/ksk-angry.png\" />",
-	"B-D",     "<img src=\"" & ROOT_URL & "/images/ksk-cool.png\" />",
-	":'(",     "<img src=\"" & ROOT_URL & "/images/ksk-cry.png\" />",
-	">:)",     "<img src=\"" & ROOT_URL & "/images/ksk-evil.png\" />",
-	":-*",     "<img src=\"" & ROOT_URL & "/images/ksk-kiss.png\" />",
-	":oops:",  "<img src=\"" & ROOT_URL & "/images/ksk-oops.png\" />",
-	":sick:",  "<img src=\"" & ROOT_URL & "/images/ksk-unwell.png\" />",
-	":heart:", "<img src=\"" & ROOT_URL & "/images/ksk-heart.png\" />",
-	":zzz:",   "<img src=\"" & ROOT_URL & "/images/ksk-zzz.png\" />"
+	":-)",     "<img src=\"" & ROOT_URL & "/images/ksk-smile.png\" alt=\"smile\" />",
+	":-P",     "<img src=\"" & ROOT_URL & "/images/ksk-tongue.png\" alt=\"tongue\" />",
+	":-D",     "<img src=\"" & ROOT_URL & "/images/ksk-grin.png\" alt=\"grin\" />",
+	":-O",     "<img src=\"" & ROOT_URL & "/images/ksk-shocked.png\" alt=\"shocked\" />",
+	":lol:",   "<img src=\"" & ROOT_URL & "/images/ksk-lol.png\" alt=\"lol\" />",
+	":-/",     "<img src=\"" & ROOT_URL & "/images/ksk-getlost.png\" alt=\"getlost\" />",
+	"^_^",     "<img src=\"" & ROOT_URL & "/images/ksk-pleased.png\" alt=\"pleased\" />",
+	":-|",     "<img src=\"" & ROOT_URL & "/images/ksk-none.png\" alt=\"none\" />",
+	":-(",     "<img src=\"" & ROOT_URL & "/images/ksk-sad.png\" alt=\"sad\" />",
+	";-)",     "<img src=\"" & ROOT_URL & "/images/ksk-blink.png\" alt=\"blink\" />",
+	">:[]",    "<img src=\"" & ROOT_URL & "/images/ksk-angry.png\" alt=\"angry\" />",
+	"B-D",     "<img src=\"" & ROOT_URL & "/images/ksk-cool.png\" alt=\"cool\" />",
+	":'(",     "<img src=\"" & ROOT_URL & "/images/ksk-cry.png\" alt=\"cry\" />",
+	">:)",     "<img src=\"" & ROOT_URL & "/images/ksk-evil.png\" alt=\"evil\" />",
+	":-*",     "<img src=\"" & ROOT_URL & "/images/ksk-kiss.png\" alt=\"kiss\" />",
+	":oops:",  "<img src=\"" & ROOT_URL & "/images/ksk-oops.png\" alt=\"oops\" />",
+	":sick:",  "<img src=\"" & ROOT_URL & "/images/ksk-unwell.png\" alt=\"unwell\" />",
+	":heart:", "<img src=\"" & ROOT_URL & "/images/ksk-heart.png\" alt=\"heart\" />",
+	":zzz:",   "<img src=\"" & ROOT_URL & "/images/ksk-zzz.png\" alt=\"zzz\" />"
 }
 
 sequence KnownWikis = { 
@@ -143,8 +144,16 @@ function markup_quotes(sequence text)
 		if pos = 0 then
 			exit
 		end if
-		
+
 		epos = pos + 6
+		
+		-- Look back to see if we have <p>
+		if pos > 3 then
+			if equal(text[pos-3..pos], "<p>") then
+				pos -= 3
+			end if
+		end if
+
 		inname = 0
 		nameend = 0
 		-- scan for the close of this quote-open tag
@@ -244,15 +253,53 @@ function markup_quotes(sequence text)
 	return text
 end function
 
+constant
+	re_quote_begin = regex:new(`(<p>)?\[quote ([A-Za-z0-9_]+)]`),
+	re_quote_end = regex:new(`\[/quote\][ \t]*(</p>)?`)
+
+function find_count(sequence needle, sequence haystack)
+	integer count = 0, pos = 1
+	
+	while pos with entry do
+		count += 1
+		pos += length(needle)
+	entry
+		pos = match(needle, haystack, pos)
+	end while
+
+	return count
+end function
+
+function markup_quotes_two(sequence body)
+	integer quote_begins = find_count("[quote", body)
+	integer quote_ends = find_count("[/quote]", body)
+
+	body = regex:find_replace(re_quote_begin, body, `<div class="quote">
+<p><strong>\2 said:</strong>`)
+	body = regex:find_replace(re_quote_end, body, `</p>
+</div>`)
+
+	for i = quote_begins to quote_ends do
+		body = "<div>" & body
+	end for
+	
+	for i = quote_ends to quote_begins do
+		body &= "</div>"
+	end for
+
+	return body
+end function
+
 export function format_body(sequence body, integer format_quotes=1)
 	body = creole_parse(body, routine_id("generate_html"), "0")
+	body = search:find_replace("&amp;#", body, "&#")
 	if format_quotes then
-		body = markup_quotes(body)
+		--body = markup_quotes(body)
+		body = markup_quotes_two(body)
 	end if
-	body = find_replace("&amp;#", body, "&#")
 
 	for i = 1 to length(smilies) by 2 do
-		body = find_replace(smilies[i], body, smilies[i+1])
+		body = search:find_replace(smilies[i], body, smilies[i+1])
 	end for
 
 	return body
