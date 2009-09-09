@@ -156,12 +156,30 @@ public procedure update(sequence message)
 end procedure
 
 public procedure remove_post(integer id)
+	object topic_id = edbi:query_object("SELECT topic_id FROM messages WHERE id=%d", { id })
+
 	if edbi:execute("DELETE FROM messages WHERE id=%d", { id }) then
 		crash("Couldn't remove forum post: %s", { edbi:error_message() })
 	end if
 	if edbi:execute("DELETE FROM messages WHERE topic_id=%d", { id }) then
 		crash("Couldn't remove children from forum post: %s", { edbi:error_message() })
 	end if
+	
+	object message_count = edbi:query_object("SELECT COUNT(*) FROM messages WHERE topic_id=%d",
+		{ topic_id })
+	object last_post_id = edbi:query_object("""SELECT id FROM messages 
+		WHERE topic_id=%d ORDER BY created_at DESC LIMIT 1""", { topic_id })
+	object last_post = get(last_post_id)
+
+	log:log("Count=%d", { message_count })
+	log:log("Id=%d", { last_post_id })
+	log:log("Topic_id=%d", { topic_id })
+	
+	edbi:execute("""UPDATE messages SET last_post_id=%d, last_post_by=%s, last_post_by_id=%d, 
+		last_post_at=%T, replies=%d WHERE id=%d""", { 
+			last_post[MSG_ID], last_post[MSG_AUTHOR_NAME], last_post[MSG_POST_BY_ID],
+ 			last_post[MSG_CREATED_AT], message_count, topic_id
+		})
 end procedure
 
 public procedure update_forked_body(integer fork_id, integer orig_id, sequence subject)

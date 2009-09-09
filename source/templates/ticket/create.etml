@@ -29,8 +29,8 @@
 			Your subject should be a short explanation of the problem, not "It doesn't work."
 		</li>
 		<li>
-			When writing the body of your bug report, if using a SVN version of Euphoria,
-			please include the full output of <code>eui -version</code>.
+			Be sure to enter the version of Euphoria you are using. It's best to include the
+			version output of <tt>eui -version</tt>. For example, <tt>4.0.0 (r2714)</tt>.
 		</li>
 		<li>
 			Please include a detailed description of the error.
@@ -50,6 +50,9 @@
 		</li>
 		<li>
 			If a documentation problem, please include a section number.
+		</li>
+		<li>
+			The <strong>content</strong> field can accept Creole formatting such as &lt;eucode&gt;
 		</li>
 	</ul>
 	</p>
@@ -73,7 +76,8 @@
 				</td>
 				<th>Your Release:</th>
 				<td>
-					<%- euweb:select include_empty=1 name="reported_release_id" selected=@reported_release_id 	option_sql="SELECT id,name FROM releases ORDER BY position" %>
+					<!-- euweb:select include_empty=1 name="reported_release_id" selected=@reported_release_id 	option_sql="SELECT id,name FROM releases ORDER BY position" -->
+					<input type="text" name="reported_release" value="<%= _h(@reported_release) %>" size="15" />
 				</td>
 			</tr>
 

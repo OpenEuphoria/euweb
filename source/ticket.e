@@ -69,9 +69,9 @@ end function
 wc:add_handler(routine_id("closed"), -1, "ticket", "closed", index_vars)
 
 sequence create_vars = {
-	{ wc:INTEGER, "severity_id" },
-	{ wc:INTEGER, "category_id" },
-	{ wc:INTEGER, "reported_release_id" },
+	{ wc:INTEGER,  "severity_id" },
+	{ wc:INTEGER,  "category_id" },
+	{ wc:SEQUENCE, "reported_release" },
 	{ wc:SEQUENCE, "content" },
 	{ wc:SEQUENCE, "subject" }
 }
@@ -103,10 +103,6 @@ function validate_do_create(map data, map request)
 		errors = wc:add_error(errors, "category_id", "You must select a category.")
 	end if
 
-	if map:get(request, "reported_release_id") = -1 then
-		errors = wc:add_error(errors, "reported_release_id", "You must select your release.")
-	end if
-
 	if length(map:get(request, "subject")) = 0 then
 		errors = wc:add_error(errors, "subject", "Subject cannot be empty.")
 	end if
@@ -122,7 +118,7 @@ function do_create(map data, map request)
 	ticket_db:create(
 		map:get(request, "severity_id"),
 		map:get(request, "category_id"),
-		map:get(request, "reported_release_id"),
+		map:get(request, "reported_release"),
 		map:get(request, "subject"),
 		map:get(request, "content"))
 
@@ -160,7 +156,7 @@ sequence update_vars = {
 	{ wc:INTEGER, "id" },
 	{ wc:INTEGER, "severity_id" },
 	{ wc:INTEGER, "category_id" },
-	{ wc:INTEGER, "reported_release_id" },
+	{ wc:SEQUENCE, "reported_release" },
 	{ wc:INTEGER, "assigned_to_id" },
 	{ wc:INTEGER, "status_id" },
 	{ wc:INTEGER, "state_id" },
@@ -191,7 +187,7 @@ function update(map data, map request)
 			map:get(request, "id"),
 			map:get(request, "severity_id"),
 			map:get(request, "category_id"),
-			map:get(request, "reported_release_id"),
+			map:get(request, "reported_release"),
 			map:get(request, "assigned_to_id"),
 			map:get(request, "status_id"),
 			map:get(request, "state_id"),

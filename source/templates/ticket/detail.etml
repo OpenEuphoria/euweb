@@ -51,7 +51,7 @@ integer is_user = sequence(current_user)
 			<th nowrap="nowrap">Reported Release:</th>
 			<td nowrap="nowrap">
 				<% if is_dev then %>
-					<%- euweb:select name="reported_release_id" selected=!ticket[ticket_db:REPORTED_RELEASE_ID] option_sql="SELECT id,name FROM releases ORDER BY position" %>
+					<input type="text" name="reported_release" value="<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>" size="15" />
 				<% else %>
 					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
 				<% end if %>
@@ -83,7 +83,7 @@ integer is_user = sequence(current_user)
 					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
 				<% end if %>
 			</td>
-			<th>Fixed in SVN:</th>
+			<th>Fixed in SVN #:</th>
 			<td>
 				<% if is_dev then %>
 					<input type="text" name="svn_rev" value="<%= _h(ticket[ticket_db:SVN_REV]) %>" size="15" />
