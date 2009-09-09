@@ -35,7 +35,7 @@ function result(map:map data, map:map request)
 		UNION ALL 
 			SELECT 'ticket', id, created_at, subject, MATCH(subject,content) AGAINST(%s IN BOOLEAN MODE) AS score 
 				FROM ticket WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE) 
-		ORDER BY score DESC LIMIT %d OFFSET %d""", {
+		ORDER BY score, created_at DESC LIMIT %d OFFSET %d""", {
  			search_term, search_term, search_term, search_term, search_term, search_term,
 			per_page, (page_no-1) * per_page })
 	

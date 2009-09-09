@@ -32,7 +32,10 @@ sequence index_vars = {
 }
 
 function real_index(map data, map request, sequence where="")
-	object tickets = ticket_db:get_list(0, 10, where)
+	integer page = map:get(request, "page")
+	integer per_page = map:get(request, "per_page")
+
+	object tickets = ticket_db:get_list((page - 1) * per_page, per_page, where)
 
 	if edbi:error_code() then
 		map:put(data, "error_code", edbi:error_code())
@@ -43,8 +46,8 @@ function real_index(map data, map request, sequence where="")
 		end for
 
 		map:put(data, "error_code", 0)
-		map:put(data, "page", map:get(request, "page"))
-		map:put(data, "per_page", map:get(request, "per_page"))
+		map:put(data, "page", page)
+		map:put(data, "per_page", per_page)
 		map:put(data, "tickets", tickets)
 		map:put(data, "ticket_count", ticket_db:count())
 	end if
