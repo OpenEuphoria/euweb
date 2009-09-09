@@ -171,15 +171,13 @@ public procedure remove_post(integer id)
 		WHERE topic_id=%d ORDER BY created_at DESC LIMIT 1""", { topic_id })
 	object last_post = get(last_post_id)
 
-	log:log("Count=%d", { message_count })
-	log:log("Id=%d", { last_post_id })
-	log:log("Topic_id=%d", { topic_id })
-	
-	edbi:execute("""UPDATE messages SET last_post_id=%d, last_post_by=%s, last_post_by_id=%d, 
-		last_post_at=%T, replies=%d WHERE id=%d""", { 
-			last_post[MSG_ID], last_post[MSG_AUTHOR_NAME], last_post[MSG_POST_BY_ID],
- 			last_post[MSG_CREATED_AT], message_count, topic_id
-		})
+	if message_count then
+		edbi:execute("""UPDATE messages SET last_post_id=%d, last_post_by=%s, last_post_by_id=%d, 
+			last_post_at=%T, replies=%d WHERE id=%d""", { 
+				last_post[MSG_ID], last_post[MSG_AUTHOR_NAME], last_post[MSG_POST_BY_ID],
+	 			last_post[MSG_CREATED_AT], message_count, topic_id
+			})
+	end if
 end procedure
 
 public procedure update_forked_body(integer fork_id, integer orig_id, sequence subject)
