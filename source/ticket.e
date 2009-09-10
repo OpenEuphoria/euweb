@@ -231,6 +231,10 @@ sequence auto_update_vars = {
 }
 
 function auto_update(map data, map request)
+	if not equal(server_var("REMOTE_ADDR"), "205.251.255.105") then
+		return { TEXT, "not authorized" }
+	end if
+
 	integer id = map:get(request, "id")
 	sequence rev = map:get(request, "rev")
 
