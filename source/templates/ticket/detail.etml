@@ -115,7 +115,8 @@ integer is_user = sequence(current_user)
 			<tr>
 				<th nowrap="nowrap">New Comment:</th>
 				<td colspan="7">
-					<textarea name="comment" rows="8" cols="60" style="width: 100%"></textarea>
+					<textarea id="comment" name="comment" rows="8" cols="60" style="width: 100%"></textarea>
+					<%- euweb:creole_previewer name="comment" %>
 				</td>
 			</tr>
 		<% end if %>
@@ -129,6 +130,7 @@ integer is_user = sequence(current_user)
 					<% elsif is_user then %>
 						<input type="submit" value="Add Comment" />
 					<% end if %>
+					<input type="button" value="Preview Comment" onclick="preview_comment();"/>
 				</td>
 			</tr>
 		<% end if %>

@@ -303,3 +303,14 @@ end if
   ), { tokens: new Array(',','\n'), fullSearch: true, partialSearch: true });
 // ]]>
 </script>
+
+{{{creole_previewer}}}
+<div id="<%= #name %>_preview" style="padding: 5px;"></div>
+<script type="text/javascript">
+function preview_<%= #name %>() {
+	new Ajax.Updater('<%= #name %>_preview', '/ajax/creole_preview.wc', { 
+		method: 'get',
+		parameters: { content: $F('<%= #name %>') }
+	})
+}
+</script>

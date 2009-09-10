@@ -62,9 +62,11 @@ for i = 1 to length(comments) do
 <% if has_role("user") then %>
 	<h4><span>Leave</span> Comment</h4>
 	<form method="post" action="/news/<%= _h(@id) %>.wc">
-		<textarea name="body" rows="5" cols="80" style="width:100%"></textarea>
+		<textarea id="body" name="body" rows="5" cols="80" style="width:100%"></textarea>
+		<%- euweb:creole_previewer name="body" %>
 		<br />
 		<input type="submit" value="Leave Comment" />
+		<input type="button" value="Preview Comment" onclick="preview_body();" />
 	</form>
 <% end if %>
 
