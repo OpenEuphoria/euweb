@@ -14,7 +14,7 @@ integer is_dev = has_role("developer")
 integer is_user = sequence(current_user)
 %>
 
-<h3><span>Ticket</span> <%= ticket[ticket_db:SUBJECT] %></h3>
+<h3><span>Ticket #<%= _h(ticket[ticket_db:ID]) %></span>: <%= ticket[ticket_db:SUBJECT] %></h3>
 
 <%- euweb:errors %>
 
