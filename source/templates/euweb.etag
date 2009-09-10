@@ -107,7 +107,7 @@
 						>
 						<h5 style="margin-bottom:0px;padding-bottom:0px;">Include:</h5>
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="news" value="1" <% if @s_news then %>checked="checked"<% end if %> /> News<br />
-						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="ticket" value="1" <% if @s_ticket then %>checked="checked"<% end if %> /> Ticket<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="ticket" value="1" <% if @s_ticket then %>checked="checked"<% end if %> /> Tickets<br />
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="forum" value="1" <% if @s_forum then %>checked="checked"<% end if %> /> Forum<br />
 					</div>
 				</form>
