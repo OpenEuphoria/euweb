@@ -20,7 +20,7 @@
 
 <% else %>
 
-    <h3><span>Ticket</span> System</h3>
+    <h3><span><a href="http://openeuphoria.org/wiki/euwiki.cgi?WhatAreTickets">Ticket</a></span> System</h3>
 
     <p>
         Old bugs are being run out on our old bug tracking system:
@@ -90,6 +90,8 @@ end if
 quick_links &= { { "/ticket/index.wc", "Open Tickets" }, 
     { "/ticket/closed.wc", "Closed Tickets" }
 }
+
+quick_links &= { { "/wiki/euwiki.cgi?WhatAreTickets", "About Tickets" } }
 
 %>
 
