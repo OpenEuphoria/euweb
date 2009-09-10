@@ -224,3 +224,37 @@ function update(map data, map request)
 	return { TEXT, t_update_ok:template(data) }
 end function
 wc:add_handler(routine_id("update"), routine_id("validate_update"), "ticket", "update", update_vars)
+
+sequence auto_update_vars = {
+	{ wc:INTEGER, "id", -1 },
+	{ wc:SEQUENCE, "rev" }
+}
+
+function auto_update(map data, map request)
+	integer id = map:get(request, "id")
+	sequence rev = map:get(request, "rev")
+
+	if id = -1 then 
+		return { TEXT, "bad-id" }
+	end if
+
+	if length(rev) then
+		object ticket_rev = edbi:query_object("SELECT svn_rev FROM ticket WHERE id=%d", { id })
+		if atom(ticket_rev) then
+			return { TEXT, "ticket-not-found" }
+		end if
+		
+		if not match(rev, ticket_rev) then
+			if length(ticket_rev) then
+				ticket_rev &= ", " & rev
+			else
+				ticket_rev = rev
+			end if
+			
+			edbi:execute("UPDATE ticket SET svn_rev=%s WHERE id=%d", { ticket_rev, id })
+		end if
+	end if
+
+	return { TEXT, "ok" }
+end function
+wc:add_handler(routine_id("auto_update"), -1, "ticket", "auto", auto_update_vars)

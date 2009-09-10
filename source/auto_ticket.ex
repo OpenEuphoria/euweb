@@ -1,0 +1,45 @@
+--
+-- Update tickets for items found in the SVN repo
+-- 
+
+include std/error.e
+include std/io.e
+include std/filesys.e
+include std/text.e
+include std/regex.e
+include std/net/http.e
+
+if not file_exists("auto_ticket.svn") then
+	crash("auto_ticket.svn does not exist, please create it with the starting svn revision number")
+end if
+
+sequence last_svn = trim(read_file("auto_ticket.svn"))
+sequence cmd = sprintf("svn log -r%s:HEAD http://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria > auto_ticket.log", { last_svn })
+--system(cmd)
+
+constant 
+	re_rev = regex:new(`r([0-9]+) \| ([A-Za-z0-9_]+) \|`), -- rev number | username |
+	re_ticket = regex:new(`ticket:([0-9]+)`) -- ticket:123
+
+/*
+------------------------------------------------------------------------
+r2772 | jeremy_c | 2009-09-10 11:29:57 -0400 (Thu, 10 Sep 2009) | 2 lines
+
+* Updated the doc template for the new ticket and recent tabs.
+* Fixes ticket:24
+*/
+
+sequence tmp, current_rev = "", current_user = ""
+sequence svn_log = read_lines("auto_ticket.log")
+for i = 1 to length(svn_log) do
+	if regex:has_match(re_rev, svn_log[i]) then
+		tmp = regex:matches(re_rev, svn_log[i])
+		current_rev = tmp[2]
+		current_user = tmp[3]
+	elsif regex:has_match(re_ticket, svn_log[i]) then
+		tmp = regex:all_matches(re_ticket, svn_log[i])
+		for j = 1 to length(tmp) do
+			printf(1, "%s/%s ticket %s\n", { current_rev, current_user, tmp[j][2] })
+		end for
+	end if
+end for
