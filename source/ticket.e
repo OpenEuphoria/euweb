@@ -72,11 +72,11 @@ end function
 wc:add_handler(routine_id("closed"), -1, "ticket", "closed", index_vars)
 
 sequence create_vars = {
-	{ wc:INTEGER,  "severity_id" },
-	{ wc:INTEGER,  "category_id" },
-	{ wc:SEQUENCE, "reported_release" },
-	{ wc:SEQUENCE, "content" },
-	{ wc:SEQUENCE, "subject" }
+	{ wc:INTEGER,  "severity_id", -1 },
+	{ wc:INTEGER,  "category_id", -1 },
+	{ wc:SEQUENCE, "reported_release", "" },
+	{ wc:SEQUENCE, "content", "" },
+	{ wc:SEQUENCE, "subject", "" }
 }
 
 function create(map data, map request)
