@@ -48,11 +48,11 @@
             <tr class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
                 <td rowspan="2" width="1%" align="center"><%= _h(ticket[ticket_db:ID]) %></td>
                 <td colspan="8" width="99%">
-                    <a href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"
+                    <a style="font-size:1.1em; font-weight:bold;" href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"
                         ><%= _h(ticket[ticket_db:SUBJECT]) %></a>
                 </td>
             </tr>
-            <tr class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
+            <tr style="font-style: italic;" class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
                 <td nowrap="nowrap"><%= _h(ticket[ticket_db:CATEGORY]) %></td>
                 <td nowrap="nowrap"><%= _h(ticket[ticket_db:SEVERITY]) %></td>
                 <td nowrap="nowrap"><%= _h(ticket[ticket_db:STATE]) %></td>
