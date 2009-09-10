@@ -191,6 +191,10 @@
         src="http://www.w3.org/Icons/valid-xhtml10" style="vertical-align: middle;"
         alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
 	-->
+	<% if has_role("admin") then %>
+		<br />
+		Total execution time: <%= _h(time() - time_start) %>
+	<% end if %>
 </div>
 
 </body>
