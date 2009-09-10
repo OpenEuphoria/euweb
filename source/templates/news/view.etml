@@ -21,13 +21,26 @@ end if
 
 <%- euweb:errors %>
 
-<h3><%= _h(@subject) %></h3>
-<p>posted by <%- euweb:user_profile user=@author_name %> <%= _h(@publish_at) %>.</p>
+<div class="post">
+	<h3><%= _h(@subject) %></h3>
+	<ul class="post_info">
+		<li class="date">Posted by <%- euweb:user_profile user=@author_name %> 
+		<%= _h(@publish_at) %></li>
+		<li class="comments"><a href="/news/<%= _h(@id) %>.wc#comments"><%= _h(@comment_count) %> comments</a></li>
+		<% if has_role("news_admin") then %>
+			<li>
+				<a href="/news/edit.wc?id=<%= _h(@id) %>">Edit</a>,
+				<a href="/news/remove.wc?id=<%= _h(@id) %>">Remove</a>
+			</li>
+		<% end if %>
+	</ul>					
+	<!--<p>posted by <%- euweb:user_profile user=@author_name %> <%= _h(@publish_at) %>.</p>-->
 
-<%= @content %>
+	<%= @content %>
+</div>
 
 <h4><span>Comments</span></h4>
-
+<a name="comments"></a>
 <%
 sequence comments = @comments
 for i = 1 to length(comments) do

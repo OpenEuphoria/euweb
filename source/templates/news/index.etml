@@ -28,6 +28,7 @@ for i = 1 to length(articles) do
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!article[AUTHOR_NAME] %> 
 			<%= article[PUBLISH_AT] %></li>
+			<li class="comments"><a href="/news/<%= _h(article[ID]) %>.wc#comments"><%= _h(article[$]) %> comments</a></li>
 			<% if has_role("news_admin") then %>
 				<li>
 					<a href="/news/edit.wc?id=<%= _h(article[ID]) %>">Edit</a>,

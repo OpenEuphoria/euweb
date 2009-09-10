@@ -35,6 +35,8 @@ function index(map data, map invars)
 	for i = 1 to length(arts) do
 		arts[i][news_db:CONTENT] = format_body(arts[i][news_db:CONTENT])
 		arts[i][news_db:PUBLISH_AT] = fuzzy_ago(arts[i][news_db:PUBLISH_AT])
+		arts[i] &= edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d AND item_id=%d", 
+			{ news_db:MODULE_ID, arts[i][news_db:ID] })
 	end for
 
 	map:put(data, "articles", arts)
@@ -131,7 +133,9 @@ function view(map data, map request)
 	map:put(data, "content", format_body(item[news_db:CONTENT], 0))
 	map:put(data, "publish_at", fuzzy_ago(item[news_db:PUBLISH_AT]))
 	map:put(data, "author_name", item[news_db:AUTHOR_NAME])
-
+	map:put(data, "comment_count", 
+		edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d AND item_id=%d", 
+			{ news_db:MODULE_ID, item[news_db:ID] }))
 	map:put(data, "comments", comment_db:get_all(news_db:MODULE_ID, map:get(request, "id")))
 	
 	return { TEXT, t_view:template(data) }
