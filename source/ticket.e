@@ -147,6 +147,7 @@ function detail(map data, map request)
 	object ticket = ticket_db:get(map:get(request, "id"))
 	
 	ticket[ticket_db:CONTENT] = format_body(ticket[ticket_db:CONTENT], 0)
+	ticket[ticket_db:CREATED_AT] = fuzzy_ago(ticket[ticket_db:CREATED_AT])
 
 	map:put(data, "ticket", ticket)	
 	map:put(data, "comments", comment_db:get_all(ticket_db:MODULE_ID, map:get(request, "id")))

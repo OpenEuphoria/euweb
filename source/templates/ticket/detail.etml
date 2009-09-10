@@ -1,5 +1,6 @@
 <%@ 
   include std/math.e
+  include std/sequence.e
   
   include webclay/escape.e
   include templates/euweb.etag as euweb
@@ -24,6 +25,7 @@ integer is_user = sequence(current_user)
 	<h4>
 	<span>Reported</span> by
 	<%- euweb:user_profile user=!ticket[ticket_db:SUBMITTED_BY] %>
+	<%= _h(ticket[ticket_db:CREATED_AT]) %>
 	</h4>
 
 	<%= ticket[ticket_db:CONTENT] %>
@@ -41,7 +43,7 @@ integer is_user = sequence(current_user)
 				<% end if %>
 			</td>
 			<th nowrap="nowrap">Category:</th>
-			<td colspan="3" nowrap="nowrap">
+			<td nowrap="nowrap">
 				<% if is_dev then %>
 					<%- euweb:select name="category_id" selected=!ticket[ticket_db:CATEGORY_ID] option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
 				<% else %>
@@ -67,14 +69,6 @@ integer is_user = sequence(current_user)
 					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
 				<% end if %>
 			</td>
-			<th>Status:</th>
-			<td>
-				<% if is_dev then %>
-					<%- euweb:select name="status_id" selected=!ticket[ticket_db:STATUS_ID] option_sql="SELECT id,name FROM ticket_status ORDER BY position" %>
-				<% else %>
-					<%= _h(ticket[ticket_db:STATUS]) %>
-				<% end if %>
-			</td>
 			<th>State:</th>
 			<td>
 				<% if is_dev then %>
@@ -83,16 +77,36 @@ integer is_user = sequence(current_user)
 					<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
 				<% end if %>
 			</td>
+			<th>Status:</th>
+			<td>
+				<% if is_dev then %>
+					<%- euweb:select name="status_id" selected=!ticket[ticket_db:STATUS_ID] option_sql="SELECT id,name FROM ticket_status ORDER BY position" %>
+				<% else %>
+					<%= _h(ticket[ticket_db:STATUS]) %>
+				<% end if %>
+			</td>
+		</tr>
+		<tr>
 			<th>Fixed in SVN #:</th>
 			<td>
 				<% if is_dev then %>
-					<input type="text" name="svn_rev" value="<%= _h(ticket[ticket_db:SVN_REV]) %>" size="15" />
+					<input type="text" name="svn_rev" value="<%= _h(ticket[ticket_db:SVN_REV]) %>" size="15" style="width:100%;"/>
 				<% else %>
 					<%= ticket[ticket_db:SVN_REV] %>
 				<% end if %>
-				<% if length(ticket[ticket_db:SVN_REV]) then %>
-					<a href="http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&revision=<%= _h(ticket[ticket_db:SVN_REV]) %>"
-						>view</a>
+			</td>
+			<th>View VCS:</th>
+			<td colspan="2">
+				<% if length(ticket[ticket_db:SVN_REV]) then
+ 					sequence revs = split_any(ticket[ticket_db:SVN_REV], ", ")
+					for i = 1 to length(revs) do
+						if length(revs[i]) = 0 then continue end if
+					%>
+						<a href="http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&revision=<%= _h(revs[i]) %>"
+							><%= _h(revs[i]) %></a><% if i < length(revs) then %>,<% end if %>
+					<% end for %>
+				<% else %>
+					none
 				<% end if %>
 			</td>
 		</tr>
