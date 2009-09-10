@@ -1,6 +1,7 @@
 without warning
 
 include std/get.e
+include std/map.e
 
 -- WebClay includes
 include webclay/webclay.e as wc
@@ -43,6 +44,11 @@ procedure app(object data, object vars)
             end if
         end if
     end if
+    
+    map:put(data, "s_news", 1)
+    map:put(data, "s_ticket", 1)
+    map:put(data, "s_forum", 1)
+    map:put(data, "is_search", 0)
 end procedure
 
 -- Open our database

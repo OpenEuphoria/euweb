@@ -96,10 +96,19 @@
 				<h4><span>Search</span></h4>
 				
 				<form method="get" action="/search/results.wc">
-					<div id="search">
-						<input type="text" name="s" value="<%= @search_term %>"/>
+					<div>
+						<input type="text" name="s" value="<%= @search_term %>" style="width:100%"/><br />
 						<input type="submit" class="button" value="Go" />
+						<input type="button" class="button" value="Opts" onclick="Effect.BlindDown('search_options');"/>
 						<br class="clear" />
+					</div>
+					<div id="search_options"
+						style="<% if not @is_search then %>display: none;<% end if %>"
+						>
+						<h5 style="margin-bottom:0px;padding-bottom:0px;">Include:</h5>
+						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="news" value="1" <% if @s_news then %>checked="checked"<% end if %> /> News<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="ticket" value="1" <% if @s_ticket then %>checked="checked"<% end if %> /> Ticket<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="forum" value="1" <% if @s_forum then %>checked="checked"<% end if %> /> Forum<br />
 					</div>
 				</form>
 					
