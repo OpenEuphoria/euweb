@@ -22,15 +22,14 @@
 
 	<h3>Ticket <span>Submission</span> Tips</h3>
 	<p>
-		When submitting a bug request, the best way to ensure it's fixed promptly is to
+		When submitting a bug report, the best way to ensure it's fixed promptly is to
 		follow these few tips:
 	<ul>
 		<li>
 			Your subject should be a short explanation of the problem, not "It doesn't work."
 		</li>
 		<li>
-			Be sure to enter the version of Euphoria you are using. It's best to include the
-			version output of <tt>eui -version</tt>. For example, <tt>4.0.0 (r2714)</tt>.
+			Include the full output of <tt><a href="http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria/trunk/bin/bugreport.ex">euphoria/bin/bugreport.ex</a></tt>
 		</li>
 		<li>
 			Please include a detailed description of the error.
