@@ -37,7 +37,7 @@ sequence index_vars = {
 	{ wc:INTEGER, "status_id", -1 }
 }
 
-function real_index(map data, map request, sequence where="")
+function real_index(map data, map request, sequence where="", integer append_to_where=1)
 	integer page = map:get(request, "page")
 	integer per_page = map:get(request, "per_page")
 	integer category_id = map:get(request, "category_id")
@@ -63,10 +63,14 @@ function real_index(map data, map request, sequence where="")
 	
 	if length(local_where) then
 		local_where = join(local_where, " AND ")
-		if length(where) then
-			where &= " AND "
+		if append_to_where then
+			if length(where) then
+				where &= " AND "
+			end if
+			where &= local_where
+		else
+			where = local_where
 		end if
-		where &= local_where
 	end if
 	
 	object tickets = ticket_db:get_list((page - 1) * per_page, per_page, where)
@@ -94,7 +98,7 @@ end function
 wc:add_handler(routine_id("mine"), -1, "ticket", "mine", index_vars)
 
 function opened(map data, map request)
-	return real_index(data, request, "tstate.closed=0")
+	return real_index(data, request, "tstate.closed=0", 0)
 end function
 wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
 
