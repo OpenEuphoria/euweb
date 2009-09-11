@@ -3446,7 +3446,7 @@ global function creole_parse(object pRawText, object pFinalForm_Generator = -1, 
 
 			case Get_CurrentHeading then
 					-- This returns the heading immediately prior to 'element'
-					-- supplied in the 'pFinalForm_Generator' parameter.
+					-- supplied in the 'pContext' parameter.
 					--     [1] = Depth (level)
 					--     [2] = Text (including numbering if applicable)
 					--     [3] = The bookmark name.
@@ -3809,7 +3809,14 @@ global function creole_parse(object pRawText, object pFinalForm_Generator = -1, 
 				lPluginResult = Generate_Final(InternalLink,{"unresolved", vUnresolved[i][2]})
 				printf(1, "Unresolved link='%s' display='%s' context='%s'\n", vUnresolved[i][1..3])
 			else
-				lPluginResult = Generate_Final(QualifiedLink, {vBookMarks[lIdx][5],
+
+				sequence lFileName
+				if length(vBookMarks[lIdx][5]) != 0 then
+					lFileName = filebase(vBookMarks[lIdx][5])
+				else
+					lFileName = filebase(vBookMarks[lIdx][4])
+				end if
+				lPluginResult = Generate_Final(QualifiedLink, {lFileName,
 													vBookMarks[lIdx][3], vUnresolved[i][2]})
 			end if
 
@@ -3826,17 +3833,23 @@ global function creole_parse(object pRawText, object pFinalForm_Generator = -1, 
 		end if
 		lPluginResult = repeat(0, length(vPluginList))
 		integer lPluginLength = 0
+
 		for i = 1 to length(vPluginList) do
 			if vVerbose then
 				printf(1, "Generating plugin #%5d of %5d\n", {i,length(vPluginList)})
 			end if
 			lPluginResult[i] = Generate_Final(Plugin, vPluginList[i])
+			if length(lPluginResult[i]) < 2 then
+				lPluginResult[i] &= repeat(' ', 2 - length(lPluginResult[i]))
+			end if
 			lPluginLength += length(lPluginResult[i])
 		end for
 		
 		integer lEndPos = length(lText)
+
 		lFrom = 1
 		lText &= repeat(' ', lPluginLength - (2 * length(vPluginList)))
+
 		for i = 1 to length(vPluginList) do
 			lPos = match_from({TAG_PLUGIN, i}, lText, lFrom)
 			if vVerbose then
