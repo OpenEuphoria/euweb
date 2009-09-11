@@ -1,0 +1,77 @@
+<%@ 
+include std/math.e
+include templates/euweb.etag as euweb
+include forum_db.e
+%>
+
+<%
+sequence page_title = "Forum: " & @subject
+integer is_forum_admin = has_role("forum_moderator")
+integer is_owner = 0	
+if sequence(current_user) then
+	is_owner = equal(current_user[USER_ID], @post_by_id)
+end if
+%>
+
+<%- euweb:head title=!page_title active="forum" %>
+
+<%- euweb:errors %>
+
+<div class="post forum">
+    <h3><%= _h(@subject) %></h3>
+	<a name="<%= @id %>"></a>
+	<ul class="post_info">
+		<li class="date">Posted by <%- euweb:user_profile user=@author_name show_public_roles=1 %> 
+		<%= @created_at %></li>
+		<li class="comments">
+			<%= _h(@views) %> views
+		</li>
+	</ul>					
+		
+	<%= @body_formatted %>
+
+	<div class="post_tools">
+		<% if has_role("user") then %>
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>">reply</a>,
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&quote=1">reply with quote</a>,
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&quote=1&fork=1">fork</a>
+			<% if is_owner or is_forum_admin then %>
+				&nbsp;&nbsp;&nbsp;&#187;
+				<a href="/forum/edit.wc?id=<%= _h(@id) %>">edit</a>
+			<% end if %>
+			<% if is_forum_admin then %>
+				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+				<a href="/forum/remove.wc?id=<%= _h(@id) %>">remove</a>
+			<% end if %>
+			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+			<a href="/forum/post.wc">new topic</a>
+		<% end if %>
+		<% if not equal(@parent_id, 0) then %>
+			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+			<a href="/forum/m/<%= _h(@parent_id) %>.wc">goto parent</a>
+		 <% end if %>
+		 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
+		 <a href="/forum.wc">topic index</a>
+		 
+		 <% if @prev_id then %>
+		 	<a href="/forum/m/<%= _h(@prev_id) %>.wc">previous message</a>
+		 <% end if %>
+		 
+		 <% if @next_id then %>
+		 	<a href="/forum/m/<%= _h(@next_id) %>.wc">previous message</a>
+		 <% end if %>
+	</div>
+</div>
+
+<%
+sequence quick_links = {
+    { "/forum/index.wc", "Forum Home" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
+

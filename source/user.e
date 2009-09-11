@@ -36,6 +36,7 @@ include db.e
 include format.e
 include fuzzydate.e
 include user_db.e
+include dump.e
 
 procedure _login(sequence u)
 	datetime rightnow = dt:now(), expire
@@ -111,12 +112,16 @@ wc:add_handler(routine_id("login_form"), -1, "user", "login")
 wc:add_handler(routine_id("login_form"), -1, "login", "index")
 
 sequence login_invars = {
-	{ wc:SEQUENCE, "code", "" },
-	{ wc:SEQUENCE, "password", "" }
+	{ wc:SEQUENCE, "code" },
+	{ wc:SEQUENCE, "password" }
 }
 
 public function validate_do_login(integer data, map vars)
 	sequence errors = wc:new_errors("user", "login")
+
+	if atom(map:get(vars, "code")) then
+		dump_map("user_login", vars)
+	end if
 	
 	sequence code = map:get(vars, "code")
 	
@@ -172,7 +177,7 @@ public function do_login(map data, map invars)
 		end if
 	end if
 end function
-wc:add_handler(routine_id("do_login"), routine_id("validate_do_login"), "user", "do_login")
+wc:add_handler(routine_id("do_login"), routine_id("validate_do_login"), "user", "do_login", login_invars)
 
 public function signup(map data, map invars)
 	map:copy(invars, data)

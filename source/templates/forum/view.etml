@@ -61,7 +61,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 				<a href="/forum/post.wc">new topic</a>
 			<% end if %>
-			<% if not equal(message[MSG_PARENT_ID], "0") then %>
+			<% if not equal(message[MSG_PARENT_ID], 0) then %>
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 				<a href="#<%= _h(message[MSG_PARENT_ID]) %>"
 					onclick="Effect.ScrollTo('<%= _h(message[MSG_PARENT_ID]) %>', { duration: 0.25 }  ); 

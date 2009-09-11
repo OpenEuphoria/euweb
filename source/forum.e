@@ -25,6 +25,7 @@ include templates/forum/remove_post.etml as t_remove
 include templates/forum/remove_post_ok.etml as t_remove_ok
 include templates/forum/edit.etml as t_edit
 include templates/forum/edit_ok.etml as t_edit_ok
+include templates/forum/view_message.etml as t_view_message
 
 -- Local includes
 include config.e
@@ -33,18 +34,18 @@ include format.e
 include forum_db.e
 include fuzzydate.e
 
-sequence index_invars = {
+sequence index_vars = {
 	{ wc:INTEGER, "page",   	1 },
 	{ wc:INTEGER, "per_page",  20 }
 }
 
-function index(map data, map invars)
-	map:put(data, "page", map:get(invars, "page"))
-	map:put(data, "per_page", map:get(invars, "per_page"))
+function index(map data, map request)
+	map:put(data, "page", map:get(request, "page"))
+	map:put(data, "per_page", map:get(request, "per_page"))
 	map:put(data, "message_count", forum_db:message_count())
 	map:put(data, "thread_count", forum_db:thread_count())
 	
-	object threads = forum_db:get_thread_list(map:get(invars, "page"), map:get(invars, "per_page"))
+	object threads = forum_db:get_thread_list(map:get(request, "page"), map:get(request, "per_page"))
 	for i = 1 to length(threads) do
 		threads[i][THREAD_CREATED_AT] = fuzzy_ago(threads[i][THREAD_CREATED_AT])
 		if length(threads[i][THREAD_LAST_POST_AT]) then
@@ -56,14 +57,14 @@ function index(map data, map invars)
 
 	return { TEXT, t_index:template(data) }
 end function
-wc:add_handler(routine_id("index"), -1, "forum", "index", index_invars)
+wc:add_handler(routine_id("index"), -1, "forum", "index", index_vars)
 
-sequence basic_invars = {
+sequence basic_vars = {
 	{ wc:INTEGER, "id", -1 }
 }
 
-function view(map data, map invars)
-	integer topic_id = map:get(invars, "id")
+function view(map data, map request)
+	integer topic_id = map:get(request, "id")
 
 	object messages = forum_db:get_topic_messages(topic_id)
 	if atom(messages) then
@@ -87,33 +88,33 @@ function view(map data, map invars)
 	
 	return { TEXT, t_view:template(data) }
 end function
-wc:add_handler(routine_id("view"), -1, "forum", "view", basic_invars)
+wc:add_handler(routine_id("view"), -1, "forum", "view", basic_vars)
 
-sequence post_invars = {
+sequence post_vars = {
 	{ wc:INTEGER, "parent_id",  -1 },
 	{ wc:INTEGER, "quote",  	 0 },
 	{ wc:INTEGER, "fork",   	 0 }
 }
 
-function post(map data, map invars)
+function post(map data, map request)
 	if not has_role("user") then
 		return { TEXT, t_security:template(data) }
 	end if
     
     if map:get(data, "has_errors") then
         -- Copy all input data right over to the template data
-        map:copy(invars, data)
+        map:copy(request, data)
         
         -- We use a different source than name for the body, so we must
         -- set it manually.
-        map:put(data, "quote_body", map:get(invars, "body"))
+        map:put(data, "quote_body", map:get(request, "body"))
 
         return { TEXT, t_post:template(data) }
     end if
     
-	integer id = map:get(invars, "parent_id")
-	integer fork = map:get(invars, "fork")
-	integer quote = map:get(invars, "quote")
+	integer id = map:get(request, "parent_id")
+	integer fork = map:get(request, "fork")
+	integer quote = map:get(request, "quote")
 
 	map:put(data, "quote", quote)
 	map:put(data, "fork", fork)
@@ -124,8 +125,8 @@ function post(map data, map invars)
 
 	if sequence(map:get(data, "body_formatted")) then
 		
-		map:copy(invars, data)
-		map:put(data, "quote_body", find_replace("\r\n", map:get(invars, "body"), "\n"))
+		map:copy(request, data)
+		map:put(data, "quote_body", find_replace("\r\n", map:get(request, "body"), "\n"))
 
 	elsif id > 0 then
 		object msg = forum_db:get(id)
@@ -166,9 +167,9 @@ function post(map data, map invars)
 
 	return { TEXT, t_post:template(data) }
 end function
-wc:add_handler(routine_id("post"), -1, "forum", "post", post_invars)
+wc:add_handler(routine_id("post"), -1, "forum", "post", post_vars)
 
-sequence save_invars = {
+sequence save_vars = {
 	{ wc:INTEGER, "id", 	   -1 },
 	{ wc:INTEGER, "topic_id",  -1 },
 	{ wc:INTEGER, "parent_id", -1 },
@@ -236,10 +237,10 @@ function save(map:map data, map:map vars)
 
 	return { TEXT, t_post_ok:template(data) }
 end function
-wc:add_handler(routine_id("save"), routine_id("validate_save"), "forum", "save", save_invars)
+wc:add_handler(routine_id("save"), routine_id("validate_save"), "forum", "save", save_vars)
 
-function edit(map data, map invars)
-	object message = forum_db:get(map:get(invars, "id"))
+function edit(map data, map request)
+	object message = forum_db:get(map:get(request, "id"))
 
 	-- A forum admin can edit any message, no need for further checks
 	if not has_role("forum_moderator") then
@@ -258,8 +259,8 @@ function edit(map data, map invars)
 
 	if sequence(map:get(data, "body_formatted")) then
 		
-		map:copy(invars, data)
-		map:put(data, "body", find_replace("\r\n", map:get(invars, "body"), "\n"))
+		map:copy(request, data)
+		map:put(data, "body", find_replace("\r\n", map:get(request, "body"), "\n"))
 
 	else
 
@@ -273,9 +274,9 @@ function edit(map data, map invars)
 
 	return { TEXT, t_edit:template(data) }
 end function
-wc:add_handler(routine_id("edit"), -1, "forum", "edit", basic_invars)
+wc:add_handler(routine_id("edit"), -1, "forum", "edit", basic_vars)
 
-sequence update_invars = {
+sequence update_vars = {
 	{ wc:INTEGER, "id", 	   -1 },
 	{ wc:SEQUENCE, "subject"	  },
 	{ wc:SEQUENCE, "body"   	  }
@@ -310,8 +311,8 @@ function validate_update(integer data, map:map vars)
 	return errors
 end function
 
-function update(map data, map invars)
-	object message = forum_db:get(map:get(invars, "id"))
+function update(map data, map request)
+	object message = forum_db:get(map:get(request, "id"))
 	
 	-- A forum admin can edit any message, no need for further checks
 	if not has_role("forum_moderator") then
@@ -326,14 +327,14 @@ function update(map data, map invars)
 		end if
 	end if
 	
-	if equal(map:get(invars, "save"), "Preview") then
-		map:put(data, "body_formatted", format_body(map:get(invars, "body")))
-		return edit(data, invars)
+	if equal(map:get(request, "save"), "Preview") then
+		map:put(data, "body_formatted", format_body(map:get(request, "body")))
+		return edit(data, request)
 	end if
 	
-	message[MSG_SUBJECT] = map:get(invars, "subject")
+	message[MSG_SUBJECT] = map:get(request, "subject")
 	
-	message[MSG_BODY] = map:get(invars, "body")
+	message[MSG_BODY] = map:get(request, "body")
 
 	forum_db:update(message)
 	
@@ -343,18 +344,18 @@ function update(map data, map invars)
 
 	return { TEXT, t_edit_ok:template(data) }
 end function
-wc:add_handler(routine_id("update"), routine_id("validate_update"), "forum", "update", update_invars)
+wc:add_handler(routine_id("update"), routine_id("validate_update"), "forum", "update", update_vars)
 
-sequence remove_invars = {
+sequence remove_vars = {
 	{ wc:INTEGER, "id", -1 }
 }
 
-function remove_post(map data, map invars)
+function remove_post(map data, map request)
 	if not has_role("forum_moderator") then
 		return { TEXT, t_security:template(data) }
 	end if
 
-	object message = forum_db:get(map:get(invars, "id"))
+	object message = forum_db:get(map:get(request, "id"))
 	if atom(message) then
 		crash("Could not retrieve message from database: %s", { edbi:error_message() })
 	end if
@@ -365,15 +366,40 @@ function remove_post(map data, map invars)
 	
 	return { TEXT, t_remove:template(data) }
 end function
-wc:add_handler(routine_id("remove_post"), -1, "forum", "remove", remove_invars)
+wc:add_handler(routine_id("remove_post"), -1, "forum", "remove", remove_vars)
 
-function remove_post_confirmed(map data, map invars)
+function remove_post_confirmed(map data, map request)
 	if not has_role("forum_moderator") then
 		return { TEXT, t_security:template(data) }
 	end if
 
-	forum_db:remove_post(map:get(invars, "id"))
+	forum_db:remove_post(map:get(request, "id"))
 	
 	return { TEXT, t_remove_ok:template(data) }
 end function
-wc:add_handler(routine_id("remove_post_confirmed"), -1, "forum", "remove_confirmed", remove_invars)
+wc:add_handler(routine_id("remove_post_confirmed"), -1, "forum", "remove_confirmed", remove_vars)
+
+sequence message_vars = {
+	{ wc:INTEGER, "id" }
+}
+
+function message(map data, map request)
+	object m = forum_db:get(map:get(request, "id"))
+
+	map:put(data, "id", m[forum_db:MSG_ID])
+	map:put(data, "topic_id", m[forum_db:MSG_TOPIC_ID])
+	map:put(data, "parent_id", m[forum_db:MSG_PARENT_ID]) 
+	map:put(data, "created_at", fuzzy_ago(m[forum_db:MSG_CREATED_AT]))  
+	map:put(data, "subject", m[forum_db:MSG_SUBJECT]) 
+	map:put(data, "body", m[forum_db:MSG_BODY]) 
+	map:put(data, "ip", m[forum_db:MSG_IP])
+	map:put(data, "author_name", m[forum_db:MSG_AUTHOR_NAME])
+	map:put(data, "author_email", m[forum_db:MSG_AUTHOR_EMAIL]) 
+	map:put(data, "post_by_id", m[forum_db:MSG_POST_BY_ID]) 
+	map:put(data, "views", m[forum_db:MSG_VIEWS]) 
+	map:put(data, "replies", m[forum_db:MSG_REPLIES])
+	map:put(data, "body_formatted", format_body(m[forum_db:MSG_BODY]))
+
+	return { TEXT, t_view_message:template(data) }
+end function
+wc:add_handler(routine_id("message"), -1, "forum", "message", message_vars)
