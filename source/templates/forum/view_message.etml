@@ -55,14 +55,13 @@ end if
 		 
 		 &nbsp;&nbsp;&nbsp;&nbsp;
 		 
-		 <% if @next_id then %>
-		 	&#187; <a href="/forum/m/<%= _h(@next_id) %>.wc">newer message</a>
-		 <% end if %>
-
 		 <% if @prev_id then %>
 		 	&#187; <a href="/forum/m/<%= _h(@prev_id) %>.wc">older message</a>
 		 <% end if %>
-		 
+
+		 <% if @next_id then %>
+		 	&#187; <a href="/forum/m/<%= _h(@next_id) %>.wc">newer message</a>
+		 <% end if %>
 	</div>
 </div>
 
