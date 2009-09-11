@@ -399,6 +399,14 @@ function message(map data, map request)
 	map:put(data, "views", m[forum_db:MSG_VIEWS]) 
 	map:put(data, "replies", m[forum_db:MSG_REPLIES])
 	map:put(data, "body_formatted", format_body(m[forum_db:MSG_BODY]))
+	
+	object prev_id = edbi:query_object("SELECT id FROM messages WHERE id < %d ORDER BY id DESC LIMIT 1", 
+		{ m[forum_db:MSG_ID] })
+	object next_id = edbi:query_object("SELECT id FROM messages WHERE id > %d ORDER BY id LIMIT 1", 
+		{ m[forum_db:MSG_ID] })
+	
+	map:put(data, "prev_id", prev_id)
+	map:put(data, "next_id", next_id)
 
 	return { TEXT, t_view_message:template(data) }
 end function

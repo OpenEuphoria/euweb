@@ -53,13 +53,16 @@ end if
 		 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
 		 <a href="/forum.wc">topic index</a>
 		 
-		 <% if @prev_id then %>
-		 	<a href="/forum/m/<%= _h(@prev_id) %>.wc">previous message</a>
-		 <% end if %>
+		 &nbsp;&nbsp;&nbsp;&nbsp;
 		 
 		 <% if @next_id then %>
-		 	<a href="/forum/m/<%= _h(@next_id) %>.wc">previous message</a>
+		 	&#187; <a href="/forum/m/<%= _h(@next_id) %>.wc">newer message</a>
 		 <% end if %>
+
+		 <% if @prev_id then %>
+		 	&#187; <a href="/forum/m/<%= _h(@prev_id) %>.wc">older message</a>
+		 <% end if %>
+		 
 	</div>
 </div>
 
