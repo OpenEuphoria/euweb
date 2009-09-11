@@ -19,7 +19,7 @@ integer is_user = sequence(current_user)
 <form method="POST" action="/ticket/update.wc">
 	<input type="hidden" name="id" value="<%= _h(ticket[ticket_db:ID]) %>" />
 	<div class="post forum">
-	    <h3><span>Ticket #<%= _h(ticket[ticket_db:ID]) %></span>: <%= ticket[ticket_db:SUBJECT] %></h3>
+	    <h3><span>Ticket #<%= _h(ticket[ticket_db:ID]) %></span>: <%= _h(ticket[ticket_db:SUBJECT]) %></h3>
 		<%- euweb:errors %>
 		<ul class="post_info">
 			<li class="date">
