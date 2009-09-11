@@ -27,7 +27,7 @@ integer is_user = sequence(current_user)
 				<%= _h(ticket[ticket_db:CREATED_AT]) %>
 			</li>
 			<li class="comments">
-				<%= _h(length(@comments)) %> comments
+				<a href="#comments"><%= _h(length(@comments)) %> comments</a>
 			</li>
 		</ul>					
 
@@ -141,6 +141,7 @@ integer is_user = sequence(current_user)
 		</table>
 	</form>
 
+	<a name="comments"></a>
 	<h4><span>Comments</span></h4>
 
 	<% 
