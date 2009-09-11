@@ -88,13 +88,18 @@
 			<tr>
 				<th>Content:</th>
 				<td colspan="5">
-					<textarea name="content" rows="15" cols="70" style="width: 100%"
-						><%= _h(@content) %></textarea></td>
+					<textarea id="content" name="content" rows="15" cols="70" style="width: 100%"
+						><%= _h(@content) %></textarea>
+					<%- euweb:creole_previewer name="content" %>
+				</td>
 			</tr>
 			
 			<tr>
 				<th>&nbsp;</th>
-				<td><input type="submit" value="Create Ticket" /></td>
+				<td>
+					<input type="submit" value="Create Ticket" />
+					<input type="button" value="Preview Content" onclick="preview_content();"/>
+				</td>
 			</tr>
 		</table>
 	</form>
