@@ -5,6 +5,7 @@ include std/error.e
 include std/get.e
 include std/map.e
 include std/search.e
+include std/sequence.e
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
@@ -29,13 +30,45 @@ include format.e
 
 sequence index_vars = {
 	{ wc:INTEGER, "page",       1 },
-	{ wc:INTEGER, "per_page",  20 }
+	{ wc:INTEGER, "per_page",  20 },
+	{ wc:INTEGER, "category_id", -1 },
+	{ wc:INTEGER, "severity_id", -1 },
+	{ wc:INTEGER, "state_id", -1 },
+	{ wc:INTEGER, "status_id", -1 }
 }
 
 function real_index(map data, map request, sequence where="")
 	integer page = map:get(request, "page")
 	integer per_page = map:get(request, "per_page")
+	integer category_id = map:get(request, "category_id")
+	integer severity_id = map:get(request, "severity_id")
+	integer state_id = map:get(request, "state_id")
+	integer status_id = map:get(request, "status_id")
 
+	map:copy(request, data)
+
+	sequence local_where = {}
+	if category_id > -1 then
+		local_where = append(local_where, sprintf("tcat.id=%d", { category_id }))
+	end if
+	if severity_id > -1 then
+		local_where = append(local_where, sprintf("tsev.id=%d", { severity_id }))
+	end if
+	if state_id > -1 then
+		local_where = append(local_where, sprintf("tstate.id=%d", { state_id }))
+	end if
+	if status_id > -1 then
+		local_where = append(local_where, sprintf("tstat.id=%d", { status_id }))
+	end if
+	
+	if length(local_where) then
+		local_where = join(local_where, " AND ")
+		if length(where) then
+			where &= " AND "
+		end if
+		where &= local_where
+	end if
+	
 	object tickets = ticket_db:get_list((page - 1) * per_page, per_page, where)
 
 	if edbi:error_code() then
@@ -47,8 +80,6 @@ function real_index(map data, map request, sequence where="")
 		end for
 
 		map:put(data, "error_code", 0)
-		map:put(data, "page", page)
-		map:put(data, "per_page", per_page)
 		map:put(data, "tickets", tickets)
 		map:put(data, "ticket_count", ticket_db:count())
 	end if
@@ -68,7 +99,7 @@ end function
 wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
 
 function confirm_tickets(map data, map request)
-	return real_index(data, request, "tstat.name='Needs Confirmed'")
+	return real_index(data, request, "tstate.name='Confirm'")
 end function
 wc:add_handler(routine_id("confirm_tickets"), -1, "ticket", "confirm", index_vars)
 

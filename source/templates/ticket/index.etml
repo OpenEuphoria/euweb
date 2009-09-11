@@ -28,6 +28,20 @@
         <a href="http://sourceforge.net/tracker/?group_id=182827&atid=902782">SourceForge Bug Tracker</a>
     </p>
 
+    <form method="GET" action="/ticket/index.wc" style="text-align: center; margin-bottom:10px;">
+        <input type="hidden" name="per_page" value="<%= _h(@per_page) %>" />
+        <input type="hidden" name="page" value="<%= _h(@page) %>" />
+        Category:
+        <%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
+        Severity:
+        <%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
+        State:
+        <%- euweb:select include_empty=1 name="state_id" selected=@state_id option_sql="SELECT id,name FROM ticket_state ORDER BY position" %>
+        Status:
+        <%- euweb:select include_empty=1 name="status_id" selected=@status_id option_sql="SELECT id,name FROM ticket_status ORDER BY position" %>
+        <input type="submit" class="button" value="Filter" />
+    </form>
+
     <table class="list forum">
         <tr>
             <th width="1%">#</th>
@@ -75,7 +89,11 @@
     </table>
 
 <div class="centered">
-    <%- euweb:paginator base="/ticket/index.wc" page=@page per_page=@per_page total=@ticket_count %>
+    <%
+    sequence qs = sprintf("&amp;category_id=%d&amp;severity_id=%d&amp;state_id=%d&amp;status_id=%d",
+        { @category_id, @severity_id, @state_id, @status_id })
+    %>
+    <%- euweb:paginator base="/ticket/index.wc" qs=!qs page=@page per_page=@per_page total=@ticket_count %>
 </div>
 
 <% end if %>
