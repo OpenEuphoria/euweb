@@ -4,6 +4,7 @@
   
   include webclay/escape.e
   include templates/euweb.etag as euweb
+  include local.etag as local
   include comment_db.e
   include ticket_db.e
 %>
@@ -160,20 +161,4 @@ integer is_user = sequence(current_user)
 	<% end for %>
 </div>
 
-<%
-sequence quick_links = {}
-
-if has_role("user") then
-    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })
-    quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
-end if
-
-quick_links &= { { "/ticket/index.wc", "Open Tickets" }, 
-    { "/ticket/closed.wc", "Closed Tickets" }
-}
-
-quick_links &= { { "/wiki/euwiki.cgi?WhatAreTickets", "About Tickets" } }
-
-%>
-
-<%- euweb:foot quick_links=!quick_links %>
+<%- local:foot %>

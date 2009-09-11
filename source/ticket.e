@@ -67,6 +67,11 @@ function opened(map data, map request)
 end function
 wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
 
+function confirm_tickets(map data, map request)
+	return real_index(data, request, "tstat.name='Needs Confirmed'")
+end function
+wc:add_handler(routine_id("confirm_tickets"), -1, "ticket", "confirm", index_vars)
+
 function closed(map data, map request)
 	return real_index(data, request, "tstate.closed=1")
 end function
