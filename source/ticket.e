@@ -98,19 +98,19 @@ function validate_do_create(map data, map request)
 		errors = wc:add_error(errors, "form", "You are not authorized to add a new ticket")
 	end if
 
-	if map:get(request, "severity_id") = -1 then
+	if map:get(request, "severity_id") <= 0 then
 		errors = wc:add_error(errors, "severity_id", "You must select a severity level.")
 	end if
 		
-	if map:get(request, "category_id") = -1 then
+	if map:get(request, "category_id") <= 0 then
 		errors = wc:add_error(errors, "category_id", "You must select a category.")
 	end if
 
-	if length(map:get(request, "subject")) = 0 then
+	if length(map:get(request, "subject", "")) = 0 then
 		errors = wc:add_error(errors, "subject", "Subject cannot be empty.")
 	end if
 
-	if length(map:get(request, "content")) = 0 then
+	if length(map:get(request, "content", "")) = 0 then
 		errors = wc:add_error(errors, "content", "Content cannot be empty.")
 	end if
 
