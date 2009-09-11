@@ -20,7 +20,7 @@ public enum ID, MODULE_ID, ITEM_ID, USER_ID, CREATED_AT, SUBJECT, BODY, USER
 
 public function get_all(integer module_id, integer id)
 	object rows = edbi:query_rows("""SELECT c.*, u.user FROM comment AS c, users AS u 
-		WHERE u.id = c.user_id AND c.module_id=%d AND item_id=%d ORDER BY id DESC""", { module_id, id })
+		WHERE u.id = c.user_id AND c.module_id=%d AND item_id=%d ORDER BY id""", { module_id, id })
 	for i = 1 to length(rows) do
 		rows[i][CREATED_AT] = fuzzy_ago(rows[i][CREATED_AT])
 		rows[i][BODY] = format_body(rows[i][BODY], 0)
