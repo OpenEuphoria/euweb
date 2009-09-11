@@ -28,7 +28,7 @@
         <a href="http://sourceforge.net/tracker/?group_id=182827&atid=902782">SourceForge Bug Tracker</a>
     </p>
 
-    <form method="GET" action="/ticket/index.wc" style="text-align: center; margin-bottom:10px;">
+    <form method="GET" style="text-align: center; margin-bottom:10px;">
         <input type="hidden" name="per_page" value="<%= _h(@per_page) %>" />
         <input type="hidden" name="page" value="<%= _h(@page) %>" />
         Category:
