@@ -68,6 +68,12 @@ function recent(map data, map request)
 				items[i][URL] = sprintf("/ticket/%d.wc#%d", { items[i][2], items[i][7] })
 			case "news comment" then
 				items[i][URL] = sprintf("/news/%d.wc#%d", { items[i][2], items[i][7] })
+			case "forum" then
+				if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
+					items[i][URL] = sprintf("/forum/m/%d.wc", { items[i][2] })
+				else
+					items[i][URL] = sprintf("/forum/%d.wc#%d", { items[i][2], items[i][2] })
+				end if
 			case else
 				items[i][URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
 		end switch

@@ -110,7 +110,7 @@ function latest_forum_posts(integer count)
 		rows[i] = {
 			rows[i][3],
 			rows[i][4],
-			sprintf("/forum/%d.wc#%d", { rows[i][2], rows[i][1] }),
+			sprintf("/forum/m/%d.wc", { rows[i][2] }),
 			"Forum: " & rows[i][5],
 			format_body(rows[i][6])
 		}
