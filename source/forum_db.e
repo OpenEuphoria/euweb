@@ -85,6 +85,14 @@ public function get(integer id)
 	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE id=%d", { id })
 end function
 
+--**
+-- Get a message list for an index
+-- 
+
+public function get_list(integer page, integer per_page)
+	return edbi:query_rows("SELECT " & message_select_fields & " FROM messages ORDER BY id DESC LIMIT %d OFFSET %d", { per_page, (page - 1) * per_page })
+end function
+
 public function get_topic_messages(integer topic_id)
 	object messages = edbi:query_rows("SELECT " & message_select_fields &
 		" FROM messages WHERE topic_id=%d ORDER BY id", { topic_id })

@@ -26,6 +26,7 @@ include templates/forum/remove_post_ok.etml as t_remove_ok
 include templates/forum/edit.etml as t_edit
 include templates/forum/edit_ok.etml as t_edit_ok
 include templates/forum/view_message.etml as t_view_message
+include templates/forum/index_message.etml as t_index_message
 
 -- Local includes
 include config.e
@@ -39,7 +40,22 @@ sequence index_vars = {
 	{ wc:INTEGER, "per_page",  20 }
 }
 
-function index(map data, map request)
+function index_message(map data, map request)
+	object messages = forum_db:get_list(map:get(request, "page"), map:get(request, "per_page"))
+	
+	for i = 1 to length(messages) do
+		messages[i][MSG_CREATED_AT] = fuzzy_ago(messages[i][MSG_CREATED_AT])
+	end for
+
+	map:put(data, "page", map:get(request, "page"))
+	map:put(data, "per_page", map:get(request, "per_page"))
+	map:put(data, "message_count", forum_db:message_count())
+	map:put(data, "messages", messages)
+
+	return { TEXT, t_index_message:template(data) }
+end function
+
+function index_thread(map data, map request)
 	map:put(data, "page", map:get(request, "page"))
 	map:put(data, "per_page", map:get(request, "per_page"))
 	map:put(data, "message_count", forum_db:message_count())
@@ -56,6 +72,14 @@ function index(map data, map request)
 	map:put(data, "threads", threads)
 
 	return { TEXT, t_index:template(data) }
+end function
+
+function index(map data, map request)
+	if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
+		return index_message(data, request)
+	else
+		return index_thread(data, request)
+	end if
 end function
 wc:add_handler(routine_id("index"), -1, "forum", "index", index_vars)
 
