@@ -42,6 +42,10 @@ public procedure inc_view_counter(integer topic_id)
 	end if
 end procedure
 
+public procedure inc_message_view_counter(integer id)
+	edbi:execute("UPDATE messages SET views=views+1 WHERE id=%d", { id })
+end procedure
+
 public enum THREAD_ID, THREAD_TOPIC_ID, THREAD_CREATED_AT, THREAD_AUTHOR_NAME, THREAD_SUBJECT,
 	THREAD_VIEWS, THREAD_REPLIES, THREAD_LAST_POST_ID, THREAD_LAST_POST_BY,
 	THREAD_LAST_POST_AT

@@ -22,7 +22,7 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap">
-                <a href="/forum/m/<%= _h(message[MSG_ID]) %>.wc"><img alt="message view" src="/images/threaded.png" /></a>
+                <a href="/forum/m/<%= _h(message[MSG_ID]) %>.wc"><img alt="message view" src="/images/full_list.png" /></a>
             </td>
             <td>
                 <a class="forum_message" href="/forum/m/<%= _h(message[MSG_ID]) %>.wc"><%= _h(message[MSG_SUBJECT]) %></a>

@@ -431,6 +431,8 @@ function message(map data, map request)
 	
 	map:put(data, "prev_id", prev_id)
 	map:put(data, "next_id", next_id)
+	
+	forum_db:inc_message_view_counter(m[forum_db:MSG_ID])
 
 	return { TEXT, t_view_message:template(data) }
 end function
