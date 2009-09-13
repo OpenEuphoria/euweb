@@ -230,7 +230,12 @@ function update(map data, map request)
 		map:put(request, "assigned_to_id", 0)
 	end if
 
-	if has_role("developer") then
+	if has_role("developer") or 
+		(sequence(current_user) and 
+			current_user[user_db:USER_ID] = 
+				edbi:query_object("SELECT submitted_by_id FROM ticket WHERE id=%d", { 
+				map:get(request, "id") }))
+	then
 		-- Update some ticket values
 		ticket_db:update(
 			map:get(request, "id"),

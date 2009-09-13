@@ -7,6 +7,7 @@
   include local.etag as local
   include comment_db.e
   include ticket_db.e
+  include user_db.e
 %>
 
 <%- euweb:head title="Ticket Detail" active="ticket" %>
@@ -14,6 +15,10 @@
 object ticket = @ticket
 integer is_dev = has_role("developer")
 integer is_user = sequence(current_user)
+integer is_owner = 0
+if is_user and current_user[user_db:USER_ID] = ticket[ticket_db:SUBMITTED_BY_ID] then
+	is_owner = 1
+end if
 %>
 
 <form method="POST" action="/ticket/update.wc">
@@ -41,7 +46,7 @@ integer is_user = sequence(current_user)
 			<tr>
 				<th nowrap="nowrap">Severity:</th>
 				<td nowrap="nowrap">
-					<% if is_dev then %>
+					<% if is_dev or is_owner then %>
 						<%- euweb:select name="severity_id" selected=!ticket[ticket_db:SEVERITY_ID] option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
 					<% else %>
 						<%= _h(ticket[ticket_db:SEVERITY]) %>
@@ -49,7 +54,7 @@ integer is_user = sequence(current_user)
 				</td>
 				<th nowrap="nowrap">Category:</th>
 				<td nowrap="nowrap">
-					<% if is_dev then %>
+					<% if is_dev or is_owner then %>
 						<%- euweb:select name="category_id" selected=!ticket[ticket_db:CATEGORY_ID] option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
 					<% else %>
 						<%= _h(ticket[ticket_db:CATEGORY]) %>
@@ -57,7 +62,7 @@ integer is_user = sequence(current_user)
 				</td>
 				<th nowrap="nowrap">Reported Release:</th>
 				<td nowrap="nowrap">
-					<% if is_dev then %>
+					<% if is_dev or is_owner then %>
 						<input type="text" name="reported_release" value="<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>" size="15" />
 					<% else %>
 						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
@@ -76,7 +81,7 @@ integer is_user = sequence(current_user)
 				</td>
 				<th>State:</th>
 				<td>
-					<% if is_dev then %>
+					<% if is_dev or is_owner then %>
 						<%- euweb:select name="state_id" selected=!ticket[ticket_db:STATE_ID] option_sql="SELECT id,name FROM ticket_state ORDER BY position" %>
 					<% else %>
 						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
@@ -84,7 +89,7 @@ integer is_user = sequence(current_user)
 				</td>
 				<th>Status:</th>
 				<td>
-					<% if is_dev then %>
+					<% if is_dev or is_owner then %>
 						<%- euweb:select name="status_id" selected=!ticket[ticket_db:STATUS_ID] option_sql="SELECT id,name FROM ticket_status ORDER BY position" %>
 					<% else %>
 						<%= _h(ticket[ticket_db:STATUS]) %>
@@ -130,7 +135,7 @@ integer is_user = sequence(current_user)
 				<tr>
 					<th>&nbsp;</th>
 					<td colspan="7">
-						<% if is_dev then %>
+						<% if is_dev or is_owner then %>
 							<input type="submit" value="Update Ticket" />
 						<% elsif is_user then %>
 							<input type="submit" value="Add Comment" />
