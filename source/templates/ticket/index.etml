@@ -47,7 +47,7 @@
             <th width="1%">#</th>
             <th width="19%">Category</th>
             <th width="20%">Severity</th>
-            <th width="10%">Status</th>
+            <th width="10%">State</th>
             <th width="10%">Status</th>
             <th width="10%">Release</th>
             <th width="10%" nowrap="nowrap">Assigned To</th>
