@@ -133,125 +133,160 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 end function
 
 
+function match_prev(sequence needle, sequence haystack, integer whence)
+	if whence <= 0 then
+		return 0
+	end if
+	
+	if whence > length(haystack) then
+		whence = length(haystack)
+	end if
+	
+	while whence >= length(needle) do
+		if equal(haystack[whence .. whence + length(needle) - 1], needle) then
+			return whence
+		end if
+		
+		whence -= 1
+	end while
+	
+	return 0
+end function
+
 function markup_quotes(sequence text)
- 	integer pos
- 	integer epos
+ 	integer ppos
+ 	integer cspos
+ 	integer ospos
+ 	integer oepos
  	integer nextpos = 1
- 	integer repcnt = 0
  	integer namepos
  	integer nameend 
  	integer inname
+	integer diff
 
 	while 1 do
-		pos = match_from("[quote", text, nextpos)
-		if pos = 0 then
-			exit
-		end if
+		cspos = match_from("[/quote]", text, nextpos)
+		if cspos then
+			ppos = match_from("</p>", text, cspos+8)
+			if ppos <= cspos + 9 then
+				diff = (ppos + 3 - (cspos + 8)) + 1
+				text[cspos .. ppos + 3] = text[cspos + 8 .. ppos + 3] & text[cspos .. cspos + 7]
+				cspos += diff
+			end if
 
-		epos = pos + 6
-		
-		-- Look back to see if we have <p>
-		if pos > 3 then
-			if equal(text[pos-3..pos], "<p>") then
-				pos -= 3
-			end if
-		end if
-
-		inname = 0
-		nameend = 0
-		-- scan for the close of this quote-open tag
-		while epos <= length(text) do
-			if text[epos] = ']' then
-				exit
-			end if
+			ospos = match_prev("[quote", text, cspos - 1)
 			
-			if text[epos] = '\n' then
-				-- should not happen in valid code.
-				-- assume that the closing bracket was missing
-				-- so assume it should be right here.
-				epos -= 1
-				nameend = epos
-				exit
-			end if
-			
-			if text[epos] = '[' then
-				-- should not happen in valid code.
-				-- assume that the closing bracket was missing
-				-- so go back to start of tag and pretend missing
-				-- bracket is after the first word in the tag.
-				epos = pos + 6
+			if ospos then
+				oepos = ospos + 6
+				
+				-- Look back to see if we have <p>
+				ppos = ospos-3
+				while ppos >= 1 do
+					if equal(text[ppos..ppos+2], "<p>") then
+						exit
+					elsif text[ppos] = '\n' then
+						ppos = 0
+						exit
+					end if
+					ppos -= 1
+				end while
+				
 				inname = 0
-				while epos <= length(text) do
-					if find(text[epos] , " \t") then
-						if inname then
-							epos -= 1
-							nameend = epos
-							exit	
+				nameend = 0
+				-- scan for the close of this quote-open tag
+				while oepos <= length(text) do
+					if text[oepos] = ']' then
+						exit
+					end if
+					
+					if text[oepos] = '\n' then
+						-- should not happen in valid code.
+						-- assume that the closing bracket was missing
+						-- so assume it should be right here.
+						oepos -= 1
+						nameend = oepos
+						exit
+					end if
+					
+					if text[oepos] = '[' then
+						-- should not happen in valid code.
+						-- assume that the closing bracket was missing
+						-- so go back to start of tag and pretend missing
+						-- bracket is after the first word in the tag.
+						oepos = ospos + 6
+						inname = 0
+						while oepos <= length(text) do
+							if find(text[oepos] , " \t") then
+								if inname then
+									oepos -= 1
+									nameend = oepos
+									exit	
+								end if
+							else
+								if not inname then
+									inname = 1
+									namepos = oepos
+								end if
+							end if
+							oepos += 1
+						end while
+						if oepos > length(text) then
+							oepos = length(text)
 						end if
-					else
-						if not inname then
+						exit
+					end if
+					
+					if not inname then
+						if not find(text[oepos], " \t") then
 							inname = 1
-							namepos = epos
+							namepos = oepos
 						end if
 					end if
-					epos += 1
+					oepos += 1
 				end while
-				if epos > length(text) then
-					epos = length(text)
+				
+				if inname then
+					if nameend = 0 then
+						nameend = oepos - 1
+					end if
 				end if
-				exit
-			end if
-			
-			if not inname then
-				if not find(text[epos], " \t") then
-					inname = 1
-					namepos = epos
+		
+				if ppos >= 1 then
+					diff = (ospos - ppos)
+					text[ppos .. oepos] = text[ospos .. oepos] & text[ppos .. ospos - 1]
+					oepos = oepos - diff
+					namepos = namepos - diff
+					nameend = nameend - diff
+					ospos = ppos
+					ppos = 0
+				end if		
+				
+				-- Replace end quote
+				text = text[1 .. cspos - 1] & "</div>" & text[ cspos + 8  .. $]
+				
+				-- Replace start quote
+				if inname then
+					text = text[1..ospos-1] & "<div class=\"quote\"><strong>" & 
+					       text[namepos .. nameend] & " </strong>said:<br />" & 
+					       text[oepos + 1 .. $]
+					nextpos = ospos + 27 + 21 + nameend - namepos + 1
+				else
+					text = text[1..ospos-1] & "<div class=\"quote:\"><strong>quote</strong><br />" & 
+					       text[oepos + 1 .. $]
+					nextpos = ospos + 48
 				end if
-			end if
-			epos += 1
-		end while
-		
-		if inname then
-			if nameend = 0 then
-				nameend = epos - 1
-			end if
-		end if
-		
-		if inname then
-			text = text[1..pos-1] & "<div class=\"quote\"><strong>" & 
-			       text[namepos .. nameend] & " </strong>said:<br />" & 
-			       text[epos + 1 .. $]
-			nextpos = pos + 27 + 21 + nameend - namepos + 1
-		else
-			text = text[1..pos-1] & "<div class=\"quote:\"><strong>quote</strong><br />" & 
-			       text[epos + 1 .. $]
-			nextpos = pos + 48
-		end if
-		repcnt += 1
-	end while
-	
-	while 1 do
-		pos = match("[/quote]", text)
-		if pos then
-			if repcnt > 0 then
-				text = text[1 .. pos - 1] & "</div>" & text[ pos + 8 .. $]
-				repcnt -= 1
 			else
-				-- too many end tags, so remove the excess.
-				text = text[1 .. pos - 1] & text[ pos + 8 .. $]
+				-- No matching open quote to this close quote
+				-- so just ignore the close quote.
+				text = text[1 .. cspos - 1] & text[ cspos + 8  .. $]
 			end if
 		else
-			if repcnt = 0 then	
-				exit
-			end if
-			-- Missing one or more end of quote tags.
-			while repcnt > 0 do
-				text &= "</div>"
-				repcnt -= 1
-			end while
-		end if
-		
+			-- No close quote found.
+			-- so ignore any open quotes in text.
+			exit
+		end if		
 	end while
+	 	
 	
 	return text
 end function
@@ -297,8 +332,8 @@ export function format_body(sequence body, integer format_quotes=1)
 	body = creole_parse(body, routine_id("generate_html"), "0")
 	body = search:find_replace("&amp;#", body, "&#")
 	if format_quotes then
-		--body = markup_quotes(body)
-		body = markup_quotes_two(body)
+		body = markup_quotes(body)
+		--body = markup_quotes_two(body)
 	end if
 
 	for i = 1 to length(smilies) by 2 do
