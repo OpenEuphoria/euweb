@@ -33,8 +33,8 @@ end if
 	<div class="post_tools">
 		<% if has_role("user") then %>
 			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>">reply</a>,
-			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&quote=1">reply with quote</a>,
-			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&quote=1&fork=1">fork</a>
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&amp;quote=1">reply with quote</a>,
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&amp;quote=1&amp;fork=1">fork</a>
 			<% if is_owner or is_forum_admin then %>
 				&nbsp;&nbsp;&nbsp;&#187;
 				<a href="/forum/edit.wc?id=<%= _h(@id) %>">edit</a>
