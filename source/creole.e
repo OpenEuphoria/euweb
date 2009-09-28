@@ -67,6 +67,7 @@ global enum     -- Action Codes for the Generator
 	Plugin,             -- A plugin has been called for
 	ContextChange,		-- A new !!CONTEXT: record found.
 	Comment,			-- A comment
+	Quoted,				-- A quoted section
 	LastActionCode
 
 global enum     -- Action Codes for the Creole
@@ -1792,7 +1793,7 @@ function get_eucode(sequence pRawText, atom pFrom)
 			end if
 
 		end while
-		lText = Generate_Final(CodeExample, {lText})
+		lText = TAG_ENDPARA & Generate_Final(CodeExample, {lText}) & TAG_STARTPARA
 	else
 		lText = ""
 		lFinal = pFrom
@@ -2213,6 +2214,113 @@ function get_link(sequence pRawText, atom pFrom)
 
 	return {lEndPos+1, lText}
 end function
+
+------------------------------------------------------------------------------
+function get_quoted(sequence pRawText, atom pFrom)
+------------------------------------------------------------------------------
+	sequence lText
+	integer lStartPos
+	integer lEndPos
+	integer lAltEnd
+	sequence lName 
+	integer lBodyStart
+	integer lBodyEnd
+	integer lDepth
+	integer lNextPos 
+
+	-- Entry has pFrom at first char after lead-in tag.
+	if pFrom > length(pRawText) then
+		return {pFrom, ""}
+	end if
+
+	lText = ""
+	
+	-- Find complete open quote tag, isolating the 'name' component
+	lStartPos = pFrom + 6
+	if lStartPos < length(pRawText) then
+		if find(pRawText[lStartPos], "\t ") then
+			lStartPos += 1
+		elsif pRawText[lStartPos] != ']' then
+			return {0}
+		end if
+	end if
+	
+	lEndPos = lStartPos - 1
+	lAltEnd = 0
+	lName = ""
+	while lEndPos < length(pRawText) do
+		lEndPos += 1
+		
+		if pRawText[lEndPos] = ']' then
+			lName = Generate_Final(Sanitize,trim(pRawText[lStartPos .. lEndPos - 1]))
+			exit
+		end if
+		
+		if find(pRawText[lEndPos], "\t ") then
+			lAltEnd = lEndPos
+			continue
+		end if
+		
+		if pRawText[lEndPos] = '\n' then
+			if lAltEnd != 0 then
+				lEndPos = lAltEnd
+			end if
+			lName = Generate_Final(Sanitize,trim(pRawText[lStartPos .. lEndPos - 1]))
+			exit
+		end if
+	end while
+	
+	-- Find matching close quote tag.
+	-- If none found, assume there should be one just prior to the next open quote tag,
+	-- and if there is no other open quote tag, assume the end tag is after the supplied text.
+	lBodyStart = lEndPos + 1
+	lBodyEnd = lBodyStart - 1
+	lDepth = 1
+	lNextPos = 0
+	while lBodyEnd < length(pRawText) do
+		lBodyEnd += 1
+		
+		if pRawText[lBodyEnd] = '[' then
+			if begins("[quote", pRawText[lBodyEnd .. $]) then
+				lDepth += 1
+				lBodyEnd += 6
+				continue
+			end if
+			
+			if begins("[/quote]", pRawText[lBodyEnd .. $]) then
+				lDepth -= 1
+				if lDepth > 0 then
+					lBodyEnd += 7
+					continue
+				end if
+				-- Matching end tag found.
+				lBodyEnd -= 1
+				lNextPos = lBodyEnd + 8
+				lText = pRawText[lBodyStart .. lBodyEnd]
+				exit
+			end if
+			
+			if begins("[[", pRawText[lBodyEnd .. $]) then
+				lBodyEnd += 1
+				continue
+			end if
+			
+		end if		
+		
+	end while
+		
+	if lNextPos = 0 then
+		-- No matching end tag found.
+		return {0}
+	end if		
+			
+	if length(lText) > 0 then
+			lText = call_func(vParser_rid, {lText, 0})
+			lText = Generate_Final(Quoted, {lName, lText})
+	end if
+	return {lNextPos, lText}
+end function
+
 
 ------------------------------------------------------------------------------
 function get_division(sequence pRawText, integer pFrom)
@@ -2804,13 +2912,15 @@ function update_paragraphs(sequence pText)
 	integer  lTempPos
 	sequence lUpdatedText
 	object   lChar
+	integer  lDepth
+
 	lParaStart = Generate_Final(Paragraph, {-1})
 	lSourcePos = eu:find(-1, lParaStart)
 
 	lParaEnd = lParaStart[lSourcePos + 1 .. $]
 	lParaStart = lParaStart[1 .. lSourcePos - 1]
-	lStartLen = (length(lParaStart) - 1)
-	lEndLen = (length(lParaEnd) - 1)
+	lStartLen = length(lParaStart) - 1
+	lEndLen = length(lParaEnd) - 1
 
 	lSourcePos = 0
 	lTargetPos = 0
@@ -2834,8 +2944,10 @@ function update_paragraphs(sequence pText)
 
 	lSourcePos = 1
 	lTargetPos = 1
-
+	lDepth = 0
 	while lSourcePos <= length(pText) do
+		sequence dbg
+		integer ff
 		lChar = pText[lSourcePos]
 		if not integer(lChar) then
 			lUpdatedText[lTargetPos] = lChar
@@ -2853,7 +2965,12 @@ function update_paragraphs(sequence pText)
 			if lSourcePos <= length(pText) then
 				if pText[lSourcePos] = TAG_ENDPARA then
 					-- Found an empty paragraph, so delete it.
-
+					if lHoldPos < 11 then
+						ff = 1
+					else
+						ff = lHoldPos - 10
+					end if
+					dbg = pText[ff .. $]
 					lTargetPos -= 1
 				else
 
@@ -2861,6 +2978,7 @@ function update_paragraphs(sequence pText)
 					lTempPos = lTargetPos + lStartLen
 					lUpdatedText[lTargetPos .. lTempPos] = lParaStart
 					lTargetPos = lTempPos + 1
+					lDepth += 1
 
 					-- Copy rest verbatim
 					lHoldPos += 1
@@ -2879,8 +2997,10 @@ function update_paragraphs(sequence pText)
 			lTempPos = lTargetPos + lEndLen
 			lUpdatedText[lTargetPos .. lTempPos] = lParaEnd
 			lTargetPos = lTempPos
+			lDepth -= 1
 
 		elsif lChar = '\n' then
+			dbg = pText[lSourcePos .. $]
 			lHoldPos = lSourcePos
 			lSourcePos += 1
 			while lSourcePos <= length(pText) and pText[lSourcePos] = '\n' do
@@ -2891,6 +3011,11 @@ function update_paragraphs(sequence pText)
 					-- Located a series of newlines ending with a lone ENDPARA,
 					-- all of this gets replaced by a single newline.
 					lUpdatedText[lTargetPos] = '\n'
+				elsif pText[lSourcePos] = TAG_STARTPARA then
+					-- Located a series of newlines ending with a STARTPARA,
+					-- all the newlines of this gets replaced by a single newline.
+					lUpdatedText[lTargetPos] = '\n'
+					lSourcePos -= 1
 				else
 					-- Copy it verbatim
 					lTempPos = lTargetPos + lSourcePos - lHoldPos
@@ -2909,7 +3034,13 @@ function update_paragraphs(sequence pText)
 		lSourcePos += 1
 	end while
 
-
+	while lDepth > 0 do
+		lUpdatedText &= repeat(0, length(lParaEnd))
+		lTempPos = lTargetPos + lEndLen
+		lUpdatedText[lTargetPos .. lTempPos] = lParaEnd
+		lTargetPos = lTempPos
+		lDepth -= 1
+	end while		
 	return lUpdatedText[1 .. lTargetPos - 1]
 end function
 
@@ -3186,7 +3317,7 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 
 				break
 
-			case '[' then   -- link
+			case '[' then   -- link or quoted section
 				if compare_next({"[["}, pRawText, lPos) > 0 then
 					lExtract = get_linebroken(pRawText, lPos)
 					lPos = lExtract[1]
@@ -3201,6 +3332,17 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 					lText &= lExtract[2]
 					lChar =-1
 				end if
+				
+				if compare_next({"quote"}, pRawText, lPos) > 0 then
+					lExtract = get_quoted(pRawText, lPos)
+					if lExtract[1] > 0 then
+						lPos = lExtract[1]
+						lText &= TAG_ENDPARA & lExtract[2] & TAG_STARTPARA
+						lChar = -1
+					end if
+					break "Tagger"
+				end if
+				
 				break
 
 			case '\\' then  -- Break Line
@@ -3397,8 +3539,13 @@ global function parse_text(sequence pRawText, integer pSpan = 0)
 		lText &= Generate_Final(EndIndent, {})
 		lIndentLevel -= 1
 	end while
+	
 	if not pSpan then
-		lFinalForm &= '\n'
+		if length(lFinalForm) > 1 then
+			if lFinalForm[$] != '\n' then
+				lFinalForm &= '\n'
+			end if
+		end if
 	end if
 
 	return lFinalForm

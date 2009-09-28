@@ -9,7 +9,7 @@ constant kHTML = {
 
 with trace
 ------------------------------------------------------------------------------
-global function html_generator(integer pAction, sequence pParms)
+global function html_generator(integer pAction, sequence pParms, object pContext = "")
 ------------------------------------------------------------------------------
 	sequence lHTMLText
 	sequence lSuffix
@@ -27,7 +27,6 @@ global function html_generator(integer pAction, sequence pParms)
 				lSuffix = ""
 			end if
 			lHTMLText = "<a href=\"" & pParms[1] & lSuffix & "\">" & pParms[2] & "</a>"
-			break
 
 		case QualifiedLink then
 			if find('.', pParms[1]) = 0 then
@@ -36,7 +35,6 @@ global function html_generator(integer pAction, sequence pParms)
 				lSuffix = ""
 			end if
 			lHTMLText = "<a href=\"" & pParms[1] & lSuffix & '#' & pParms[2] & "\">" & pParms[3] & "</a>"
-			break
 
 		case InterWikiLink then
 			lHTMLText = "<font color=\"#FF0000\" background=\"#000000\">Interwiki link failed for "
@@ -47,12 +45,10 @@ global function html_generator(integer pAction, sequence pParms)
 				end if
 			end for
 			lHTMLText &= "</font>"
-			break
 
 		case NormalLink then
 			lHTMLText = "<a class=\"external\" href=\"" & pParms[1] & "\">" &
 							pParms[2] & "</a>"
-			break
 
 		case InternalImage then
 
@@ -60,7 +56,6 @@ global function html_generator(integer pAction, sequence pParms)
 						"\" alt=\"" & pParms[2] & 
 						"\" caption=\"" & pParms[2] & 
 						"\" />"
-			break
 
 		case InterWikiImage then
 			lHTMLText = "<font color=\"#FF0000\" background=\"#000000\">Interwiki image failed for "
@@ -71,140 +66,100 @@ global function html_generator(integer pAction, sequence pParms)
 				end if
 			end for
 			lHTMLText &= "</font>"
-			break
 
 		case NormalImage then
 			lHTMLText = "<img src=\"" & pParms[1] & 
 						"\" alt=\"" & pParms[2] & 
 						"\" caption=\"" & pParms[2] & 
 						"\" />"
-			break
 
 		case Paragraph then
 			lHTMLText = "\n<p>" & pParms & "</p>\n"
-			break
 
 		case Division then
 			lHTMLText = "\n<div class=\"" & pParms[1] & "\">" & pParms[2] & "</div>\n"
-			break
 
 		case Bookmark then
 			lHTMLText = "<a name=\"" & pParms & "\" ></a>"
-			break
 
 		case OrderedList then
 			lHTMLText = "<ol>" & pParms & "</ol>"
-			break
 
 		case UnorderedList then
 			lHTMLText = "<ul>" & pParms & "</ul>"
-			break
 
 		case ListItem then
 			lHTMLText = "<li>" & pParms & "\n</li>"
-			break
 
 		case Heading then
 			lNumText = sprintf("%d", pParms[1])
-			lHTMLText = "\n<H" & lNumText & ">" & trim(pParms[2]) & "</H" & lNumText & ">"
-			break
+			lHTMLText = "\n<h" & lNumText & ">" & trim(pParms[2]) & "</h" & lNumText & ">"
 
 		case ItalicText then
 			lHTMLText = "<em>" & pParms[1] & "</em>"
-			break
 
 		case BoldText then
 			lHTMLText = "<strong>" & pParms[1] & "</strong>"
-			break
 
 		case MonoText then
 			lHTMLText = "<tt>" & pParms[1] & "</tt>"
-			break
 
 		case UnderlineText then
 			lHTMLText = "<u>" & pParms[1] & "</u>"
-			break
 
 		case Superscript then
 			lHTMLText = "<sup>" & pParms[1] & "</sup>"
-			break
 
 		case Subscript then
 			lHTMLText = "<sub>" & pParms[1] & "</sub>"
-			break
 
 		case StrikeText then
 			lHTMLText = "<del>" & pParms[1] & "</del>"
-			break
 
 		case InsertText then
 			lHTMLText = "<ins>" & pParms[1] & "</ins>"
-			break
 
 		case ColorText then
-			lHTMLText = "<font color=\"" & pParms[1] & "\">" & pParms[2] & "</font>"
-			break
+			lHTMLText = "<span style=\"color:" & pParms[1] & ";\">" & pParms[2] & "</span>"
 
 		case CodeExample then
 			lHTMLText = "\n<pre class=\"examplecode\">" & pParms[1] &  "</pre>\n"
-			break
 
 		case TableDef then
 			lHTMLText = "<table>" & pParms[1] & "</table>\n"
 
-			break
-
 		case HeaderRow then
 			lHTMLText = "<tr>" & pParms[1] & "</tr>\n"
-
-			break
 
 		case HeaderCell then
 			lHTMLText = "<th>" & pParms[1] & "</th>\n"
 
-			break
-
 		case NormalRow then
 			lHTMLText = "<tr>" & pParms[1] & "</tr>\n"
-
-			break
 
 		case NormalCell then
 			lHTMLText = "<td>" & pParms[1] & "</td>\n"
 
-			break
-
 		case NonBreakSpace then
 			lHTMLText = "&nbsp;"
-
-			break
 
 		case ForcedNewLine then
 			lHTMLText = "<br />\n"
 
-			break
-
 		case HorizontalLine then
 			lHTMLText = "\n<hr />\n"
-
-			break
 
 		case NoWikiBlock then
 			lHTMLText = "\n<pre>" & pParms[1] & "</pre>\n"
 
-			break
-
 		case NoWikiInline then
 			lHTMLText = pParms[1]
-			break
 
 		case HostID then
 			lHTMLText = ""
-			break
 
 		case OptReparseHeadings then
 			lHTMLText = ""
-			break
 
 		case DefinitionList then
 			lHTMLText = "<dl>\n"
@@ -214,15 +169,12 @@ global function html_generator(integer pAction, sequence pParms)
 							"</dd>\n"
 			end for
 			lHTMLText &= "</dl>\n"
-			
-			break
+
 		case BeginIndent then
 			lHTMLText = "<div style=\"margin-left:2em\">"
-			break
 			
 		case EndIndent then
 			lHTMLText = "</div>"
-			break
 			
 		case PassThru then
 			lHTMLText = pParms
@@ -232,16 +184,12 @@ global function html_generator(integer pAction, sequence pParms)
 			if not equal(pParms, lHTMLText) then
 				lHTMLText = "<div class=\"passthru\">" & lHTMLText & "</div>"
 			end if
-			break
-			
 			
 		case Sanitize then
 			lHTMLText = pParms
 			for i = 1 to length(kHTML) do
 				lHTMLText = find_replace(kHTML[i][1], lHTMLText, kHTML[i][2])
 			end for
-			break
-
 		
 		case CamelCase then
 			lHTMLText = {lower(pParms[1])}
@@ -253,32 +201,37 @@ global function html_generator(integer pAction, sequence pParms)
 					lHTMLText &= pParms[i]
 				end if
 			end for
-			break
 			
 		case Plugin then
 		-- Extract the key/values, but don't parse for quoted text nor whitespace delims.
 			pParms = keyvalues(pParms[1], -1, -2, "", "")
-			lHTMLText = "**Unknown plugin '" & pParms[1][2] & "'"
-			break
+			lHTMLText = "--**Unknown plugin '" & pParms[1][2] & "'"
 
 		case Document then
 			-- Default action is to ust pass back the document text untouched.
 			lHTMLText = pParms[1]
-			break
 									
 		case ContextChange then
 			-- Record the context change in the output document
 			if length(pParms) > 0 then
 				lHTMLText = "\n<!-- " & pParms & " -->\n"
 			end if
-			break
 									
 		case Comment then
 			-- Record a comment in the output document
 			if length(pParms) > 0 then
 				lHTMLText = "\n<!-- " & pParms & " -->\n"
 			end if
-			break
+									
+		case Quoted then
+			-- Highlight a quoted section.
+			if length(pParms[2]) > 0 then
+				lHTMLText = "\n<div class=\"quote\">quote: <strong>" &
+							pParms[1] &
+							"</strong><br />\n" &
+							pParms[2] &
+							"\n</div>\n"
+			end if
 									
 		case else
 			lHTMLText = sprintf("[BAD ACTION CODE %d]", pAction)
@@ -286,7 +239,7 @@ global function html_generator(integer pAction, sequence pParms)
 				lHTMLText &= pParms[i]
 				lHTMLText &= " "
 			end for
-			break
+
 	end switch
 
 	lPos = 0
