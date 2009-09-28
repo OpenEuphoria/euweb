@@ -332,7 +332,7 @@ export function format_body(sequence body, integer format_quotes=1)
 	body = creole_parse(body, routine_id("generate_html"), "0")
 	body = search:find_replace("&amp;#", body, "&#")
 	if format_quotes then
-		body = markup_quotes(body)
+		--body = markup_quotes(body)
 		--body = markup_quotes_two(body)
 	end if
 
