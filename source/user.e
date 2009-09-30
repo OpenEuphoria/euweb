@@ -224,7 +224,7 @@ function validate_do_signup(integer data, map:map vars)
 	elsif is_email_used(email) then
 		errors = wc:add_error(errors, "email", "Email is already in use.")
 	end if
-	
+
 	-- No reason to do the costly tests if we already have errors.
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"

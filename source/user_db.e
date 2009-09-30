@@ -160,7 +160,7 @@ public function create(sequence code, sequence password, sequence email)
 		crash("Couldn't insert user into the database: %s", { edbi:error_message() })
 	end if
 	
-	integer id = edbi:last_insert_id(db)
+	integer id = edbi:last_insert_id()
 	edbi:execute("INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
 	
 	return id
