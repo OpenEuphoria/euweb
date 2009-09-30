@@ -56,6 +56,8 @@ end procedure
 -- Open our database
 db:open()
 
+include ip_track.e
+
 -- For developers use. Define AUTO_LOGIN_UID in your config file and 
 -- populate it with your user.id value from the database.
 
