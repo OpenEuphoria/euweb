@@ -2,7 +2,7 @@
 -- Creole Markup
 --
 ifdef UNITTEST then
-include unittest.e
+include std/unittest.e
 end ifdef
 
 include std/get.e
@@ -1825,6 +1825,7 @@ function get_list(sequence pRawText, atom pFrom)
 	sequence lLine
 	sequence lNextLine
 	integer lPos
+	sequence lInItem = {}
 
 	lStartPos = 0
 	lEndPos = 0
@@ -1837,13 +1838,17 @@ function get_list(sequence pRawText, atom pFrom)
 	while 1 do
 		lLine = get_logical_line(pRawText, lNextPos, vLineBeginings, {})
 		if length(lLine[2]) = 0 then
+			-- A blank line signals the end of the list block
 			lEndPos = lNextPos - 1
 			exit
 		end if
+		
 		if eu:find(lLine[2][1], "#*") = 0 then
+			-- A line not starting with a list tag signals the end of the list block.
 			lEndPos = lNextPos - 1
 			exit
 		end if
+		
 		lNextPos = lLine[1]
 		lLine = lLine[2]
 
@@ -1856,6 +1861,7 @@ function get_list(sequence pRawText, atom pFrom)
 			lPos += 1
 		end while
 
+		-- What type of list have we got
 		if lType = '#' then
 			lCode = 'o' -- Ordered List
 			lHead = lStartOrdered
@@ -1868,30 +1874,49 @@ function get_list(sequence pRawText, atom pFrom)
 
 		-- Start/End levels
 		if lNewLevel > lCurLevel then
-			--lHead[3] = lCode
+			-- Going up to a new level
 			while lNewLevel > lCurLevel do
+				if length(lInItem) > 0 then
+					if lInItem[$] = 0 then
+						lText &= lStartItem
+						lInItem[$] = 1
+					end if
+				end if
 				lText &= lHead
+				lInItem &= 0
 				lCurLevel += 1
-				lCodeStack &= lTail
+				lCodeStack &= lTail				
 			end while
 
 		elsif lNewLevel < lCurLevel then
+			-- Going back to a lower level
 			while lNewLevel < lCurLevel do
-				lText &= lEndItem
 				lTail = lCodeStack[$]
+				if lInItem[$] then
+					lText &= lEndItem
+				end if
 				lText &= lTail
 				lCurLevel -= 1
 				lCodeStack = lCodeStack[1..$-1]
+				lInItem = lInItem[1..$-1]
 			end while
-			lText &= lEndItem
+			
 		elsif lTail != lCodeStack[$] then
+			-- Change of list type on same level.
 			lText &= lCodeStack[$]
+			if lInItem[$] then
+				lText &= lEndItem
+			end if
 			lText &= lHead
+			lInItem[$] = 0
 			lCodeStack[$] = lTail
 		end if
 
-
+		if lInItem[$] then
+			lText &= lEndItem
+		end if
 		lText &= lStartItem
+		lInItem[$] = 1
 
 		-- Locate end of current item.
 		-- * Next line is either blank or starts with a list item, heading,
@@ -1945,17 +1970,19 @@ function get_list(sequence pRawText, atom pFrom)
 			lPos += 1
 		end while
 		lText &= call_func(vParser_rid, {trim(lLine[lPos .. $]), 1})
-		lText &= lEndItem
 
 	end while
 
 
 	while length(lCodeStack) > 0 do
 		lTail = lCodeStack[$]
+		if lInItem[$] then
+			lText &= lEndItem
+		end if
 		lText &= lTail
 		lCodeStack = lCodeStack[1..$-1]
+		lInItem = lInItem[1 .. $-1]
 	end while
-
 	lCodeStack = Generate_Final(ListItem, {255})
 	lPos = eu:find(255, lCodeStack)
 	lText = search:find_replace(lStartItem, lText, lCodeStack[1 .. lPos - 1], 0)
@@ -1971,7 +1998,7 @@ function get_list(sequence pRawText, atom pFrom)
 	lText = search:find_replace(lStartUnordered, lText, lCodeStack[1 .. lPos - 1], 0)
 	lText = search:find_replace(lEndUnordered, lText, lCodeStack[lPos + 1 .. $], 0)
 
-	return {lNextPos, lText}
+	return {lNextPos, TAG_ENDPARA & lText & TAG_STARTPARA}
 end function
 
 ------------------------------------------------------------------------------
@@ -2825,7 +2852,7 @@ function get_table(sequence pRawText, atom pFrom)
 	end for
 
 
-	lText = Generate_Final(TableDef, {lText})
+	lText = TAG_ENDPARA & Generate_Final(TableDef, {lText}) & TAG_STARTPARA
 
 	return {lPos-1, lText}
 end function
@@ -2946,8 +2973,6 @@ function update_paragraphs(sequence pText)
 	lTargetPos = 1
 	lDepth = 0
 	while lSourcePos <= length(pText) do
-		sequence dbg
-		integer ff
 		lChar = pText[lSourcePos]
 		if not integer(lChar) then
 			lUpdatedText[lTargetPos] = lChar
@@ -2965,12 +2990,6 @@ function update_paragraphs(sequence pText)
 			if lSourcePos <= length(pText) then
 				if pText[lSourcePos] = TAG_ENDPARA then
 					-- Found an empty paragraph, so delete it.
-					if lHoldPos < 11 then
-						ff = 1
-					else
-						ff = lHoldPos - 10
-					end if
-					dbg = pText[ff .. $]
 					lTargetPos -= 1
 				else
 
@@ -3000,7 +3019,6 @@ function update_paragraphs(sequence pText)
 			lDepth -= 1
 
 		elsif lChar = '\n' then
-			dbg = pText[lSourcePos .. $]
 			lHoldPos = lSourcePos
 			lSourcePos += 1
 			while lSourcePos <= length(pText) and pText[lSourcePos] = '\n' do
@@ -3553,7 +3571,6 @@ end function
 
 
 vParser_rid = routine_id("parse_text")
-
 --------------------------------------------------------------------------------
 global function creole_parse(object pRawText, object pFinalForm_Generator = -1, object pContext = "")
 --------------------------------------------------------------------------------
@@ -3940,6 +3957,7 @@ global function creole_parse(object pRawText, object pFinalForm_Generator = -1, 
 		if vVerbose then
 			printf(1, "Processing text (%d bytes).\n", length(lText))
 		end if
+
 		lText = parse_text( lText )
 
 		-- Resolve any local links.
