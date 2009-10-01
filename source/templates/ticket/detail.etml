@@ -44,6 +44,24 @@ end if
 
 		<table class="form" style="width: 100%">
 			<tr>
+				<th nowrap="nowrap">Type:</th>
+				<td nowrap="nowrap">
+					<% if is_dev or is_owner then %>
+						<%- euweb:select name="type_id" selected=!ticket[ticket_db:TYPE_ID] option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
+					<% else %>
+						<%= _h(ticket[ticket_db:TYPE]) %>
+					<% end if %>
+				</td>
+				<th nowrap="nowrap">Product:</th>
+				<td nowrap="nowrap" colspan="3">
+					<% if is_dev or is_owner then %>
+						<%- euweb:select name="product_id" selected=!ticket[ticket_db:PRODUCT_ID] option_sql="SELECT id,name FROM ticket_product ORDER BY name" %>
+					<% else %>
+						<%= _h(ticket[ticket_db:PRODUCT]) %>
+					<% end if %>
+				</td>
+			</tr>
+			<tr>
 				<th nowrap="nowrap">Severity:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>

@@ -66,6 +66,16 @@
 
 		<table class="form">		
 			<tr>
+				<th>Ticket Type:</th>
+				<td>
+                    <%- euweb:select name="type_id" selected=@type_id option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
+                </td>
+                <th>Product:</th>
+                <td colspan="3">
+                    <%- euweb:select name="product_id" selected=@product_id option_sql="SELECT id,name FROM ticket_product ORDER BY name" %>
+				</td>
+			</tr>
+			<tr>
 				<th>Severity:</th>
 				<td>
 					<%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
@@ -106,7 +116,7 @@
 	</form>
 
 <script type="text/javascript">
-	$('severity_id').focus();
+	$('type_id').focus();
 </script>
 
 <% end if %>

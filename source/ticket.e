@@ -34,7 +34,9 @@ sequence index_vars = {
 	{ wc:INTEGER, "category_id", -1 },
 	{ wc:INTEGER, "severity_id", -1 },
 	{ wc:INTEGER, "state_id", -1 },
-	{ wc:INTEGER, "status_id", -1 }
+	{ wc:INTEGER, "status_id", -1 },
+	{ wc:INTEGER, "type_id", -1 },
+	{ wc:INTEGER, "product_id", -1 }
 }
 
 function real_index(map data, map request, sequence where="", integer append_to_where=1)
@@ -44,6 +46,8 @@ function real_index(map data, map request, sequence where="", integer append_to_
 	integer severity_id = map:get(request, "severity_id")
 	integer state_id = map:get(request, "state_id")
 	integer status_id = map:get(request, "status_id")
+	integer type_id = map:get(request, "type_id")
+	integer product_id = map:get(request, "product_id")
 
 	map:copy(request, data)
 
@@ -59,6 +63,12 @@ function real_index(map data, map request, sequence where="", integer append_to_
 	end if
 	if status_id > -1 then
 		local_where = append(local_where, sprintf("tstat.id=%d", { status_id }))
+	end if
+	if type_id > -1 then
+		local_where = append(local_where, sprintf("ttype.id=%d", { type_id }))
+	end if
+	if product_id > -1 then
+		local_where = append(local_where, sprintf("tprod.id=%d", { product_id }))
 	end if
 	
 	if length(local_where) then
@@ -113,6 +123,8 @@ end function
 wc:add_handler(routine_id("closed"), -1, "ticket", "closed", index_vars)
 
 sequence create_vars = {
+	{ wc:INTEGER, "type_id", -1 },
+	{ wc:INTEGER, "product_id", 1 },
 	{ wc:INTEGER,  "severity_id", -1 },
 	{ wc:INTEGER,  "category_id", -1 },
 	{ wc:SEQUENCE, "reported_release" },
@@ -146,6 +158,14 @@ function validate_do_create(map data, map request)
 	if map:get(request, "category_id") = -1 then
 		errors = wc:add_error(errors, "category_id", "You must select a category.")
 	end if
+	
+	if map:get(request, "product_id") = -1 then
+		errors = wc:add_error(errors, "product_id", "You must select a valid product.")
+	end if
+
+	if map:get(request, "type_id") = -1 then
+		errors = wc:add_error(errors, "type_id", "You must select a ticket type.")
+	end if
 
 	if atom(map:get(request, "subject")) or atom(map:get(request, "content")) then
 		dump_map("ticket_create", request)
@@ -164,6 +184,8 @@ end function
 
 function do_create(map data, map request)
 	ticket_db:create(
+		map:get(request, "type_id"),
+		map:get(request, "product_id"),
 		map:get(request, "severity_id"),
 		map:get(request, "category_id"),
 		map:get(request, "reported_release"),
@@ -203,6 +225,8 @@ wc:add_handler(routine_id("detail"), -1, "ticket", "view", detail_vars)
 
 sequence update_vars = {
 	{ wc:INTEGER, "id" },
+	{ wc:INTEGER, "type_id" },
+	{ wc:INTEGER, "product_id" },
 	{ wc:INTEGER, "severity_id" },
 	{ wc:INTEGER, "category_id" },
 	{ wc:SEQUENCE, "reported_release" },
@@ -239,6 +263,8 @@ function update(map data, map request)
 		-- Update some ticket values
 		ticket_db:update(
 			map:get(request, "id"),
+			map:get(request, "type_id"),
+			map:get(request, "product_id"),
 			map:get(request, "severity_id"),
 			map:get(request, "category_id"),
 			map:get(request, "reported_release"),
