@@ -79,7 +79,8 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 
 <%
 sequence quick_links = {
-    { "/forum/index.wc", "Forum Home" }
+    { "/forum/index.wc", "Forum Home" },
+    { "/wiki/euwiki.cgi?CreoleHelp", "Creole Markup"}
 }
 
 if has_role("user") then
