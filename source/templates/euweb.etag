@@ -26,7 +26,6 @@
 
 		<div id="logo">
 			<h1><span>Open</span>Euphoria</h1>
-			<h2><%= #title %></h2>
 		</div>
 		
 		<div id="menu">

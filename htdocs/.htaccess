@@ -12,6 +12,11 @@ AddHandler cgi-script ex exe
 #
 RewriteEngine on
 
+#IP_BAN_LIST
+RewriteCond %{REMOTE_ADDR} ^96\.224\.139\.195 [OR]
+RewriteCond %{REMOTE_ADDR} ^71\.190\.5\.103
+RewriteRule .* - [F]
+
 # If the requested file does not exist, rewrite
 RewriteRule ^user/profile/(.+)\.wc$ /euweb.ex?module=user&action=profile&user=$1 [L,QSA]
 RewriteRule ^forum/m/([0-9]+)\.wc$ /euweb.ex?module=forum&action=message&id=$1 [L,QSA]
