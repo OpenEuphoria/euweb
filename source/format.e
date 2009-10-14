@@ -107,12 +107,6 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 		case Plugin then
 			lHTMLText = ""
 
-		case StrikeText then
-			lHTMLText = "--" & pParms[1]
-
-		case InsertText then
-			lHTMLText = "++" & pParms[1]
-			
 		case HostID then
 			lHTMLText = "euforum"
 
