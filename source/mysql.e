@@ -43,8 +43,8 @@ function sprintf_sql(sequence sql, object values)
 	                idx += 1
 	            case 's' then -- escaped string
 					-- TODO: Use MySQL's escape string function
-	                ns &= sprintf("'%s'", { find_replace("\\", 
-						find_replace("'", values[idx], "''", 0), "\\\\")})
+	                ns &= sprintf("'%s'", { match_replace("\\", 
+						match_replace("'", values[idx], "''", 0), "\\\\")})
 	                idx += 1
 	            case 'd' then  -- integer
 	                ns &= sprintf("%d", {values[idx]})

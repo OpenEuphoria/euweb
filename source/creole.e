@@ -1390,7 +1390,7 @@ function get_passthru(sequence pRawText, atom pFrom)
 
 	lText = pRawText[lStartPos .. lEndPos - 1]
 	-- Convert any escaped `` tags
-	lText = search:find_replace("~``", lText, "``")
+	lText = search:match_replace("~``", lText, "``")
 
 	lText = Generate_Final(PassThru, lText)
 	return {lNewPos-1, lText}
@@ -1985,18 +1985,18 @@ function get_list(sequence pRawText, atom pFrom)
 	end while
 	lCodeStack = Generate_Final(ListItem, {255})
 	lPos = eu:find(255, lCodeStack)
-	lText = search:find_replace(lStartItem, lText, lCodeStack[1 .. lPos - 1], 0)
-	lText = search:find_replace(lEndItem, lText, lCodeStack[lPos + 1 .. $], 0)
+	lText = search:match_replace(lStartItem, lText, lCodeStack[1 .. lPos - 1], 0)
+	lText = search:match_replace(lEndItem, lText, lCodeStack[lPos + 1 .. $], 0)
 
 	lCodeStack = Generate_Final(OrderedList, {255})
 	lPos = eu:find(255, lCodeStack)
-	lText = search:find_replace(lStartOrdered, lText, lCodeStack[1 .. lPos - 1], 0)
-	lText = search:find_replace(lEndOrdered, lText, lCodeStack[lPos + 1 .. $], 0)
+	lText = search:match_replace(lStartOrdered, lText, lCodeStack[1 .. lPos - 1], 0)
+	lText = search:match_replace(lEndOrdered, lText, lCodeStack[lPos + 1 .. $], 0)
 
 	lCodeStack = Generate_Final(UnorderedList, {255})
 	lPos = eu:find(255, lCodeStack)
-	lText = search:find_replace(lStartUnordered, lText, lCodeStack[1 .. lPos - 1], 0)
-	lText = search:find_replace(lEndUnordered, lText, lCodeStack[lPos + 1 .. $], 0)
+	lText = search:match_replace(lStartUnordered, lText, lCodeStack[1 .. lPos - 1], 0)
+	lText = search:match_replace(lEndUnordered, lText, lCodeStack[lPos + 1 .. $], 0)
 
 	return {lNextPos, TAG_ENDPARA & lText & TAG_STARTPARA}
 end function

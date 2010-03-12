@@ -179,7 +179,7 @@ global function html_generator(integer pAction, sequence pParms, object pContext
 		case PassThru then
 			lHTMLText = pParms
 			for i = 1 to length(kHTML) do
-				lHTMLText = find_replace(kHTML[i][1], lHTMLText, kHTML[i][2])
+				lHTMLText = match_replace(kHTML[i][1], lHTMLText, kHTML[i][2])
 			end for
 			if not equal(pParms, lHTMLText) then
 				lHTMLText = "<div class=\"passthru\">" & lHTMLText & "</div>"
@@ -188,7 +188,7 @@ global function html_generator(integer pAction, sequence pParms, object pContext
 		case Sanitize then
 			lHTMLText = pParms
 			for i = 1 to length(kHTML) do
-				lHTMLText = find_replace(kHTML[i][1], lHTMLText, kHTML[i][2])
+				lHTMLText = match_replace(kHTML[i][1], lHTMLText, kHTML[i][2])
 			end for
 		
 		case CamelCase then

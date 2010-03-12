@@ -150,7 +150,7 @@ function post(map data, map request)
 	if sequence(map:get(data, "body_formatted")) then
 		
 		map:copy(request, data)
-		map:put(data, "quote_body", find_replace("\r\n", map:get(request, "body"), "\n"))
+		map:put(data, "quote_body", match_replace("\r\n", map:get(request, "body"), "\n"))
 
 	elsif id > 0 then
 		object msg = forum_db:get(id)
@@ -176,7 +176,7 @@ function post(map data, map request)
 		if quote or fork then
 			sequence body 
 			map:put(data, "quote", 1)
-			body = find_replace("\r\n", sprintf("[quote %s]\n%s\n[/quote]\n", {
+			body = match_replace("\r\n", sprintf("[quote %s]\n%s\n[/quote]\n", {
 				msg[MSG_AUTHOR_NAME], msg[MSG_BODY] }), "\n")
 			
 			if fork then
@@ -279,12 +279,12 @@ function edit(map data, map request)
 		end if
 	end if
 
-	message[MSG_BODY] = find_replace("\r\n", message[MSG_BODY], "\n")
+	message[MSG_BODY] = match_replace("\r\n", message[MSG_BODY], "\n")
 
 	if sequence(map:get(data, "body_formatted")) then
 		
 		map:copy(request, data)
-		map:put(data, "body", find_replace("\r\n", map:get(request, "body"), "\n"))
+		map:put(data, "body", match_replace("\r\n", map:get(request, "body"), "\n"))
 
 	else
 

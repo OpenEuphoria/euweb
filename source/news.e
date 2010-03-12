@@ -64,7 +64,7 @@ function edit(map data, map request)
 	end if
 	
 	if map:has(data, "content") then
-		map:put(data, "content", find_replace("\r\n", map:get(data, "content"), "\n"))
+		map:put(data, "content", match_replace("\r\n", map:get(data, "content"), "\n"))
 	end if
 
 	return { TEXT, t_edit:template(data) }

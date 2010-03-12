@@ -127,10 +127,10 @@ end function
 
 export function format_body(sequence body, integer format_quotes=1)
 	body = creole_parse(body, routine_id("generate_html"), "0")
-	body = search:find_replace("&amp;#", body, "&#")
+	body = search:match_replace("&amp;#", body, "&#")
 
 	for i = 1 to length(smilies) by 2 do
-		body = search:find_replace(smilies[i], body, smilies[i+1])
+		body = search:match_replace(smilies[i], body, smilies[i+1])
 	end for
 
 	return body
