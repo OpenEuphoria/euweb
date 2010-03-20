@@ -3972,7 +3972,9 @@ global function creole_parse(object pRawText, object pFinalForm_Generator = -1, 
 			lIdx = find_bookmark(vUnresolved[i][1], vUnresolved[i][2], vUnresolved[i][3], vUnresolved[i][4])
 			if lIdx = 0 then
 				lPluginResult = Generate_Final(InternalLink,{"unresolved", vUnresolved[i][2]})
+				if vVerbose then
 				printf(1, "Unresolved link='%s' display='%s' context='%s'\n", vUnresolved[i][1..3])
+				end if
 			else
 
 				sequence lFileName
