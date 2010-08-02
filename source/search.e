@@ -7,6 +7,7 @@ include edbi/edbi.e
 -- Webclay includes
 include webclay/webclay.e as wc
 include webclay/logging.e as log
+include webclay/escape.e as esc
 
 -- Local includes
 include templates/search/result.etml as t_result
@@ -77,8 +78,8 @@ function result(map:map data, map:map request)
 	end for
 
 	map:put(data, "items", rows)
-	map:put(data, "s", search_term)
-	map:put(data, "search_term", search_term)
+	map:put(data, "s", htmlspecialchars(search_term))
+	map:put(data, "search_term", htmlspecialchars(search_term))
 	map:put(data, "page", page_no)
 	map:put(data, "per_page", per_page)
 	map:put(data, "s_news", s_news)
