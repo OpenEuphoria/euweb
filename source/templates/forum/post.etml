@@ -1,4 +1,5 @@
 <%@ include templates/euweb.etag as euweb %>
+<%@    sequence div_class = "normal" %>
 
 <%- euweb:head title="Forum Post" active="forum" %>
 
@@ -48,6 +49,9 @@
 </script>
 
 <h4><span>More</span> Common Formatting</h4>
+<p>
+<a href="http://oe.cowgar.com/wiki/euwiki.cgi?CreoleHelp">To see even more formatting options, click here.</a>
+</p>
 <pre>
 Force a line break \\
 

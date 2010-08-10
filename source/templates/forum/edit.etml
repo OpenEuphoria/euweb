@@ -1,4 +1,5 @@
 <%@ include templates/euweb.etag as euweb %>
+<%@    sequence div_class = "normal" %>
 
 <%- euweb:head title="Forum Edit" active="forum" %>
 
