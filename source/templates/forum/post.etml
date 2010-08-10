@@ -6,9 +6,9 @@
 <form method="post" action="/forum/save.wc">
     <% if length(@body_formatted) then %>
     	<h3><span>Preview</span> Message</h3>
-
-    	<%= @body_formatted %>
-	    
+		<div class="post forum <%= div_class %>">
+			<%= @body_formatted %>
+	    </div>
         <input class="button" type="submit" name="save" value="Post" />
         <br />&nbsp;
     <% end if %>
