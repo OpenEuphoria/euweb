@@ -1,0 +1,43 @@
+euweb forum software
+https://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria/tools/euweb/trunk
+
+Dependencies:
+=======================
+
+edbi       http://jeremy.cowgar.com/svn/edbi/trunk
+webclay2   http://jeremy.cowgar.com/svn/webclay2/trunk
+
+The edbi and webclay2 files are included like:
+
+    include edbi/edbi.e
+    include webclay/webclay.e as wc
+
+Therefore, they should be put into a directory called "edbi" or
+"webclay", respectively that is a subdirectory of a directory 
+in the include path (configurable via eu.cfg file, -i flags 
+on the command line or EUDIR) or of the euweb source directory.
+
+
+Configuration
+=======================
+
+Read source/config.e.  Create your own configuration file and include it from
+source/config.e inside an ifdef.  A sample config file might look like:
+
+        public constant DB_DRIVERS_PATH = "drivers"
+        public constant DB_URL = "mysql://user:password@localhost:3306/database_name"
+
+        -- Do NOT include the trailing slash
+        public constant ROOT_URL = "http://localhost"
+
+        public constant AUTO_LOGIN_UID = 0 -- 0 disables, otherwise set to your UID
+
+        -- reCAPTCHA keys
+        public constant RECAPTCHA_PRIVATE_KEY = ""
+        public constant RECAPTCHA_PUBLIC_KEY = ""
+
+
+Database
+=========================
+
+euweb uses a MySQL database, so you'll need to have the MySQL server installed.
