@@ -18,7 +18,7 @@ in the include path (configurable via eu.cfg file, -i flags
 on the command line or EUDIR) or of the euweb source directory.
 
 
-Configuration
+config.e
 =======================
 
 Read source/config.e.  Create your own configuration file and include it from
@@ -41,3 +41,46 @@ Database
 =========================
 
 euweb uses a MySQL database, so you'll need to have the MySQL server installed.
+
+
+Configuring Apache
+=======================
+euweb uses some rewrite rules to make some friendly urls, but 
+it uses an htaccess also.
+
+	Options +ExecCGI
+	RewriteEngine on
+
+	#IP_BAN_LIST
+	#RewriteCond %{REMOTE_ADDR} ^189\.84\.117\.2 [OR]
+	#RewriteCond %{REMOTE_ADDR} ^96\.246\.214\.212 [OR]
+	#RewriteCond %{REMOTE_ADDR} ^200\.215\.15\.10 [OR]
+	#RewriteCond %{REMOTE_ADDR} ^96\.224\.139\.195 [OR]
+	#RewriteCond %{REMOTE_ADDR} ^71\.190\.5\.103
+	#RewriteRule .* - [F]
+
+	#RewriteRule (.*) updating.html
+	#RewriteCond %{HTTP_HOST} !^oe\.cowgar\.com
+	#RewriteRule (.*)$ http://oe.cowgar.com/$1  [L,R=301]
+
+	RewriteRule ^docs/$ /docs/eu400_0001.html
+	RewriteRule ^user/profile/(.+)\.wc$
+	/euweb.cgi?module=user&action=profile&user=$1 [L,QSA]
+	RewriteRule ^forum/m/([0-9]+)\.wc$
+	/euweb.cgi?module=forum&action=message&id=$1 [L,QSA]
+	RewriteRule ^([^\.]+)/([0-9]+)\.wc$
+	/euweb.cgi?module=$1&action=view&id=$2 [L,QSA]
+	RewriteRule ^(.+)/([^\.]+)\.wc$ /euweb.cgi?module=$1&action=$2 [L,QSA]
+	RewriteRule ^([^\.]+)\.wc$ /euweb.cgi?module=$1&action=index [L,QSA]
+	RewriteRule ^([^\.]+)/$ /euweb.cgi?module=$1&action=index [L,QSA]
+	RewriteRule ^$ /euweb.cgi?module=index&action=index [L,QSA]
+
+	<Files ~ "^\.htaccess">
+	Order allow,deny
+	Deny from all
+	</Files>
+
+	<Files ~ "^eu\.cfg">
+	Order allow,deny
+	Deny from all
+	</Files>
