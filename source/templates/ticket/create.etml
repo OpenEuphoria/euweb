@@ -99,8 +99,9 @@
 			<tr>
 				<th>Content:</th>
 				<td colspan="5">
-					<textarea id="content" name="content" rows="15" cols="70" style="width: 100%"
-						><%= _h(@content) %></textarea>
+					<textarea id="content" name="content" rows="15" cols="70" style="width: 100%">
+						<%= _h(@content) %>
+					</textarea>
 					<%- euweb:creole_previewer name="content" %>
 				</td>
 			</tr>

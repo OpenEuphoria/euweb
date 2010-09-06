@@ -32,19 +32,19 @@ constant BASE_QUERY = """SELECT
 	tsev.name AS severity, tcat.name AS category, tstat.name AS status,
 	tstate.name AS state, t.product_id, tprod.name, t.type_id, ttype.name
 FROM
-	ticket AS t, users AS tsb, users AS tas, ticket_severity AS tsev,
-	ticket_category AS tcat, ticket_status AS tstat, ticket_state AS tstate,
-	ticket_product AS tprod, ticket_type AS ttype
+	ticket AS t
+	join users AS tsb on tsb.id=t.submitted_by_id
+	left join users AS tas on tas.id=t.assigned_to_id
+	join ticket_severity AS tsev on tsev.id=t.severity_id
+	join ticket_category AS tcat on tcat.id=t.category_id
+	join ticket_status AS tstat on tstat.id=t.status_id
+	join ticket_state AS tstate on tstate.id=t.state_id
+	join ticket_product AS tprod on tprod.id=t.product_id
+	join ticket_type AS ttype on ttype.id=t.type_id
 WHERE
-	tsb.id = t.submitted_by_id AND
-	tas.id = t.assigned_to_id AND
-	tsev.id = t.severity_id AND
-	tcat.id = t.category_id AND
-	tstat.id = t.status_id AND
-	tstate.id = t.state_id AND
-	tprod.id = t.product_id AND
-	ttype.id = t.type_id
+	t.id != 0
 """
+
 
 --**
 -- Get a list of tickets for the given criteria
