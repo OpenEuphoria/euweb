@@ -723,3 +723,12 @@ padding-top: 5px;
 padding-bottom: 5px;
 }
 
+#content_preview pre {
+padding-left: 15px;
+margin-left: 20px;
+border-left: 2px solid #8090a0;
+margin-right: 10px;
+background-color: #d0e0f0;
+padding-top: 5px;
+padding-bottom: 5px;
+}
