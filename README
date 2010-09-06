@@ -4,21 +4,12 @@ https://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria/tools/euweb/trun
 Dependencies:
 =======================
 
+creole     https://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria/tools/creole/trunk
 edbi       http://jeremy.cowgar.com/svn/edbi/trunk
 webclay2   http://jeremy.cowgar.com/svn/webclay2/trunk
 
-The edbi and webclay2 files are included like:
 
-    include edbi/edbi.e
-    include webclay/webclay.e as wc
-
-Therefore, they should be put into a directory called "edbi" or
-"webclay", respectively that is a subdirectory of a directory 
-in the include path (configurable via eu.cfg file, -i flags 
-on the command line or EUDIR) or of the euweb source directory.
-
-
-config.e
+Configuring euweb
 =======================
 
 Read source/config.e.  Create your own configuration file and include it from
@@ -36,51 +27,103 @@ source/config.e inside an ifdef.  A sample config file might look like:
         public constant RECAPTCHA_PRIVATE_KEY = ""
         public constant RECAPTCHA_PUBLIC_KEY = ""
 
+Create a eu.cfg file in the euweb/htdocs directory.  It should have the following:
+
+  -batch
+  -i /dir/to/euphoria/include
+  -p etml,etag:/dir/to/webclay/webclay/etml.ex
+  -i /dir/to/edbi
+  -i /dir/to/creole
+  -i /dir/to/webclay
+  -i /dir/to/euweb/source
+  -d <ifdef used in config.e>
+
+This enables the webclay preprocessor and ensures that all of the include
+files can be found when running euweb.
+
 
 Database
 =========================
 
 euweb uses a MySQL database, so you'll need to have the MySQL server installed.
+The "sql/euweb.sql" file will create the database schema required, and adds 
+a few users and a post, as well.  It uses a database named euweb.  To run
+it:
+
+$ mysql -u <username> -p < euweb.sql
 
 
 Configuring Apache
 =======================
-euweb uses some rewrite rules to make some friendly urls, but 
-it uses an htaccess also.
 
-	Options +ExecCGI
-	RewriteEngine on
+Configuration is somewhat different based on the version of 
+Apache that you are using.  Below are configuration guides
+for Apache 1.3 and Apache 2.
 
-	#IP_BAN_LIST
-	#RewriteCond %{REMOTE_ADDR} ^189\.84\.117\.2 [OR]
-	#RewriteCond %{REMOTE_ADDR} ^96\.246\.214\.212 [OR]
-	#RewriteCond %{REMOTE_ADDR} ^200\.215\.15\.10 [OR]
-	#RewriteCond %{REMOTE_ADDR} ^96\.224\.139\.195 [OR]
-	#RewriteCond %{REMOTE_ADDR} ^71\.190\.5\.103
-	#RewriteRule .* - [F]
+Apache 1.3
+-----------------------
 
-	#RewriteRule (.*) updating.html
-	#RewriteCond %{HTTP_HOST} !^oe\.cowgar\.com
-	#RewriteRule (.*)$ http://oe.cowgar.com/$1  [L,R=301]
 
-	RewriteRule ^docs/$ /docs/eu400_0001.html
-	RewriteRule ^user/profile/(.+)\.wc$
-	/euweb.cgi?module=user&action=profile&user=$1 [L,QSA]
-	RewriteRule ^forum/m/([0-9]+)\.wc$
-	/euweb.cgi?module=forum&action=message&id=$1 [L,QSA]
-	RewriteRule ^([^\.]+)/([0-9]+)\.wc$
-	/euweb.cgi?module=$1&action=view&id=$2 [L,QSA]
-	RewriteRule ^(.+)/([^\.]+)\.wc$ /euweb.cgi?module=$1&action=$2 [L,QSA]
-	RewriteRule ^([^\.]+)\.wc$ /euweb.cgi?module=$1&action=index [L,QSA]
-	RewriteRule ^([^\.]+)/$ /euweb.cgi?module=$1&action=index [L,QSA]
-	RewriteRule ^$ /euweb.cgi?module=index&action=index [L,QSA]
+Apache 2
+-----------------------
 
-	<Files ~ "^\.htaccess">
-	Order allow,deny
-	Deny from all
-	</Files>
+Configuration files can be in different places on different 
+systems.  This guide will assume the following files:
 
-	<Files ~ "^eu\.cfg">
-	Order allow,deny
-	Deny from all
-	</Files>
+  /etc/apache2/apache2.conf
+  /etc/apache2/sites-enabled/000-default
+
+If you do not have the second, look for some lines like
+the following in apache2.conf:
+
+  # Include the virtual host configurations:
+  Include /etc/apache2/sites-enabled/
+
+The 000-default file should look like this:
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+
+	DocumentRoot /var/www/htdocs
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride All
+	</Directory>
+	
+	<Directory /var/www/htdocs>
+		Options Indexes FollowSymLinks MultiViews ExecCGI
+		AllowOverride All
+		Order allow,deny
+		allow from all
+		AddHandler cgi-script .ex
+	</Directory>
+
+	ErrorLog /var/log/apache2/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/access.log combined
+
+</VirtualHost>
+
+This assumes that /var/www/htdocs is the root directory from
+which apache will serve pages.  You can simply make a symlink
+from /var/www to your euweb htdocs dir:
+
+  $ cd /var/www
+  $ sudo ln -s /dir/to/euweb/htdocs htdocs
+
+
+.htaccess
+-----------------------
+
+euweb uses some rewrite rules to make some friendly urls through
+an .htaccess file.  A default .htaccess is in the repository,
+though you can additionally configure it.  
+
+While developing and testing, your local IP may end up being in 
+the banned list.  If this happens, you can simply delete that 
+line from the IP_BAN_LIST, or revert the file via svn (assuming
+you haven't changed anything else).

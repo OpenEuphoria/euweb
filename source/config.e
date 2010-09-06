@@ -38,6 +38,9 @@ elsifdef CKL then
 elsifdef JEREMY then
 	public include config_jeremy.e
 
+elsifdef MATT then
+	public include config_matt.e
+	
 elsedef
 	include std/error.e
 	crash("Invalid configuration, please see config.e")
