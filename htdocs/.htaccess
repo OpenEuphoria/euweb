@@ -23,4 +23,5 @@ RewriteRule ^forum/m/([0-9]+)\.wc$ /euweb.ex?module=forum&action=message&id=$1 [
 RewriteRule ^([^\.]+)/([0-9]+)\.wc$ /euweb.ex?module=$1&action=view&id=$2 [L,QSA]
 RewriteRule ^(.+)/([^\.]+)\.wc$ /euweb.ex?module=$1&action=$2 [L,QSA]
 RewriteRule ^([^\.]+)\.wc$ /euweb.ex?module=$1&action=index [L,QSA]
+RewriteRule ^([^\.]+)/$ /euweb.ex?module=$1&action=index [L,QSA]
 RewriteRule ^$ /euweb.ex?module=index&action=index [L,QSA]
