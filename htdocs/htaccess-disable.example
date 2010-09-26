@@ -1,0 +1,10 @@
+# Disable parent directory's euweb config for Apache
+# Allow normal directory listings
+
+Options -ExecCGI
+DirectoryIndex euweb.ex index.html index.htm
+
+#
+# Setup mod_rewrite
+#
+RewriteEngine off
