@@ -610,8 +610,8 @@ div.LEVELTOC div.toc_2 { font-size: 1.2em; font-weight: bold; padding: 5px 0px 0
 div.LEVELTOC div.toc_3 { font-weight: bold; font-style: italic; padding-left: 30px; }
 div.LEVELTOC div.toc_4 { padding-left: 60px; }
 
-.forum_message a:link {padding-right: 20px;background: url("/images/new.png") top right no-repeat;}
-.forum_message a:visited {background: 0;padding-right: 0px;} 
+a.forum_message {padding-right: 20px;background: url("/images/new.png") top right no-repeat;}
+a:visited.forum_message {background: 0;padding-right: 0px;}
 
 .wiki table {
 margin-top: 5px;
