@@ -29,6 +29,11 @@ function salt(sequence salt, sequence message)
   integer s = 1, m = 1, ret
   sequence new = ""
 
+  if length(salt) = 0 then
+  	-- someone put in an empty username
+	salt = " "
+  end if
+
   while m < length(message) do
     if s > length(salt) then
       s = 1
