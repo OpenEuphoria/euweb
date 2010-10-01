@@ -33,7 +33,20 @@ include ticket.e
 include user.e
 include wiki.e
 
+constant
+	EUWEB_JS = `
+	<script src="/js/prototype.js" type="text/javascript"></script> 
+	<script src="/js/scriptaculous.js" type="text/javascript"></script> 
+	`,
+	
+	GOOGLE_JS = `
+	<script src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.1.0/prototype.js" type="text/javascript"></script> 
+	<script src="http://ajax.googleapis.com/ajax/libs/scriptaculous/1.8.3/scriptaculous.js" type="text/javascript"></script
+	`
+	
+
 procedure app(object data, object vars)
+    map:put( data, "js_libs", GOOGLE_JS )
     -- Auto Login trumps a cookie that may exist.
     if AUTO_LOGIN_UID = 0 then
         sequence user_cookie = wc:cookie("euweb_sessinfo")
@@ -43,6 +56,9 @@ procedure app(object data, object vars)
             if sequence(u) then
                 current_user = u
                 user_db:update_last_login(u)
+                if u[USER_LOCAL_JS] then
+					map:put( data, "js_libs", EUWEB_JS )
+				end if
             end if
         end if
     end if

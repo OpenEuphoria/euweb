@@ -50,6 +50,18 @@ include templates/euweb.etag as euweb
 			</td>
 		</tr>
 		<tr>
+			<th>Javascript:</th>
+			<td>
+				<select name="local_js">
+					<option value="0" <% if @local_js = 0 then %>selected<% end if %> >
+						Use javascript libraries hosted at Google (default, recommended)
+					<option value="1" <% if @local_js = 1 then %>selected<% end if %> >
+						Use javascript libraries hosted at OpenEuphoria</option>
+					</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<th>&nbsp;</th>
 			<td>
 				You only need to fill in New Password and Confirm password <strong>if</strong> you

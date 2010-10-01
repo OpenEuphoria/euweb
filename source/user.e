@@ -98,8 +98,9 @@ public function profile(map data, map invars)
 	map:put(data, "user_disabled", user[USER_DISABLED])
 	map:put(data, "user_disabled_reason", user[USER_DISABLED_REASON])
 	map:put(data, "user_ip_addr", user[USER_IP_ADDR])
+	map:put(data, "user_local_js", user[USER_LOCAL_JS])
 	map:put(data, "user_roles", user[USER_ROLES])
-
+	
 	return { TEXT, t_profile:template(data) }
 end function
 wc:add_handler(routine_id("profile"), -1, "user", "profile", profile_invars)
@@ -233,11 +234,13 @@ function validate_do_signup(integer data, map:map vars)
 			url:encode(map:get(vars, "recaptcha_challenge_field")),
 			url:encode(map:get(vars, "recaptcha_response_field")) })
 
-		object recaptcha_result = get_url(recaptcha_url, postdata)
-		if length(recaptcha_result) < 2 then
-	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
-		elsif not match("true", recaptcha_result[2]) = 1 then
-			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response was incorrect.")
+		if length(RECAPTCHA_PUBLIC_KEY) then
+			object recaptcha_result = get_url(recaptcha_url, postdata)
+			if length(recaptcha_result) < 2  then
+				errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
+			elsif not match("true", recaptcha_result[2]) = 1 then
+				errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response was incorrect.")
+			end if
 		end if
 	end if
 
@@ -384,6 +387,7 @@ function profile_edit(map data, map invars)
 	map:put(data, "email", u[USER_EMAIL])
 	map:put(data, "show_email", u[USER_SHOW_EMAIL])
 	map:put(data, "forum_default_view", u[USER_FORUM_DEFAULT_VIEW])
+	map:put(data, "local_js", u[USER_LOCAL_JS])
 
 	if map:has(invars, "post") then
 		map:copy(invars, data) 
@@ -399,6 +403,7 @@ sequence profile_save_invars = {
 	{ wc:SEQUENCE, "location", "" },
 	{ wc:SEQUENCE, "show_email", "off" },
 	{ wc:SEQUENCE, "forum_default_view", 1 },
+	{ wc:SEQUENCE, "local_js", 0 },
 	{ wc:SEQUENCE, "password", "" }
 }
 
@@ -436,15 +441,15 @@ end function
 
 function profile_save(map data, map vars)
 	object r = edbi:execute(`UPDATE users SET name=%s, location=%s, forum_default_view=%s,
-		show_email=%d, email=%s, login_time=login_time WHERE user=%s`, { 
+		show_email=%d, email=%s, login_time=login_time, local_js=%d WHERE user=%s`, { 
 			map:get(vars, "full_name"), 
 			map:get(vars, "location"), 
 			map:get(vars, "forum_default_view"),
 			equal("on", map:get(vars, "show_email")),
 			map:get(vars, "email"),
+			equal( "1", map:get(vars, "local_js") ),
 			map:get(vars, "user")
 		})
-
 	if length(map:get(vars, "password")) then
 		user_db:update_password(map:get(vars, "user"), map:get(vars, "password"))
 	end if

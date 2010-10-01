@@ -65,6 +65,16 @@ end function
 			<th>Last Seen:</th>
 			<td><%= @user_last_seen %></td>
 		</tr>
+		<tr>
+			<th>Javascript:</th>
+			<td>
+				<% if @user_local_js then %>
+					Use javascript libraries hosted at OpenEuphoria
+				<% else %>
+					Use javascript libraries hosted at <a href="http://code.google.com/apis/libraries/">Google</a> (default, recommended)
+				<% end if %>
+			</td>
+		</tr>
 	</table>
 
 	<br class="clear" />
