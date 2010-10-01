@@ -1,5 +1,13 @@
 <%@ 
 include templates/euweb.etag as euweb 
+
+function make_atom(object x)
+ if atom(x) then
+  return x
+ else
+  return 0
+ end if
+end function
 %>
 
 <%- euweb:head title="User Profile" active="home" %>
@@ -32,7 +40,7 @@ include templates/euweb.etag as euweb
 			<td>
 				<input type="text" name="email" size="40" value="<%= @email %>" />
 				<input type="checkbox" name="show_email" 
-					<% if @show_email then %>checked="checked"<% end if %> />
+					<% if make_atom(@show_email) then %>checked="checked"<% end if %> />
 				Show Email to other authenticated users?
 			</td>
 		</tr>
@@ -41,10 +49,10 @@ include templates/euweb.etag as euweb
 			<td>
 				<select name="forum_default_view">
 					<option value="1"
-						<% if @forum_default_view = 1 then %>selected="selected"<% end if %>
+						<% if make_atom(@forum_default_view) = 1 then %>selected="selected"<% end if %>
 					>Topic list</option>
 					<option value="2"
-						<% if @forum_default_view = 2 then %>selected="selected"<% end if %>
+						<% if make_atom(@forum_default_view) = 2 then %>selected="selected"<% end if %>
 					>Message list</option>
 				</select>
 			</td>
