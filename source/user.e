@@ -403,8 +403,8 @@ sequence profile_save_invars = {
 	{ wc:SEQUENCE, "location", "" },
 	{ wc:SEQUENCE, "show_email", "off" },
 	{ wc:SEQUENCE, "forum_default_view", 1 },
-	{ wc:SEQUENCE, "local_js", 0 },
-	{ wc:INTEGER, "password", "" }
+	{ wc:INTEGER, "local_js", 0 },
+	{ wc:SEQUENCE, "password", "" }
 }
 
 function validate_profile_save(map data, map vars)
