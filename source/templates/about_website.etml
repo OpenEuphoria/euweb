@@ -6,7 +6,7 @@
 <p>
     The website is written using 100% Euphoria technologies including:
     <ul>
-        <li><a href="http://www.webclay.org/">WebClay</a> - a Euphoria web framework</li>
+        <li><a href="http://openeuphoria.org/wiki/euwiki.ex?WebClay">WebClay</a> - a Euphoria web framework</li>
         <li>ETML - Euphoria Text Markup Language, which mixes Euphoria code and any text format (in most cases HTML)</li>
         <li>ESQL - Allows the direct inclusion of SQL schema files thus generating basic CRUD routines and finders based on the indexes</li>
     </ul>
