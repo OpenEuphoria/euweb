@@ -447,7 +447,7 @@ function profile_save(map data, map vars)
 			map:get(vars, "forum_default_view"),
 			equal("on", map:get(vars, "show_email")),
 			map:get(vars, "email"),
-			equal( "1", map:get(vars, "local_js") ),
+			map:get(vars, "local_js" ),
 			map:get(vars, "user")
 		})
 	if length(map:get(vars, "password")) then
