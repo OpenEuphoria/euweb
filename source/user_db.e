@@ -159,8 +159,8 @@ public function set_user_ip(sequence user, sequence ip)
 end function
 
 public function create(sequence code, sequence password, sequence email)
-	if edbi:execute("INSERT INTO users (user, password, email) VALUES (%s,%s,%s)", {
-		code, md5hex(salt(code,password)), email })
+	if edbi:execute("INSERT INTO users (user, password, email) VALUES (%s,SHA1(%s),%s)", {
+		code, password, email })
 	then
 		crash("Couldn't insert user into the database: %s", { edbi:error_message() })
 	end if
@@ -193,8 +193,8 @@ public procedure enable(sequence uname)
 end procedure
 
 public procedure set_password(sequence uname, sequence password)
-	edbi:execute("UPDATE users SET password=%s WHERE user=%s", { 
-		md5hex(salt(uname,password)), uname })
+	edbi:execute("UPDATE users SET password=SHA1(%s) WHERE user=%s", { 
+		password, uname })
 end procedure
 
 public function is_old_account(sequence user)
