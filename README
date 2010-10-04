@@ -39,7 +39,12 @@ Create a eu.cfg file in the euweb/htdocs directory.  It should have the followin
   -d <ifdef used in config.e>
 
 This enables the webclay preprocessor and ensures that all of the include
-files can be found when running euweb.
+files can be found when running euweb.  The preprocessor needs to be run
+by a user that can write the post processed files.  The cgi process likely
+will not be running with those permissions.  For the initial configuration,
+and any time any of the templates in euweb/source/templates change, you
+will probably need to execute euweb/htdocs/euweb.ex manually from the 
+command line in order to reprocess the templates.
 
 
 Database
