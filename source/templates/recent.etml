@@ -25,7 +25,7 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap" align="center"><%= _h(item[recent:TYPE]) %></td>
-            <td nowrap="nowrap">
+            <td>
                 <a href="<%= item[recent:URL] %>"><%= _h(item[recent:SUBJECT]) %></a>
             </td>
             <td nowrap="nowrap">
