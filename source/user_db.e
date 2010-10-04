@@ -92,15 +92,14 @@ end function
 
 public function get_by_login(sequence code, sequence password)
 	-- try the new method first, it's hoped that it will become the most common
-	sequence fields = select_fields
-	
 	object u = edbi:query_row("SELECT " & select_fields & 
 		" FROM users WHERE (LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)) AND password=SHA1(%s)",
 		{ code, code, password })
+	
 	if atom(u) then
 		u = edbi:query_row("SELECT " & select_fields & 
-			", user FROM users WHERE lower(user)=lower(%s) AND password=md5(%s) LIMIT 1", 
-			{ code, salt(code,password) })
+			" FROM users WHERE user=%s AND password=%s LIMIT 1", 
+			{ code, md5hex(salt(code,password)) })
 		
 		if atom(u) then
 			return { 0, "Invalid account" }
@@ -160,8 +159,8 @@ public function set_user_ip(sequence user, sequence ip)
 end function
 
 public function create(sequence code, sequence password, sequence email)
-	if edbi:execute("INSERT INTO users (user, password, email) VALUES (%s,md5(%s),%s)", {
-		code, salt(code,password), email })
+	if edbi:execute("INSERT INTO users (user, password, email) VALUES (%s,%s,%s)", {
+		code, md5hex(salt(code,password)), email })
 	then
 		crash("Couldn't insert user into the database: %s", { edbi:error_message() })
 	end if
