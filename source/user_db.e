@@ -104,6 +104,10 @@ public function get_by_login(sequence code, sequence password)
 		if atom(u) then
 			return { 0, "Invalid account" }
 		end if
+
+		-- if we are here, then there was a successful MD5 password match
+		-- we can safely update the password to the new SHA1 format now
+		update_password(code, password)
 	end if
 	
 	if u[USER_DISABLED] then
