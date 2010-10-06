@@ -25,7 +25,7 @@
 
     <p>
         Old bugs are being run out on our old bug tracking system:
-        <a href="http://sourceforge.net/tracker/?group_id=182827&atid=902782">SourceForge Bug Tracker</a>
+        <a href="http://sourceforge.net/tracker/?group_id=182827&amp;atid=902782">SourceForge Bug Tracker</a>
     </p>
 
     <form method="GET" style="margin-bottom:10px;">
