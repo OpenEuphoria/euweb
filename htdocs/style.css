@@ -246,7 +246,7 @@ margin-bottom: 2.0em;
 
 #main_inner
 {
-position: relative;
+/* position: relative; */
 width: 950px;
 margin: 0 auto;
 padding-top: 3.5em;
@@ -261,7 +261,7 @@ border-bottom: dotted 1px #E1E1E1;
 {
 font-size: 2.1em;
 padding-bottom: 0.1em;
-margin-bottom: 0.8em;
+/* margin-bottom: 0.8em; */
 }
 
 #main_inner h4
@@ -274,22 +274,23 @@ margin-top: 0.95em;
 
 #main_inner .post
 {
-position: relative;
+/* position: relative; */
 }
 
 #main_inner .post h3
 {
-position: relative;
+/* position: relative; */
 font-size: 1.7em;
-padding-bottom: 1.2em;
+/* padding-bottom: 1.2em; */
 }
 
 #main_inner .post ul.post_info
 {
 list-style: none;
-position: absolute;
-top: 3em;
 font-size: 0.8em;
+border-bottom: 1px dotted #E1E1E1;
+margin-top: 1em;
+padding-bottom: 1em;
 }
 
 #main_inner .post ul.post_info li
