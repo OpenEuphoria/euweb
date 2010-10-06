@@ -35,7 +35,7 @@ sequence KnownWikis = {
 	{"TICKET",  	"http://openeuphoria.org/ticket/view.wc?id="},
 	{"MESSAGE", 	"http://openeuphoria.org/forum/view.wc?id="},
 	{"NEWS",		"http://openeuphoria.org/news/view.wc?id="},
-	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&revision="}
+	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&amp;revision="}
 }
 
 function generate_html(integer pAction, sequence pParms, object pContext)

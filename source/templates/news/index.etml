@@ -38,7 +38,7 @@ for i = 1 to length(articles) do
 			<% end if %>
 		</ul>					
 
-		<p><%= article[CONTENT] %></p>
+		<%= article[CONTENT] %>
 	</div>
 
 <% end for %>
