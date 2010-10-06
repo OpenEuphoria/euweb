@@ -97,10 +97,15 @@ public function get_by_login(sequence code, sequence password)
 		{ code, code, password })
 	
 	if atom(u) then
-		u = edbi:query_row("SELECT " & select_fields & 
-			" FROM users WHERE user=%s AND password=%s LIMIT 1", 
-			{ code, md5hex(salt(code,password)) })
-		
+		ifdef X86_64 then
+			u = edbi:query_row("SELECT " & select_fields & 
+				" FROM users WHERE user=%s AND password=md5(%s) LIMIT 1", 
+				{ code, salt(code,password) })
+		elsedef
+			u = edbi:query_row("SELECT " & select_fields & 
+				" FROM users WHERE user=%s AND password=%s LIMIT 1", 
+				{ code, md5hex(salt(code,password)) })
+		end ifdef
 		if atom(u) then
 			return { 0, "Invalid account" }
 		end if
