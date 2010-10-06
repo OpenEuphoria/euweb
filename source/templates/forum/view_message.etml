@@ -19,7 +19,7 @@ end if
 
 <div class="post forum">
     <h3><%= _h(@subject) %></h3>
-	<a name="<%= @id %>"></a>
+	<a name="<%= sprintf("%d",@id ) %>"></a>
 	<ul class="post_info">
 		<li class="date">Posted by <%- euweb:user_profile user=@author_name show_public_roles=1 %> 
 		<%= @created_at %></li>
