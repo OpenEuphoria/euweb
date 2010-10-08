@@ -151,7 +151,6 @@ background: #440000 url('images/n1.gif') repeat-x;
 
 #header_inner
 {
-position: relative;
 width: 950px;
 height:64px;
 margin: 0 auto;
@@ -161,7 +160,7 @@ margin: 0 auto;
 
 #logo
 {
-position: absolute;
+/* position: absolute; */
 /* bottom: 0.6em; */
 }
 
@@ -191,9 +190,9 @@ font-size: 1.0em;
 
 #menu
 {
-position: absolute;
-right: 0em;
-bottom: 0em;
+/* position: absolute; */
+/* right: 1ex; */
+/* bottom: 0em; */
 }
 
 #menu ul
@@ -250,6 +249,7 @@ margin-bottom: 2.0em;
 width: 950px;
 margin: 0 auto;
 padding-top: 3.5em;
+/* overflow-x: scroll; */
 }
 
 #main_inner h3,h4
@@ -435,7 +435,7 @@ max-width: 2.5em;
 	#primaryContent_2columns
 	{
 	position: relative;
-	margin-right: 17em;
+	margin-right: 17ex;
 	}
 
 	#columnA_2columns
@@ -443,7 +443,7 @@ max-width: 2.5em;
 	position: relative;
 	float: left;
 	width: 100%;
-	margin-right: -17em;
+	margin-right: -17ex;
 	padding-right: 2em;
 	}
 
@@ -452,11 +452,12 @@ max-width: 2.5em;
 	#secondaryContent_2columns
 	{
 	float: right;
+	width: 17ex;
 	}
 
 	#columnC_2columns
 	{
-	width: 13.0em;
+	width: 17ex;
 	float: left;
 	padding: 0em 0em 0.5em 2em;
 	border-left: dotted 1px #E1E1E1;
@@ -493,6 +494,7 @@ div.error_box {
 #main_inner ul, #main_inner ol {
 	padding-bottom: 0px;
 	margin-bottom: 0px;
+	
 }
 
 #main_inner ul li, #main_inner ol li {
@@ -562,6 +564,7 @@ div.error_box {
 
 #main_inner .forum {
 	border: dotted 1px #C1C1C1;
+	overflow-x: auto;
 }
 
 #main_inner .forum p {
@@ -736,13 +739,14 @@ background-color: rgb(200, 255, 200);
 background-color: rgb(255, 200, 200);
 }
 .post pre {
-padding-left: 15px;
-margin-left: 20px;
+padding-left: 1ex;
+margin-left: 2ex;
 border-left: 2px solid #8090a0;
-margin-right: 10px;
+margin-right: 1ex;
 background-color: #d0e0f0;
-padding-top: 5px;
-padding-bottom: 5px;
+padding-top: 1em;
+padding-bottom: 1em;
+witdh: 100%;
 }
 
 #content_preview pre {
