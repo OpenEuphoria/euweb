@@ -71,6 +71,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 			 <% end if %>
 			 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
 			 <a href="/forum.wc">topic index</a>
+			 &#187; <a href="/forum/m/<%= _h(message[MSG_ID]) %>.wc">view message</a>
 		</div>
 	</div>
 <% end for %>
