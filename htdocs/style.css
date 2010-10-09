@@ -160,8 +160,6 @@ margin: 0 auto;
 
 #logo
 {
-/* position: absolute; */
-/* bottom: 0.6em; */
 }
 
 #logo h1
@@ -190,9 +188,6 @@ font-size: 1.0em;
 
 #menu
 {
-/* position: absolute; */
-/* right: 1ex; */
-/* bottom: 0em; */
 }
 
 #menu ul
@@ -245,7 +240,6 @@ margin-bottom: 2.0em;
 
 #main_inner
 {
-/* position: relative; */
 width: 950px;
 margin: 0 auto;
 padding-top: 3.5em;
@@ -274,14 +268,11 @@ margin-top: 0.95em;
 
 #main_inner .post
 {
-/* position: relative; */
 }
 
 #main_inner .post h3
 {
-/* position: relative; */
 font-size: 1.7em;
-/* padding-bottom: 1.2em; */
 }
 
 #main_inner .post ul.post_info
@@ -369,21 +360,15 @@ width: 100%;
 margin-bottom: 2.0em;
 }
 
-#search input.text
+#search input[type=text]
 {
-position: absolute;
-top: 0em;
-left: 0em;
-width: 9.5em;
+width: 17ex;
 }
 
 #search input.button
 {
-position: absolute;
-top: 0em;
-right: 0em;
-min-width: 2.0em;
-max-width: 2.5em;
+min-width: 3.0ex;
+max-width: 4.5ex;
 }
 
 /* LAYOUT - 3 COLUMNS */
