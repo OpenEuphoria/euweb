@@ -427,9 +427,8 @@ max-width: 4.5ex;
 	{
 	position: relative;
 	float: left;
-	width: 100%;
+	width: 99%;
 	margin-right: -17ex;
-	overflow-x: auto;
 	}
 
 	/* Secondary Content */
