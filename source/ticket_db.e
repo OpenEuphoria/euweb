@@ -14,7 +14,7 @@ include edbi/edbi.e
 public constant MODULE_ID=1
 
 public enum ID, CREATED_AT, SUBMITTED_BY_ID, ASSIGNED_TO_ID, SEVERITY_ID, 
-	CATEGORY_ID, STATUS_ID, STATE_ID, REPORTED_RELEASE, SUBJECT, CONTENT,
+	CATEGORY_ID, STATUS_ID, STATE_ID, REPORTED_RELEASE, MILESTONE, SUBJECT, CONTENT,
 	RESOLVED_AT, SVN_REV, SUBMITTED_BY, ASSIGNED_TO, SEVERITY, CATEGORY, STATUS,
 	STATE, PRODUCT_ID, PRODUCT, TYPE_ID, TYPE
 
@@ -27,10 +27,11 @@ end function
 
 constant BASE_QUERY = """SELECT
 	t.id, t.created_at, t.submitted_by_id, t.assigned_to_id, t.severity_id, 
-	t.category_id, t.status_id, t.state_id, t.reported_release, t.subject, t.content, 
-	t.resolved_at, t.svn_rev, tsb.user AS submitted_by, tas.user AS assigned_to,
-	tsev.name AS severity, tcat.name AS category, tstat.name AS status,
-	tstate.name AS state, t.product_id, tprod.name, t.type_id, ttype.name
+	t.category_id, t.status_id, t.state_id, t.reported_release, t.milestone, t.subject, 
+    t.content, t.resolved_at, t.svn_rev, tsb.user AS submitted_by, 
+    tas.user AS assigned_to, tsev.name AS severity, tcat.name AS category, 
+    tstat.name AS status, tstate.name AS state, t.product_id, tprod.name, t.type_id, 
+    ttype.name
 FROM
 	ticket AS t
 	join users AS tsb on tsb.id=t.submitted_by_id
@@ -44,7 +45,6 @@ FROM
 WHERE
 	t.id != 0
 """
-
 
 --**
 -- Get a list of tickets for the given criteria
@@ -70,12 +70,13 @@ end function
 -- Insert a new ticket
 
 public function create(integer type_id, integer product_id, integer severity_id, 
-		integer category_id, sequence reported_release, sequence subject, sequence content)
+		integer category_id, sequence reported_release, sequence milestone, sequence subject, 
+        sequence content)
 	return edbi:execute("""INSERT INTO ticket (assigned_to_id, status_id, state_id, created_at, 
-		submitted_by_id, type_id, product_id, severity_id, category_id, reported_release, subject, 
-		content) VALUES (0, 1, 1, NOW(), %d, %d, %d, %d, %d, %s, %s, %s)""", { 
+		submitted_by_id, type_id, product_id, severity_id, category_id, reported_release, milestone,
+        subject, content) VALUES (0, 1, 1, NOW(), %d, %d, %d, %d, %d, %s, %s, %s, %s)""", { 
 			current_user[USER_ID], type_id, product_id, severity_id, 
-			category_id, reported_release, subject, content }
+			category_id, reported_release, milestone, subject, content }
 		)
 end function
 
@@ -83,10 +84,10 @@ end function
 -- Update a ticket
 
 public function update(integer id, integer type_id, integer product_id, integer severity_id, 
-		integer category_id, sequence reported_release, integer assigned_to_id, integer status_id, 
-		integer state_id, sequence svn_rev)
+		integer category_id, sequence reported_release, sequence milestone, integer assigned_to_id, 
+        integer status_id, integer state_id, sequence svn_rev)
 	return edbi:execute("""UPDATE ticket SET type_id=%d, product_id=%d, severity_id=%d, 
-		category_id=%d, reported_release=%s, assigned_to_id=%d, status_id=%d, state_id=%d,
+		category_id=%d, reported_release=%s, milestone=%s, assigned_to_id=%d, status_id=%d, state_id=%d,
 		svn_rev=%s WHERE id=%d""", { type_id, product_id, severity_id, category_id, 
-			reported_release, assigned_to_id, status_id, state_id, svn_rev, id })
+			reported_release, milestone, assigned_to_id, status_id, state_id, svn_rev, id })
 end function

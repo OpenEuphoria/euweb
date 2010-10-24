@@ -284,7 +284,10 @@ end if
 
 <select id="<%= id %>" name="<%= #name %>">
 	<% if equal(#include_empty, "1") then %>
-		<option value="-1"></option>
+        <option value="-1"></option>
+	<% end if %>
+	<% if equal(#include_blank, "1") then %>
+        <option value=""></option>
 	<% end if %>
     <% for i = 1 to length(rows) do 
       object this_id = rows[i][1]

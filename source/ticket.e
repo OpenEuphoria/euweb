@@ -29,25 +29,27 @@ include fuzzydate.e
 include format.e
 
 sequence index_vars = {
-	{ wc:INTEGER, "page",       1 },
-	{ wc:INTEGER, "per_page",  20 },
-	{ wc:INTEGER, "category_id", -1 },
-	{ wc:INTEGER, "severity_id", -1 },
-	{ wc:INTEGER, "state_id", -1 },
-	{ wc:INTEGER, "status_id", -1 },
-	{ wc:INTEGER, "type_id", -1 },
-	{ wc:INTEGER, "product_id", -1 }
+	{ wc:INTEGER,  "page",         1 },
+	{ wc:INTEGER,  "per_page",    20 },
+	{ wc:INTEGER,  "category_id", -1 },
+	{ wc:INTEGER,  "severity_id", -1 },
+	{ wc:INTEGER,  "state_id",    -1 },
+	{ wc:INTEGER,  "status_id",   -1 },
+	{ wc:INTEGER,  "type_id",     -1 },
+	{ wc:INTEGER,  "product_id",  -1 },
+    { wc:SEQUENCE, "milestone",   "" }
 }
 
 function real_index(map data, map request, sequence where="", integer append_to_where=1)
-	integer page = map:get(request, "page")
-	integer per_page = map:get(request, "per_page")
+	integer page        = map:get(request, "page")
+	integer per_page    = map:get(request, "per_page")
 	integer category_id = map:get(request, "category_id")
 	integer severity_id = map:get(request, "severity_id")
-	integer state_id = map:get(request, "state_id")
-	integer status_id = map:get(request, "status_id")
-	integer type_id = map:get(request, "type_id")
-	integer product_id = map:get(request, "product_id")
+	integer state_id    = map:get(request, "state_id")
+	integer status_id   = map:get(request, "status_id")
+	integer type_id     = map:get(request, "type_id")
+	integer product_id  = map:get(request, "product_id")
+    sequence milestone  = map:get(request, "milestone")
 
 	map:copy(request, data)
 
@@ -70,7 +72,14 @@ function real_index(map data, map request, sequence where="", integer append_to_
 	if product_id > -1 then
 		local_where = append(local_where, sprintf("tprod.id=%d", { product_id }))
 	end if
-	
+    if length(milestone) > 0 then
+        local_where = append(local_where, sprintf("t.milestone='%s'", {
+                match_replace("\\",
+                    match_replace("'", milestone, "''", 0), 
+                "\\\\")
+            }))
+    end if
+
 	if length(local_where) then
 		local_where = join(local_where, " AND ")
 		if append_to_where then
@@ -82,7 +91,7 @@ function real_index(map data, map request, sequence where="", integer append_to_
 			where = local_where
 		end if
 	end if
-	
+
 	object tickets = ticket_db:get_list((page - 1) * per_page, per_page, where)
 
 	if edbi:error_code() then
@@ -126,11 +135,12 @@ end function
 wc:add_handler(routine_id("closed"), -1, "ticket", "closed", index_vars)
 
 sequence create_vars = {
-	{ wc:INTEGER, "type_id", -1 },
-	{ wc:INTEGER, "product_id", 1 },
+	{ wc:INTEGER,  "type_id",     -1 },
+	{ wc:INTEGER,  "product_id",   1 },
 	{ wc:INTEGER,  "severity_id", -1 },
 	{ wc:INTEGER,  "category_id", -1 },
 	{ wc:SEQUENCE, "reported_release" },
+    { wc:SEQUENCE, "milestone" },
 	{ wc:SEQUENCE, "content" },
 	{ wc:SEQUENCE, "subject" }
 }
@@ -192,6 +202,7 @@ function do_create(map data, map request)
 		map:get(request, "severity_id"),
 		map:get(request, "category_id"),
 		map:get(request, "reported_release"),
+        map:get(request, "milestone"),
 		map:get(request, "subject"),
 		map:get(request, "content"))
 
@@ -227,15 +238,16 @@ end function
 wc:add_handler(routine_id("detail"), -1, "ticket", "view", detail_vars)
 
 sequence update_vars = {
-	{ wc:INTEGER, "id" },
-	{ wc:INTEGER, "type_id" },
-	{ wc:INTEGER, "product_id" },
-	{ wc:INTEGER, "severity_id" },
-	{ wc:INTEGER, "category_id" },
+	{ wc:INTEGER,  "id" },
+	{ wc:INTEGER,  "type_id" },
+	{ wc:INTEGER,  "product_id" },
+	{ wc:INTEGER,  "severity_id" },
+	{ wc:INTEGER,  "category_id" },
 	{ wc:SEQUENCE, "reported_release" },
-	{ wc:INTEGER, "assigned_to_id" },
-	{ wc:INTEGER, "status_id" },
-	{ wc:INTEGER, "state_id" },
+    { wc:SEQUENCE, "milestone" },
+	{ wc:INTEGER,  "assigned_to_id" },
+	{ wc:INTEGER,  "status_id" },
+	{ wc:INTEGER,  "state_id" },
 	{ wc:SEQUENCE, "svn_rev" },
 	{ wc:SEQUENCE, "comment" }
 }
@@ -271,6 +283,7 @@ function update(map data, map request)
 			map:get(request, "severity_id"),
 			map:get(request, "category_id"),
 			map:get(request, "reported_release"),
+            map:get(request, "milestone"),
 			map:get(request, "assigned_to_id"),
 			map:get(request, "status_id"),
 			map:get(request, "state_id"),
@@ -304,40 +317,3 @@ function update(map data, map request)
 end function
 wc:add_handler(routine_id("update"), routine_id("validate_update"), "ticket", "update", update_vars)
 
-sequence auto_update_vars = {
-	{ wc:INTEGER, "id", -1 },
-	{ wc:SEQUENCE, "rev" }
-}
-
-function auto_update(map data, map request)
-	if not equal(server_var("REMOTE_ADDR"), "206.251.255.105") then
-		return { TEXT, "not authorized" }
-	end if
-
-	integer id = map:get(request, "id")
-	sequence rev = map:get(request, "rev")
-
-	if id = -1 then 
-		return { TEXT, "bad-id" }
-	end if
-
-	if length(rev) then
-		object ticket_rev = edbi:query_object("SELECT svn_rev FROM ticket WHERE id=%d", { id })
-		if atom(ticket_rev) then
-			return { TEXT, "ticket-not-found" }
-		end if
-		
-		if not match(rev, ticket_rev) then
-			if length(ticket_rev) then
-				ticket_rev &= ", " & rev
-			else
-				ticket_rev = rev
-			end if
-			
-			edbi:execute("UPDATE ticket SET svn_rev=%s WHERE id=%d", { ticket_rev, id })
-		end if
-	end if
-
-	return { TEXT, "ok" }
-end function
-wc:add_handler(routine_id("auto_update"), -1, "ticket", "auto", auto_update_vars)

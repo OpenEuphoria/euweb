@@ -71,9 +71,13 @@
                     <%- euweb:select name="type_id" selected=@type_id option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
                 </td>
                 <th>Product:</th>
-                <td colspan="3">
+                <td>
                     <%- euweb:select name="product_id" selected=@product_id option_sql="SELECT id,name FROM ticket_product ORDER BY name" %>
 				</td>
+                <th>Milestone:</th>
+                <td>
+                    <%- euweb:select name="milestone" include_empty=1 option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %>
+                </td>
 			</tr>
 			<tr>
 				<th>Severity:</th>

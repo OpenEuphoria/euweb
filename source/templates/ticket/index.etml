@@ -54,6 +54,10 @@
                 <th>Status:</th>
                 <td><%- euweb:select include_empty=1 name="status_id" selected=@status_id option_sql="SELECT id,name FROM ticket_status ORDER BY position" %></td>
             </tr>
+            <tr>
+                <th>Milestone:</th>
+                <td colspan="5"><%- euweb:select include_blank=1 name="milestone" selected=@milestone option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %></td>
+            </tr>
         </table>
 
         <input type="submit" class="button" value="Filter" />

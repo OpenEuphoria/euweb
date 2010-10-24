@@ -115,6 +115,14 @@ end if
 				</td>
 			</tr>
 			<tr>
+                <th>Milestone:</th>
+                <td>
+                    <% if is_dev then %>
+                        <%- euweb:select include_blank=1 name="milestone" selected=!ticket[ticket_db:MILESTONE] option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %>
+                    <% else %>
+                        <%= _h(ticket[ticket_db:MILESTONE]) %>
+                    <% end if %>
+                </td>
 				<th>Fixed in SVN #:</th>
 				<td>
 					<% if is_dev then %>
@@ -124,7 +132,7 @@ end if
 					<% end if %>
 				</td>
 				<th>View VCS:</th>
-				<td colspan="2">
+				<td>
 					<% if length(ticket[ticket_db:SVN_REV]) then
 	 					sequence revs = split_any(ticket[ticket_db:SVN_REV], ", ")
 						for i = 1 to length(revs) do
