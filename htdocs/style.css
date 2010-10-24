@@ -126,13 +126,13 @@ background: #ddeedd;
 color: #111100;
 }
 
-table
+#docs table
 {
 border: 1px solid;
 background: #ddeedd;
 }
 
-td
+#docs td
 {
 border: 1px solid;
 padding-left: 0.25em;
