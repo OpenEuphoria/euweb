@@ -103,7 +103,7 @@ ul.links li
 {
 margin-left: 0px;
 padding-left: 0px;
-line-height: 2em;
+padding-bottom: 4px;
 }
 
 ul.links li.first
@@ -458,6 +458,10 @@ max-width: 4.5ex;
 	padding: 0em 0em 0.5em 2em;
 	border-left: dotted 1px #E1E1E1;
 	}
+
+    #columnC_2columns h4 {
+    margin-bottom: 0px;
+    }
 
 /* LAYOUT - COLUMNLESS */
 
