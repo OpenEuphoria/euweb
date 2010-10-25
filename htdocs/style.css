@@ -94,11 +94,15 @@ text-decoration: none;
 
 ul.links
 {
-list-style: none;
+list-style: square;
+margin-left: 0px;
+padding-left: 0px;
 }
 
 ul.links li
 {
+margin-left: 0px;
+padding-left: 0px;
 line-height: 2em;
 }
 
@@ -428,7 +432,7 @@ max-width: 4.5ex;
 	#primaryContent_2columns
 	{
 	position: relative;
-	margin-right: 17ex;
+	margin-right: 22ex;
 	}
 
 	#columnA_2columns
@@ -436,7 +440,7 @@ max-width: 4.5ex;
 	position: relative;
 	float: left;
 	width: 99%;
-	margin-right: -17ex;
+	margin-right: -22ex;
 	}
 
 	/* Secondary Content */
@@ -444,12 +448,12 @@ max-width: 4.5ex;
 	#secondaryContent_2columns
 	{
 	float: right;
-	width: 17ex;
+	width: 22ex;
 	}
 
 	#columnC_2columns
 	{
-	width: 17ex;
+	width: 22ex;
 	float: left;
 	padding: 0em 0em 0.5em 2em;
 	border-left: dotted 1px #E1E1E1;
@@ -741,7 +745,6 @@ padding: 0 5px 5px 5px;
 color: white;
 text-decoration: none;
 }
-
 
 .wiki div.notsaved {
 font-family: sans-serif;

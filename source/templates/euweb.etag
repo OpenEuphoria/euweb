@@ -123,7 +123,7 @@
 							class = "first"
 						end if
 					%>
-					<li class="<%= class %>"><a href="<%= ql[1] %>"><%= ql[2] %></a></li>
+					<li class="<%= class %>"> <a href="<%= ql[1] %>"><%= ql[2] %></a></li>
 					<% end for %>
 				<% else %>
 					<li class="first"><a href="/docs/eu400_0001.html">Manual</a></li>
@@ -155,14 +155,14 @@
 				
 				<% if has_role("admin") then %>
 					<h4><span>Recent</span> Users</h4>
-					<ul class="list">
+					<ul class="links">
 						<% 
 						sequence users = user_db:get_recent_users() 
 						for i = 1 to length(users) do
 							sequence u = users[i]
 							%>
 							<li><%- user_profile user=!u[1] %><br />
-							&nbsp;&nbsp;&nbsp;&#187; <%= fuzzy_ago(u[2]) %></li>
+							<%= fuzzy_ago(u[2]) %></li>
 						<% end for %>
 					</ul>
 				<% end if %>
