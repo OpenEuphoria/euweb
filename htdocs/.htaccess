@@ -5,7 +5,7 @@
 #
 
 Options +ExecCGI
-AddHandler cgi-script ex exe
+AddHandler cgi-script ex exe cgi
 
 #
 # Setup mod_rewrite
@@ -13,13 +13,6 @@ AddHandler cgi-script ex exe
 RewriteEngine on
 
 #IP_BAN_LIST
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
-RewriteCond %{REMOTE_ADDR} ^UNKNOWN [OR]
 RewriteCond %{REMOTE_ADDR} ^96\.224\.139\.195 [OR]
 RewriteCond %{REMOTE_ADDR} ^71\.190\.5\.103
 RewriteRule .* - [F]
@@ -34,3 +27,5 @@ RewriteRule ^([^\.]+)/$ /euweb.ex?module=$1&action=index [L,QSA]
 RewriteRule ^$ /euweb.ex?module=index&action=index [L,QSA]
 
 Redirect 301 /EUforum /
+Redirect /index.cgi /forum/index.wc
+Redirect messages_full.xml /rss.wc

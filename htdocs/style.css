@@ -634,13 +634,13 @@ div.LEVELTOC div.toc_4 { padding-left: 60px; }
 a.forum_message {padding-right: 20px;background: url("/images/new.png") top right no-repeat;}
 a:visited.forum_message {background: 0;padding-right: 0px;}
 
-.post table, .wiki table {
+.post table:not(.form), .wiki table {
 margin-top: 5px;
 border-collapse: collapse;
 border: 2px solid #607080;
 }
 
-.post table {
+.post table:not(.form) {
 margin-bottom: 15px;
 margin-left: 10px;
 }
@@ -649,7 +649,7 @@ margin-left: 10px;
 text-align: right;
 }
 
-.post th, .wiki table th {
+.post table:not(.form) th, .wiki table th {
 border-width: 0px 1px 0px 1px;
 border-style: solid;
 border-color: #bdbdcf;
@@ -658,13 +658,13 @@ color: white;
 padding: 5px;
 }
 
-.post table tr, .wiki table tr {
+.post table:not(.form) tr, .wiki table tr {
 padding: 3px 0px 3px 0px;
 border-bottom: 1px solid #bfbfcf;
 background-color: #efefff;
 }
 
-.post table td, .wiki table td {
+.post table:not(.form) td, .wiki table td {
 padding: 3px 5px 3px 5px;
 border-width: 0px 1px 0px 1px;
 border-style: solid;
