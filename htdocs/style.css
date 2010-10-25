@@ -713,6 +713,36 @@ border-color: #8090a0;
 padding: 1px 3px 1px 3px;
 background-color: #f0f0f0;
 }
+
+.wiki ul.navlist {
+list-style: none;
+border-top: 1px dotted black;
+margin-top: 2em;
+padding-top: 9px;
+}
+
+.wiki ul.navlist li {
+display: inline;
+/*border-style: dotted;
+border-color: black;
+border-width: 1px;
+padding: 2px 5px 2px 5px;*/
+background: #FF790B url('images/n3.gif') repeat-x;
+color: #fff;
+border: solid 1px #DB7623;
+font-weight: bold;
+text-transform: lowercase;
+font-size: 0.8em;
+height: 2.0em;
+padding: 0 5px 5px 5px;
+}
+
+.wiki ul.navlist li a {
+color: white;
+text-decoration: none;
+}
+
+
 .wiki div.notsaved {
 font-family: sans-serif;
 background-color: red;
