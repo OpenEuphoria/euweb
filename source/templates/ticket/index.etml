@@ -72,7 +72,7 @@
             %>
             <tr class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
                 <td rowspan="2" width="1%" align="center"><%= _h(ticket[ticket_db:ID]) %></td>
-                <td colspan="10" width="99%">
+                <td colspan="8" width="99%">
                     <a style="font-size:1.1em; font-weight:bold;" href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"
                         ><%= _h(ticket[ticket_db:SUBJECT]) %></a>
                 </td>
