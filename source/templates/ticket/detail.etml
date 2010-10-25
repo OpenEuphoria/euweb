@@ -150,7 +150,7 @@ end if
 			<% if is_user then %>
 				<tr>
 					<th nowrap="nowrap">New Comment:</th>
-					<td colspan="7">
+					<td colspan="5">
 						<textarea id="comment" name="comment" rows="8" cols="60" style="width: 100%"></textarea>
 						<%- euweb:creole_previewer name="comment" %>
 					</td>
