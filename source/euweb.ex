@@ -84,6 +84,7 @@ end if
 -- Handle the request
 wc:handle_request(routine_id("app"))
 
--- Close our database
+-- Close our app
 db:close()
+log:close()
 
