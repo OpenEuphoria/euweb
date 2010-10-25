@@ -21,7 +21,7 @@
 
 <% else %>
 
-    <h3><span><%= _h(@product_name) %></span> <a href="http://openeuphoria.org/wiki/euwiki.cgi?WhatAreTickets">Ticket</a> System</h3>
+    <h3><span><%= _h(@product_name) %></span> Tickets <span class="small">(<a href="/ticket/change_product.wc">select another product</a>)</span></h3>
 
     <form method="GET" style="margin-bottom:10px;">
         <input type="hidden" name="per_page" value="<%= _h(@per_page) %>" />

@@ -57,7 +57,7 @@
 	</ul>
 	</p>
 
-    <h4>Create Ticket for <span><%= _h(@product_name) %></span></h4>
+    <h4>New Ticket for <span><%= _h(@product_name) %></span> <span class="small">(<a href="/ticket/change_product.wc">select another product</a>)</span></h4>
 
 	<%- euweb:errors %>
 

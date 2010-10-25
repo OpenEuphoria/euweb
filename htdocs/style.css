@@ -62,6 +62,16 @@ h4 span, th span
 font-weight: bold;
 }
 
+h3 span.small
+{
+font-size: 35%;
+}
+
+h4 span.small
+{
+font-size: 70%;
+}
+
 br.clear
 {
 clear: both;
