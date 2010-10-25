@@ -1,7 +1,9 @@
 {{{foot}}}
 <%@ include templates/euweb.etag as euweb %>
 <%
-sequence quick_links = {}
+sequence quick_links = {
+    { "/ticket/change_product.wc", "Change Product" }
+}
 
 if has_role("user") then
     quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket" })

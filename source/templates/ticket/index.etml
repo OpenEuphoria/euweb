@@ -21,25 +21,23 @@
 
 <% else %>
 
-    <h3><span><a href="http://openeuphoria.org/wiki/euwiki.cgi?WhatAreTickets">Ticket</a></span> System</h3>
+    <h3><span><%= _h(@product_name) %></span> <a href="http://openeuphoria.org/wiki/euwiki.cgi?WhatAreTickets">Ticket</a> System</h3>
 
     <form method="GET" style="margin-bottom:10px;">
         <input type="hidden" name="per_page" value="<%= _h(@per_page) %>" />
         <input type="hidden" name="page" value="<%= _h(@page) %>" />
         <table cellspacing="5">
             <tr>
-                <th>Product:</th>
-                <td>
-                    <%- euweb:select include_empty=1 name="product_id" selected=@product_id option_sql="SELECT id,name FROM ticket_product ORDER BY name" %>
-                </td>
                 <th>Type:</th>
                 <td>
                     <%- euweb:select include_empty=1 name="type_id" selected=@type_id option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
                 </td>
                 <th>Category:</th>
                 <td>
-                    <%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
+                    <%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql=@category_sql %>
                 </td>
+                <th>Milestone:</th>
+                <td colspan="5"><%- euweb:select include_blank=1 name="milestone" selected=@milestone option_sql=@milestone_sql %></td>
             </tr>
             <tr>
                 <th>Severity:</th>
@@ -49,10 +47,6 @@
                 <th>Status:</th>
                 <td><%- euweb:select include_empty=1 name="status_id" selected=@status_id option_sql="SELECT id,name FROM ticket_status ORDER BY position" %></td>
             </tr>
-            <tr>
-                <th>Milestone:</th>
-                <td colspan="5"><%- euweb:select include_blank=1 name="milestone" selected=@milestone option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %></td>
-            </tr>
         </table>
 
         <input type="submit" class="button" value="Filter" />
@@ -61,15 +55,14 @@
     <table class="list forum">
         <tr>
             <th width="1%">#</th>
-            <th width="11%">Type</th>
-            <th width="11%">Product</th>
-            <th width="11%">Category</th>
-            <th width="11%">Severity</th>
-            <th width="11%">State</th>
-            <th width="11%">Status</th>
-            <th width="11%" nowrap="nowrap">Assigned To</th>
-            <th width="11%" nowrap="nowrap">Submitted By</th>
-            <th width="11%">Age</th>
+            <th width="12%">Type</th>
+            <th width="12%">Category</th>
+            <th width="12%">Severity</th>
+            <th width="12%">State</th>
+            <th width="12%">Status</th>
+            <th width="16%" nowrap="nowrap">Assigned To</th>
+            <th width="12%" nowrap="nowrap">Submitted By</th>
+            <th width="12%">Age</th>
         </tr>
     
         <%
@@ -86,7 +79,6 @@
             </tr>
             <tr style="font-style: italic;" class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
                 <td><%= _h(ticket[ticket_db:TYPE]) %></td>
-                <td><%= _h(ticket[ticket_db:PRODUCT]) %></td>
                 <td><%= _h(ticket[ticket_db:CATEGORY]) %></td>
                 <td><%= _h(ticket[ticket_db:SEVERITY]) %></td>
                 <td><%= _h(ticket[ticket_db:STATE]) %></td>
@@ -108,8 +100,8 @@
 
 <div class="centered">
     <%
-    sequence qs = sprintf("&amp;type_id=%d&amp;product_id=%d&amp;category_id=%d&amp;severity_id=%d&amp;state_id=%d&amp;status_id=%d",
-        { @type_id, @product_id, @category_id, @severity_id, @state_id, @status_id })
+    sequence qs = sprintf("&amp;type_id=%d&amp;&amp;category_id=%d&amp;severity_id=%d&amp;state_id=%d&amp;status_id=%d",
+        { @type_id, @category_id, @severity_id, @state_id, @status_id })
     %>
     <%- euweb:paginator base="/ticket/index.wc" qs=!qs page=@page per_page=@per_page total=@ticket_count %>
 </div>

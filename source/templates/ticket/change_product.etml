@@ -1,0 +1,20 @@
+<%@
+  include webclay/escape.e
+  include templates/euweb.etag as euweb
+  include local.etag as local
+%>
+
+<%- euweb:head title="Ticket Change Product" active="ticket" %>
+
+<h3><span>Change</span> Ticket Product</h3>
+<ul>
+<% 
+sequence products = @products
+for i = 1 to length(products) do
+    sequence product = products[i]
+    %>
+    <li><a href="/ticket/index.wc?product_id=<%= _h(product[1]) %>"><%= product[2] %></a></li>
+<% end for %>
+</ul>
+
+<%- local:foot %>

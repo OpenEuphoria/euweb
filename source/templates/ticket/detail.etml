@@ -24,7 +24,7 @@ end if
 <form method="POST" action="/ticket/update.wc">
 	<input type="hidden" name="id" value="<%= _h(ticket[ticket_db:ID]) %>" />
 	<div class="post forum">
-	    <h3><span>Ticket #<%= _h(ticket[ticket_db:ID]) %></span>: <%= _h(ticket[ticket_db:SUBJECT]) %></h3>
+	    <h3><span><%= _h(@product_name) %></span> Ticket <span>#<%= _h(ticket[ticket_db:ID]) %></span>: <%= _h(ticket[ticket_db:SUBJECT]) %></h3>
 		<%- euweb:errors %>
 		<ul class="post_info">
 			<li class="date">
@@ -52,16 +52,6 @@ end if
 						<%= _h(ticket[ticket_db:TYPE]) %>
 					<% end if %>
 				</td>
-				<th nowrap="nowrap">Product:</th>
-				<td nowrap="nowrap" colspan="3">
-					<% if is_dev or is_owner then %>
-						<%- euweb:select name="product_id" selected=!ticket[ticket_db:PRODUCT_ID] option_sql="SELECT id,name FROM ticket_product ORDER BY name" %>
-					<% else %>
-						<%= _h(ticket[ticket_db:PRODUCT]) %>
-					<% end if %>
-				</td>
-			</tr>
-			<tr>
 				<th nowrap="nowrap">Severity:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
@@ -73,21 +63,12 @@ end if
 				<th nowrap="nowrap">Category:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
-						<%- euweb:select name="category_id" selected=!ticket[ticket_db:CATEGORY_ID] option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
+						<%- euweb:select name="category_id" selected=!ticket[ticket_db:CATEGORY_ID] option_sql=@category_sql %>
 					<% else %>
 						<%= _h(ticket[ticket_db:CATEGORY]) %>
 					<% end if %>
 				</td>
-				<th nowrap="nowrap">Reported Release:</th>
-				<td nowrap="nowrap">
-					<% if is_dev or is_owner then %>
-						<input type="text" name="reported_release" value="<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>" size="15" />
-					<% else %>
-						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
-					<% end if %>
-				</td>
-			</tr>
-
+            </tr>
 			<tr>
 				<th>Assigned To:</th>
 				<td>
@@ -114,15 +95,25 @@ end if
 					<% end if %>
 				</td>
 			</tr>
-			<tr>
+            <tr>
+				<th nowrap="nowrap">Reported Release:</th>
+				<td nowrap="nowrap">
+					<% if is_dev or is_owner then %>
+						<input type="text" name="reported_release" value="<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>" size="15" />
+					<% else %>
+						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
+					<% end if %>
+				</td>
                 <th>Milestone:</th>
                 <td>
                     <% if is_dev then %>
-                        <%- euweb:select include_blank=1 name="milestone" selected=!ticket[ticket_db:MILESTONE] option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %>
+                        <%- euweb:select include_blank=1 name="milestone" selected=!ticket[ticket_db:MILESTONE] option_sql=@milestone_sql %>
                     <% else %>
                         <%= _h(ticket[ticket_db:MILESTONE]) %>
                     <% end if %>
                 </td>
+            </tr>
+            <tr>
 				<th>Fixed in SVN #:</th>
 				<td>
 					<% if is_dev then %>

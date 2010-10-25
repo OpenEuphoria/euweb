@@ -57,7 +57,7 @@
 	</ul>
 	</p>
 
-    <h4><span>Create</span> the Ticket</h4>
+    <h4>Create Ticket for <span><%= _h(@product_name) %></span></h4>
 
 	<%- euweb:errors %>
 
@@ -70,29 +70,25 @@
 				<td>
                     <%- euweb:select name="type_id" selected=@type_id option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
                 </td>
-                <th>Product:</th>
-                <td>
-                    <%- euweb:select name="product_id" selected=@product_id option_sql="SELECT id,name FROM ticket_product ORDER BY name" %>
+				<th>Category:</th>
+				<td>
+					<%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql=@category_sql %>
 				</td>
-                <th>Milestone:</th>
-                <td>
-                    <%- euweb:select name="milestone" include_blank=1 option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %>
-                </td>
 			</tr>
 			<tr>
 				<th>Severity:</th>
 				<td>
 					<%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
 				</td>
-				<th>Category:</th>
-				<td>
-					<%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql="SELECT id,name FROM ticket_category ORDER BY name" %>
-				</td>
 				<th>Your Release:</th>
 				<td>
 					<input type="text" id="reported_release" name="reported_release" value="<%= _h(@reported_release) %>" size="15"  autocomplete="off" />
 					<%- euweb:autocomplete name="reported_release" sql="SELECT name FROM releases ORDER BY position" %>
 				</td>
+                <th>Milestone:</th>
+                <td>
+                    <%- euweb:select name="milestone" include_blank=1 option_sql=@milestone_sql %>
+                </td>
 			</tr>
 
 			<tr>
