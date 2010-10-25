@@ -506,19 +506,23 @@ div.error_box {
 }
 
 #main_inner table.list {
-	border: dotted 1px #E1E1E1;
+    border: 1px solid #a1a1a1;
 	border-collapse: collapse;
 }
 
 #main_inner table.list th {
-	border-bottom: dotted 1px #C1C1C1;
+	border-bottom: solid 1px #a1a1a1;
+    border-left: solid 1px #a1a1a1;
+    border-right: solid 1px #a1a1a1;
 	background-color: #E1E1E1;
-	padding-left: 5px;
-	padding-right: 5px;
+    padding: 2px 5px 2px 5px;
+    font-weight: bold;
 }
 
 #main_inner table.list td {
 	border-bottom: dotted 1px #C1C1C1;
+    border-left: dotted 1px #C1C1C1;
+    border-right: dotted 1px #C1C1C1;
 }
 
 #main_inner table.list tr.stipple {
