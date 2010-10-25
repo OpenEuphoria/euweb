@@ -18,20 +18,7 @@ public enum ID, CREATED_AT, SUBMITTED_BY_ID, ASSIGNED_TO_ID, SEVERITY_ID,
 	RESOLVED_AT, SVN_REV, SUBMITTED_BY, ASSIGNED_TO, SEVERITY, CATEGORY, STATUS,
 	STATE, PRODUCT_ID, PRODUCT, TYPE_ID, TYPE
 
---**
--- Get the number of tickets
-
-public function count()
-	return edbi:query_object("SELECT COUNT(id) FROM ticket")
-end function
-
-constant BASE_QUERY = """SELECT
-	t.id, t.created_at, t.submitted_by_id, t.assigned_to_id, t.severity_id, 
-	t.category_id, t.status_id, t.state_id, t.reported_release, t.milestone, t.subject, 
-    t.content, t.resolved_at, t.svn_rev, tsb.user AS submitted_by, 
-    tas.user AS assigned_to, tsev.name AS severity, tcat.name AS category, 
-    tstat.name AS status, tstate.name AS state, t.product_id, tprod.name, t.type_id, 
-    ttype.name
+constant BASE_FROM = """
 FROM
 	ticket AS t
 	join users AS tsb on tsb.id=t.submitted_by_id
@@ -45,6 +32,27 @@ FROM
 WHERE
 	t.id != 0
 """
+
+constant BASE_QUERY = """SELECT
+	t.id, t.created_at, t.submitted_by_id, t.assigned_to_id, t.severity_id, 
+	t.category_id, t.status_id, t.state_id, t.reported_release, t.milestone, t.subject, 
+    t.content, t.resolved_at, t.svn_rev, tsb.user AS submitted_by, 
+    tas.user AS assigned_to, tsev.name AS severity, tcat.name AS category, 
+    tstat.name AS status, tstate.name AS state, t.product_id, tprod.name, t.type_id, 
+    ttype.name
+""" & BASE_FROM
+
+--**
+-- Get the number of tickets
+
+public function count(sequence where = "")
+    sequence sql = "SELECT COUNT(t.id) " & BASE_FROM
+    if length(where) > 0 then
+        sql &= " AND " & where
+    end if
+
+	return edbi:query_object(sql)
+end function
 
 --**
 -- Get a list of tickets for the given criteria

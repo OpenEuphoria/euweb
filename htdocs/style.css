@@ -526,6 +526,10 @@ div.error_box {
 	font-size: 1.3em;
 }
 
+#main_inner .other_page {
+    padding: 0px 3px 0px 3px;
+}
+
 .centered {
 	text-align: center;
 }

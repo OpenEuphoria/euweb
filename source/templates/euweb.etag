@@ -243,8 +243,8 @@ Pages
 <a href="<%= #base %>?page=1&amp;per_page=<%= sprintf("%d", #per_page) %><%= #qs %>">newest</a>
 ...
 <% for i = start to end_page do %>
-<a <% if i = current_page then %>class="current_page"<% end if %> href="<%= #base %>?page=<%= sprintf("%d", i) %>&amp;per_page=<%= sprintf("%d", #per_page) %><%= #qs %>"
-><%= sprintf("%d", i) %></a>,
+<a class="<% if i = current_page then %>current<% else %>other<% end if %>_page" href="<%= #base %>?page=<%= sprintf("%d", i) %>&amp;per_page=<%= sprintf("%d", #per_page) %><%= #qs %>"
+><%= sprintf("%d", i) %></a>
 <% end for %>
 ...
 <a href="<%= #base %>?page=<%= sprintf("%d", last_page) %>&amp;per_page=<%= sprintf("%d", per_page) %><%= #qs %>"

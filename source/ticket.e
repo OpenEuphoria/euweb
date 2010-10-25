@@ -104,7 +104,7 @@ function real_index(map data, map request, sequence where="", integer append_to_
 
 		map:put(data, "error_code", 0)
 		map:put(data, "tickets", tickets)
-		map:put(data, "ticket_count", ticket_db:count())
+		map:put(data, "ticket_count", ticket_db:count(where))
 	end if
 
 	return { TEXT, t_index:template(data) }

@@ -23,11 +23,6 @@
 
     <h3><span><a href="http://openeuphoria.org/wiki/euwiki.cgi?WhatAreTickets">Ticket</a></span> System</h3>
 
-    <p>
-        Old bugs are being run out on our old bug tracking system:
-        <a href="http://sourceforge.net/tracker/?group_id=182827&amp;atid=902782">SourceForge Bug Tracker</a>
-    </p>
-
     <form method="GET" style="margin-bottom:10px;">
         <input type="hidden" name="per_page" value="<%= _h(@per_page) %>" />
         <input type="hidden" name="page" value="<%= _h(@page) %>" />
@@ -66,16 +61,15 @@
     <table class="list forum">
         <tr>
             <th width="1%">#</th>
-            <th width="10%">Type</th>
-            <th width="10%">Product</th>
-            <th width="10%">Category</th>
-            <th width="10%">Severity</th>
-            <th width="10%">State</th>
-            <th width="10%">Status</th>
-            <th width="10%">Release</th>
-            <th width="10%" nowrap="nowrap">Assigned To</th>
-            <th width="10%" nowrap="nowrap">Submitted By</th>
-            <th width="10%">Age</th>
+            <th width="11%">Type</th>
+            <th width="11%">Product</th>
+            <th width="11%">Category</th>
+            <th width="11%">Severity</th>
+            <th width="11%">State</th>
+            <th width="11%">Status</th>
+            <th width="11%" nowrap="nowrap">Assigned To</th>
+            <th width="11%" nowrap="nowrap">Submitted By</th>
+            <th width="11%">Age</th>
         </tr>
     
         <%
@@ -91,24 +85,23 @@
                 </td>
             </tr>
             <tr style="font-style: italic;" class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:TYPE]) %></td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:PRODUCT]) %></td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:CATEGORY]) %></td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:SEVERITY]) %></td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:STATE]) %></td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:STATUS]) %></td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:REPORTED_RELEASE]) %></td>
-                <td nowrap="nowrap">
+                <td><%= _h(ticket[ticket_db:TYPE]) %></td>
+                <td><%= _h(ticket[ticket_db:PRODUCT]) %></td>
+                <td><%= _h(ticket[ticket_db:CATEGORY]) %></td>
+                <td><%= _h(ticket[ticket_db:SEVERITY]) %></td>
+                <td><%= _h(ticket[ticket_db:STATE]) %></td>
+                <td><%= _h(ticket[ticket_db:STATUS]) %></td>
+                <td>
                     <% if ticket[ticket_db:ASSIGNED_TO_ID] = 0 then %>
                         unassigned
                     <% else %>
                         <%- euweb:user_profile user=!ticket[ticket_db:ASSIGNED_TO] %>
                     <% end if %>
                 </td>
-                <td nowrap="nowrap">
+                <td>
                     <%- euweb:user_profile user=!ticket[ticket_db:SUBMITTED_BY] %>
                 </td>
-                <td nowrap="nowrap"><%= _h(ticket[ticket_db:CREATED_AT]) %></td>
+                <td><%= _h(ticket[ticket_db:CREATED_AT]) %></td>
             </tr>
         <% end for %>
     </table>
