@@ -8,6 +8,7 @@
 <h3>Remove Forum Post</h3>
 <p>
 	Are you sure you wish to remove the forum post <%= _h(@id) %>, '<%= _h(@subject) %>'?
+    This action will also remove any replies to this message.
 </p>
 
 <p class="centered">
