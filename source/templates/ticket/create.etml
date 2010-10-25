@@ -76,7 +76,7 @@
 				</td>
                 <th>Milestone:</th>
                 <td>
-                    <%- euweb:select name="milestone" include_empty=1 option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %>
+                    <%- euweb:select name="milestone" include_blank=1 option_sql="SELECT name,name FROM ticket_milestone ORDER BY name" %>
                 </td>
 			</tr>
 			<tr>
