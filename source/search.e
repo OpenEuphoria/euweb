@@ -69,7 +69,7 @@ function result(map:map data, map:map request)
 	sequence sql = join(queries, " UNION ALL ") & 
 		" ORDER BY created_at DESC LIMIT %d OFFSET %d"
 	params = append(params, per_page)
-	params = append(params, (page_no - 1) * page_no)
+	params = append(params, (page_no - 1) * per_page)
 	
 	object rows = edbi:query_rows(sql, params)
 	
