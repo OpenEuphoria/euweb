@@ -14,9 +14,13 @@
         <br />&nbsp;
     <% end if %>
 
-    <% if length(@subject) > 0 then %>
+    <% if @parent_id > 0 then %>
 	
     	<h3><span>Reply</span> to '<%= _h(@subject) %>'</h3>
+
+    <% elsif @fork_id > 0 then %>
+
+        <h3><span>Fork</span> Messsage</h3>
 
     <% else %>
 
