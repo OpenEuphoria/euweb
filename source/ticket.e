@@ -333,7 +333,6 @@ function update(map data, map request)
 		ticket_db:update(
 			map:get(request, "id"),
 			map:get(request, "type_id"),
-			get_product_id(request),
 			map:get(request, "severity_id"),
 			map:get(request, "category_id"),
 			map:get(request, "reported_release"),
@@ -377,4 +376,3 @@ function change_product(map data, map request)
 	return { TEXT, t_change_product:template(data) }
 end function
 wc:add_handler(routine_id("change_product"), -1, "ticket", "change_product", {})
-
