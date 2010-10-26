@@ -65,14 +65,13 @@ sequence index_vars = {
 	{ wc:INTEGER,  "per_page",	  20 },
 	{ wc:INTEGER,  "category_id", -1 },
 	{ wc:INTEGER,  "severity_id", -1 },
-	{ wc:INTEGER,  "state_id",	  -1 },
 	{ wc:INTEGER,  "status_id",	  -1 },
 	{ wc:INTEGER,  "type_id",	  -1 },
 	{ wc:INTEGER,  "product_id",  -1 },
 	{ wc:SEQUENCE, "milestone",	  "" }
 }
 
-function real_index(map data, map request, sequence where="", integer append_to_where=1)
+function real_index(map data, map request, sequence where="")
 	-- If no cookie is set, send them to the change product page. This page will
 	-- describe how the ticket system works with products.
 	if not map:has(request, "product_id") and not wc:cookie_has("product_id") then
@@ -80,17 +79,18 @@ function real_index(map data, map request, sequence where="", integer append_to_
 		return change_product(data, request)
 	end if
 
+	sequence milestone	= map:get(request, "milestone")
 	integer page		= map:get(request, "page")
 	integer per_page	= map:get(request, "per_page")
 	integer category_id = map:get(request, "category_id")
 	integer severity_id = map:get(request, "severity_id")
-	integer state_id	= map:get(request, "state_id")
 	integer status_id	= map:get(request, "status_id")
 	integer type_id		= map:get(request, "type_id")
-	sequence milestone	= map:get(request, "milestone")
 	integer product_id	= get_product_id(request, data)
 
+	log:log("status_id=%d", { status_id })
 	map:copy(request, data)
+	log:log("status_id=%d", { status_id })
 
 	sequence local_where = {}
 	if category_id > -1 then
@@ -98,9 +98,6 @@ function real_index(map data, map request, sequence where="", integer append_to_
 	end if
 	if severity_id > -1 then
 		local_where = append(local_where, sprintf("tsev.id=%d", { severity_id }))
-	end if
-	if state_id > -1 then
-		local_where = append(local_where, sprintf("tstate.id=%d", { state_id }))
 	end if
 	if status_id > -1 then
 		local_where = append(local_where, sprintf("tstat.id=%d", { status_id }))
@@ -121,14 +118,10 @@ function real_index(map data, map request, sequence where="", integer append_to_
 
 	if length(local_where) then
 		local_where = join(local_where, " AND ")
-		if append_to_where then
-			if length(where) then
-				where &= " AND "
-			end if
-			where &= local_where
-		else
-			where = local_where
+		if length(where) then
+			where &= " AND "
 		end if
+		where &= local_where
 	end if
 
 	object tickets = ticket_db:get_list((page - 1) * per_page, per_page, where)
@@ -165,20 +158,18 @@ end function
 wc:add_handler(routine_id("mine"), -1, "ticket", "mine", index_vars)
 
 function opened(map data, map request)
-	if equal(map:get(request, "state_id"), -1) then
-		map:put(request, "state_id", 1)
-	end if
-	return real_index(data, request, "tstate.closed=0", 0)
+	return real_index(data, request, "tstat.is_open=1")
 end function
 wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
 
 function confirm_tickets(map data, map request)
-	return real_index(data, request, "tstate.name='Confirm'")
+	map:put(request, "status_id", 8)
+	return real_index(data, request, "tstat.id=8")
 end function
 wc:add_handler(routine_id("confirm_tickets"), -1, "ticket", "confirm", index_vars)
 
 function closed(map data, map request)
-	return real_index(data, request, "tstate.closed=1")
+	return real_index(data, request, "tstat.is_open=0")
 end function
 wc:add_handler(routine_id("closed"), -1, "ticket", "closed", index_vars)
 
@@ -301,7 +292,6 @@ sequence update_vars = {
 	{ wc:SEQUENCE, "milestone" },
 	{ wc:INTEGER,  "assigned_to_id" },
 	{ wc:INTEGER,  "status_id" },
-	{ wc:INTEGER,  "state_id" },
 	{ wc:SEQUENCE, "svn_rev" },
 	{ wc:SEQUENCE, "comment" }
 }
@@ -339,7 +329,6 @@ function update(map data, map request)
 			map:get(request, "milestone"),
 			map:get(request, "assigned_to_id"),
 			map:get(request, "status_id"),
-			map:get(request, "state_id"),
 			map:get(request, "svn_rev")
 		)
 

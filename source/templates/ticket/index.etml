@@ -1,6 +1,6 @@
-<%@ 
+<%@
   include std/math.e
-  
+
   include webclay/escape.e
   include templates/euweb.etag as euweb
   include local.etag as local
@@ -42,8 +42,6 @@
             <tr>
                 <th>Severity:</th>
                 <td><%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %></td>
-                <th>State:</th>
-                <td><%- euweb:select include_empty=1 name="state_id" selected=@state_id option_sql="SELECT id,name FROM ticket_state ORDER BY position" %></td>
                 <th>Status:</th>
                 <td><%- euweb:select include_empty=1 name="status_id" selected=@status_id option_sql="SELECT id,name FROM ticket_status ORDER BY position" %></td>
             </tr>
@@ -55,16 +53,15 @@
     <table class="list forum">
         <tr>
             <th width="1%">#</th>
-            <th width="12%">Type</th>
-            <th width="12%">Category</th>
-            <th width="12%">Severity</th>
-            <th width="12%">State</th>
-            <th width="12%">Status</th>
-            <th width="16%" nowrap="nowrap">Assigned To</th>
-            <th width="12%" nowrap="nowrap">Submitted By</th>
-            <th width="12%">Age</th>
+            <th width="13%">Type</th>
+            <th width="13%">Category</th>
+            <th width="13%">Severity</th>
+            <th width="13%">Status</th>
+            <th width="17%">Assigned To</th>
+            <th width="17%">Submitted By</th>
+            <th width="13%">Age</th>
         </tr>
-    
+
         <%
         sequence tickets = @tickets
         for i = 1 to length(tickets) do
@@ -72,7 +69,7 @@
             %>
             <tr class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
                 <td rowspan="2" width="1%" align="center"><%= _h(ticket[ticket_db:ID]) %></td>
-                <td colspan="8" width="99%">
+                <td colspan="7" width="99%">
                     <a style="font-size:1.1em; font-weight:bold;" href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"
                         ><%= _h(ticket[ticket_db:SUBJECT]) %></a>
                 </td>
@@ -81,7 +78,6 @@
                 <td><%= _h(ticket[ticket_db:TYPE]) %></td>
                 <td><%= _h(ticket[ticket_db:CATEGORY]) %></td>
                 <td><%= _h(ticket[ticket_db:SEVERITY]) %></td>
-                <td><%= _h(ticket[ticket_db:STATE]) %></td>
                 <td><%= _h(ticket[ticket_db:STATUS]) %></td>
                 <td>
                     <% if ticket[ticket_db:ASSIGNED_TO_ID] = 0 then %>
@@ -100,13 +96,13 @@
 
 <div class="centered">
     <%
-    sequence qs = sprintf("&amp;type_id=%d&amp;&amp;category_id=%d&amp;severity_id=%d&amp;state_id=%d&amp;status_id=%d",
-        { @type_id, @category_id, @severity_id, @state_id, @status_id })
+    sequence qs = sprintf("&amp;type_id=%d&amp;category_id=%d&amp;severity_id=%d&amp;status_id=%d",
+        { @type_id, @category_id, @severity_id, @status_id })
     %>
-    <%- euweb:paginator base="/ticket/index.wc" qs=!qs page=@page per_page=@per_page total=@ticket_count %>
+    <%- euweb:paginator qs=!qs page=@page per_page=@per_page total=@ticket_count %>
 </div>
 
 <% end if %>
-    
+
 <%- local:foot %>
 

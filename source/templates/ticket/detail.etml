@@ -1,7 +1,7 @@
-<%@ 
+<%@
   include std/math.e
   include std/sequence.e
-  
+
   include webclay/escape.e
   include templates/euweb.etag as euweb
   include local.etag as local
@@ -35,7 +35,7 @@ end if
 			<li class="comments">
 				<a href="#comments"><%= _h(length(@comments)) %> comments</a>
 			</li>
-		</ul>					
+		</ul>
 
 
 		<%= ticket[ticket_db:CONTENT] %>
@@ -78,14 +78,6 @@ end if
 						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
 					<% end if %>
 				</td>
-				<th>State:</th>
-				<td>
-					<% if is_dev or is_owner then %>
-						<%- euweb:select name="state_id" selected=!ticket[ticket_db:STATE_ID] option_sql="SELECT id,name FROM ticket_state ORDER BY position" %>
-					<% else %>
-						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
-					<% end if %>
-				</td>
 				<th>Status:</th>
 				<td>
 					<% if is_dev or is_owner then %>
@@ -94,8 +86,6 @@ end if
 						<%= _h(ticket[ticket_db:STATUS]) %>
 					<% end if %>
 				</td>
-			</tr>
-            <tr>
 				<th nowrap="nowrap">Reported Release:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
@@ -104,15 +94,7 @@ end if
 						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
 					<% end if %>
 				</td>
-                <th>Milestone:</th>
-                <td>
-                    <% if is_dev then %>
-                        <%- euweb:select include_blank=1 name="milestone" selected=!ticket[ticket_db:MILESTONE] option_sql=@milestone_sql %>
-                    <% else %>
-                        <%= _h(ticket[ticket_db:MILESTONE]) %>
-                    <% end if %>
-                </td>
-            </tr>
+			</tr>
             <tr>
 				<th>Fixed in SVN #:</th>
 				<td>
@@ -136,6 +118,14 @@ end if
 						none
 					<% end if %>
 				</td>
+                <th>Milestone:</th>
+                <td>
+                    <% if is_dev then %>
+                        <%- euweb:select include_blank=1 name="milestone" selected=!ticket[ticket_db:MILESTONE] option_sql=@milestone_sql %>
+                    <% else %>
+                        <%= _h(ticket[ticket_db:MILESTONE]) %>
+                    <% end if %>
+                </td>
 			</tr>
 
 			<% if is_user then %>
@@ -167,15 +157,15 @@ end if
 	<a name="comments"></a>
 	<h4><span>Comments</span></h4>
 
-	<% 
+	<%
 	object comments = @comments
 
 	for i = 1 to length(comments) do
-		sequence comment = comments[i] 
+		sequence comment = comments[i]
 	%>
 		<h4>
 			<a name="<%= _h(comment[comment_db:ID]) %>"></a>
-			<span>Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %> 
+			<span>Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %>
 			<%= _h(comment[comment_db:CREATED_AT]) %>
 		</h4>
 

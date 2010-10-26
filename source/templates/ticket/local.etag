@@ -10,7 +10,7 @@ if has_role("user") then
     quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
 end if
 
-quick_links &= { 
+quick_links &= {
     { "/ticket/index.wc", "Open Tickets" },
     { "/ticket/confirm.wc", "Needs Confirmed" },
     { "/ticket/closed.wc", "Closed Tickets" }
