@@ -73,6 +73,13 @@ sequence index_vars = {
 }
 
 function real_index(map data, map request, sequence where="", integer append_to_where=1)
+	-- If no cookie is set, send them to the change product page. This page will
+	-- describe how the ticket system works with products.
+	if not map:has(request, "product_id") and not wc:cookie_has("product_id") then
+		map:put(data, "no_product_id", 1)
+		return change_product(data, request)
+	end if
+
 	integer page		= map:get(request, "page")
 	integer per_page	= map:get(request, "per_page")
 	integer category_id = map:get(request, "category_id")

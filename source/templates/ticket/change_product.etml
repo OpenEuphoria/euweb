@@ -7,8 +7,20 @@
 <%- euweb:head title="Ticket Change Product" active="ticket" %>
 
 <h3><span>Change</span> Ticket Product</h3>
+
+<% if atom(@no_product_id) then %>
+<p>
+The ticket system has the ability to function on many different
+"products." Here on this page you will be able to select from the
+product list. All actions (search, edit, create, ...) will be
+performed on that product. At any point in time you will be able to
+use the "select another product" link to change what product is
+your active.
+</p>
+<% end if %>
+
 <ul>
-<% 
+<%
 sequence products = @products
 for i = 1 to length(products) do
     sequence product = products[i]
