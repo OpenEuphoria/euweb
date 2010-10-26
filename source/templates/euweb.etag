@@ -16,7 +16,7 @@
 	<link rel="stylesheet" type="text/css" href="/style.css" />
 	<link rel="alternate" type="application/rss+xml" title="OpenEuphoria's Latest Happenings" href="/rss.wc" />
 	<%= @js_libs %>
-	
+
 </head>
 <body>
 
@@ -27,7 +27,7 @@
 		<div id="logo">
 			<h1><span>Open</span>Euphoria</h1>
 		</div>
-		
+
 		<div id="menu">
 			<ul>
 				<li>
@@ -36,17 +36,17 @@
 						>Home</a>
 				</li>
 				<li>
-					<a href="/forum/index.wc" 
+					<a href="/forum/index.wc"
 				  		<% if equal(#active, "forum") then %>class="active"<% end if %>
 				  		>Forum</a>
 				</li>
 				<li>
-					<a href="/wiki/wiki.cgi" 
+					<a href="/wiki/wiki.cgi"
 				  		<% if equal(#active, "wiki") then %>class="active"<% end if %>
 				  		>Wiki</a>
 				</li>
 				<li>
-					<a href="/docs/eu400_0001.html" 
+					<a href="/docs/eu400_0001.html"
 				  		<% if equal(#active, "manual") then %>class="active"<% end if %>
 						>Manual</a>
 				</li>
@@ -56,7 +56,7 @@
 				  		>Downloads</a>
 				</li>
 				<li>
-					<a href="/recent.wc" 
+					<a href="/recent.wc"
 				  		<% if equal(#active, "recent") then %>class="active"<% end if %>
 				  		>Recent</a>
 				</li>
@@ -67,7 +67,7 @@
 				</li>
 			</ul>
 		</div>
-		
+
 	</div>
 </div>
 
@@ -85,15 +85,15 @@
 <%@ include fuzzydate.e %>
 
 			</div>
-	
+
 		</div>
-		
+
 		<div id="secondaryContent_2columns">
-		
+
 			<div id="columnC_2columns">
 
 				<h4><span>Search</span></h4>
-				
+
 				<form method="get" action="/search/results.wc">
 					<div>
 						<input type="text" name="s" value="<%= @search_term %>" style="width:100%"/><br />
@@ -110,7 +110,7 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="forum" value="1" <% if @s_forum then %>checked="checked"<% end if %> /> Forum<br />
 					</div>
 				</form>
-					
+
 				<h4><span>Quick</span> Links</h4>
 				<ul class="links">
 				<%
@@ -131,13 +131,13 @@
 					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
 				<% end if %>
 				</ul>
-				
-				<% if atom(current_user) then %> 
+
+				<% if atom(current_user) then %>
 
 					<h4><span>User</span> menu</h4>
+                                        Not signed in.
 					<ul class="links">
-					  	<li class="first">Not signed in.</li>
- 					  	<li><a href="/user/login.wc">Login</a></li>
+ 					  	<li class="first"><a href="/user/login.wc">Login</a></li>
 						<li><a href="/user/signup.wc">Sign-up</a></li>
 					</ul>
 
@@ -152,12 +152,12 @@
 						<li><a href="/user/logout.wc">Logout</a></li>
 					</ul>
 				<% end if %>
-				
+
 				<% if has_role("admin") then %>
 					<h4><span>Recent</span> Users</h4>
 					<ul class="links">
-						<% 
-						sequence users = user_db:get_recent_users() 
+						<%
+						sequence users = user_db:get_recent_users()
 						for i = 1 to length(users) do
 							sequence u = users[i]
 							%>
@@ -183,7 +183,7 @@
 	<br />
  	<a href="http://www.openeuphoria.org/"><img style="vertical-align: middle;" src="/images/poweredby-euphoria.png" alt="Powered By Euphoria" /></a>
 	<a href="http://sourceforge.net/projects/rapideuphoria/"
-		><img style="vertical-align: middle;" src="http://sflogo.sourceforge.net/sflogo.php?group_id=182827&amp;type=1" 
+		><img style="vertical-align: middle;" src="http://sflogo.sourceforge.net/sflogo.php?group_id=182827&amp;type=1"
 			width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
     <!--
 	<a href="http://validator.w3.org/check?uri=referer"><img
@@ -239,7 +239,7 @@ else
 	start -= mid_size
 end if
 %>
-Pages 
+Pages
 <a href="<%= #base %>?page=1&amp;per_page=<%= sprintf("%d", #per_page) %><%= #qs %>">newest</a>
 ...
 <% for i = start to end_page do %>
@@ -261,9 +261,9 @@ if equal(#show_public_roles, "1") then
 	elsif has_role("forum_moderator", #user) then
 		%>
 		(moderator)
-		<% 
+		<%
 	end if
-end if 
+end if
 %>
 
 {{{select}}}
@@ -289,7 +289,7 @@ end if
 	<% if equal(#include_blank, "1") then %>
         <option value=""></option>
 	<% end if %>
-    <% for i = 1 to length(rows) do 
+    <% for i = 1 to length(rows) do
       object this_id = rows[i][1]
       object this_text = rows[i][2]
     %>
@@ -323,7 +323,7 @@ end if
 <div id="<%= #name %>_preview" style="padding: 5px;"></div>
 <script type="text/javascript">
 function preview_<%= #name %>() {
-	new Ajax.Updater('<%= #name %>_preview', '/ajax/creole_preview.wc', { 
+	new Ajax.Updater('<%= #name %>_preview', '/ajax/creole_preview.wc', {
 		method: 'get',
 		parameters: { content: $F('<%= #name %>') }
 	})
