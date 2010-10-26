@@ -158,7 +158,11 @@ end function
 wc:add_handler(routine_id("mine"), -1, "ticket", "mine", index_vars)
 
 function opened(map data, map request)
-	return real_index(data, request, "tstat.is_open=1")
+	if map:get(request, "status_id") = -1 then
+		return real_index(data, request, "tstat.is_open=1")
+	else
+		return real_index(data, request)
+	end if
 end function
 wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
 
