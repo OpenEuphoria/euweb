@@ -339,6 +339,20 @@ padding: 5px 20px 5px 20px;
 font-size: 0.8em;
 }
 
+#main_inner .post .post_tools_bottom
+{
+border-top: dotted 1px #E1E1E1;
+padding: 5px 20px 5px 20px;
+font-size: 0.8em;
+}
+
+#main_inner .post .post_tools_top
+{
+border-bottom: dotted 1px #E1E1E1;
+padding: 5px 20px 5px 20px;
+font-size: 0.8em;
+}
+
 /* Footer */
 
 #footer
@@ -504,7 +518,7 @@ div.error_box {
 #main_inner ul, #main_inner ol {
 	padding-bottom: 0px;
 	margin-bottom: 0px;
-	
+
 }
 
 #main_inner ul li, #main_inner ol li {

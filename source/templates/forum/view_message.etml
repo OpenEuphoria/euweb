@@ -1,4 +1,4 @@
-<%@ 
+<%@
 include std/math.e
 include templates/euweb.etag as euweb
 include forum_db.e
@@ -7,7 +7,7 @@ include forum_db.e
 <%
 sequence page_title = "Forum: " & @subject
 integer is_forum_admin = has_role("forum_moderator")
-integer is_owner = 0	
+integer is_owner = 0
 if sequence(current_user) then
 	is_owner = equal(current_user[USER_ID], @post_by_id)
 end if
@@ -20,17 +20,7 @@ end if
 <div class="post forum">
     <h3><%= _h(@subject) %></h3>
 	<a name="<%= sprintf("%d",@id ) %>"></a>
-	<ul class="post_info">
-		<li class="date">Posted by <%- euweb:user_profile user=@author_name show_public_roles=1 %> 
-		<%= @created_at %></li>
-		<li class="comments">
-			<%= _h(@views) %> views
-		</li>
-	</ul>					
-		
-	<%= @body_formatted %>
-
-	<div class="post_tools">
+	<div class="post_tools_top">
 		<% if has_role("user") then %>
 			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>">reply</a>,
 			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&amp;quote=1">reply with quote</a>,
@@ -53,9 +43,54 @@ end if
 		 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
 		 <a href="/forum.wc">topic index</a>
 		 &#187; <a href="/forum/<%= _h(@id) %>.wc">view thread</a>
-		 
+
 		 &nbsp;&nbsp;&nbsp;&nbsp;
-		 
+
+		 <% if @prev_id then %>
+		 	&#187; <a href="/forum/m/<%= _h(@prev_id) %>.wc">older message</a>
+		 <% end if %>
+
+		 <% if @next_id then %>
+		 	&#187; <a href="/forum/m/<%= _h(@next_id) %>.wc">newer message</a>
+		 <% end if %>
+	</div>
+
+	<ul class="post_info">
+		<li class="date">Posted by <%- euweb:user_profile user=@author_name show_public_roles=1 %>
+		<%= @created_at %></li>
+		<li class="comments">
+			<%= _h(@views) %> views
+		</li>
+	</ul>
+
+	<%= @body_formatted %>
+
+	<div class="post_tools_bottom">
+		<% if has_role("user") then %>
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>">reply</a>,
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&amp;quote=1">reply with quote</a>,
+			<a href="/forum/post.wc?parent_id=<%= _h(@id) %>&amp;quote=1&amp;fork=1">fork</a>
+			<% if is_owner or is_forum_admin then %>
+				&nbsp;&nbsp;&nbsp;&#187;
+				<a href="/forum/edit.wc?id=<%= _h(@id) %>">edit</a>
+			<% end if %>
+			<% if is_forum_admin then %>
+				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+				<a href="/forum/remove.wc?id=<%= _h(@id) %>">remove</a>
+			<% end if %>
+			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+			<a href="/forum/post.wc">new topic</a>
+		<% end if %>
+		<% if not equal(@parent_id, 0) then %>
+			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
+			<a href="/forum/m/<%= _h(@parent_id) %>.wc">goto parent</a>
+		 <% end if %>
+		 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
+		 <a href="/forum.wc">topic index</a>
+		 &#187; <a href="/forum/<%= _h(@id) %>.wc">view thread</a>
+
+		 &nbsp;&nbsp;&nbsp;&nbsp;
+
 		 <% if @prev_id then %>
 		 	&#187; <a href="/forum/m/<%= _h(@prev_id) %>.wc">older message</a>
 		 <% end if %>
