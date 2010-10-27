@@ -1,5 +1,5 @@
-<%@ 
-include templates/euweb.etag as euweb 
+<%@
+include templates/euweb.etag as euweb
 include std/text.e
 
 include comment_db.e
@@ -24,7 +24,7 @@ end if
 <div class="post">
 	<h3><%= _h(@subject) %></h3>
 	<ul class="post_info">
-		<li class="date">Posted by <%- euweb:user_profile user=@author_name %> 
+		<li class="date">Posted by <%- euweb:user_profile user=@author_name %>
 		<%= _h(@publish_at) %></li>
 		<li class="comments"><a href="/news/<%= _h(@id) %>.wc#comments"><%= _h(@comment_count) %> comments</a></li>
 		<% if has_role("news_admin") then %>
@@ -33,13 +33,12 @@ end if
 				<a href="/news/remove.wc?id=<%= _h(@id) %>">Remove</a>
 			</li>
 		<% end if %>
-	</ul>					
+	</ul>
 	<!--<p>posted by <%- euweb:user_profile user=@author_name %> <%= _h(@publish_at) %>.</p>-->
 
 	<%= @content %>
 </div>
 
-<h4><span>Comments</span></h4>
 <a name="comments"></a>
 <%
 sequence comments = @comments
@@ -47,16 +46,17 @@ for i = 1 to length(comments) do
 	sequence comment = comments[i]
 	%>
 
-	<h5>
-		<%= _h(comment[comment_db:CREATED_AT]) %> <%- euweb:user_profile user=!comment[comment_db:USER] %> said:</strong>
-		<% if has_role("forum_moderator") then %>
-			&#187; <a href="/news/<%= _h(@id) %>.wc?remove_comment=<%= _h(comment[comment_db:ID]) %>">remove</a>
-		<% end if %>
-	</h5>
-	<a name="<%= _h(comment[comment_db:ID]) %>"></a>
+  <a name="<%= _h(comment[comment_db:ID]) %>"></a>
+  <h4>
+    <a name="<%= _h(comment[comment_db:ID]) %>"></a>
+    <span><%= _h(i) %>. Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %>
+    <%= _h(comment[comment_db:CREATED_AT]) %>
+    <% if has_role("forum_moderator") then %>
+    &#187; <a href="/news/<%= _h(@id) %>.wc?remove_comment=<%= _h(comment[comment_db:ID]) %>">remove</a>
+    <% end if %>
+  </h4>
 
-	<%= comment[comment_db:BODY] %>
-	
+  <%= comment[comment_db:BODY] %>
 <% end for %>
 
 <% if has_role("user") then %>
