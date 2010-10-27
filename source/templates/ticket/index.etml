@@ -53,7 +53,6 @@
     <table class="list forum">
         <tr>
             <th width="1%">#</th>
-            <th width="13%">Type</th>
             <th width="13%">Category</th>
             <th width="13%">Severity</th>
             <th width="13%">Status</th>
@@ -68,14 +67,17 @@
             sequence ticket = tickets[i]
             %>
             <tr class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
-                <td rowspan="2" width="1%" align="center"><%= _h(ticket[ticket_db:ID]) %></td>
-                <td colspan="7" width="99%">
+                <td rowspan="2" width="1%" align="center">
+                  <%= _h(ticket[ticket_db:ID]) %>
+                  <img src="/images/famfam/<% if ticket[ticket_db:TYPE_ID] = 1 then %>bug<% else %>bell<% end if %>.png"
+                      alt="<%= _h(ticket[ticket_db:TYPE]) %>" />
+                </td>
+                <td colspan="6" width="99%">
                     <a style="font-size:1.1em; font-weight:bold;" href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"
                         ><%= _h(ticket[ticket_db:SUBJECT]) %></a>
                 </td>
             </tr>
             <tr style="font-style: italic;" class="<% if mod(i, 2) then %>normal<% else %>stipple<% end if %>">
-                <td><%= _h(ticket[ticket_db:TYPE]) %></td>
                 <td><%= _h(ticket[ticket_db:CATEGORY]) %></td>
                 <td><%= _h(ticket[ticket_db:SEVERITY]) %></td>
                 <td><%= _h(ticket[ticket_db:STATUS]) %></td>
