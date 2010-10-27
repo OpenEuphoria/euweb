@@ -32,6 +32,9 @@
 ifdef PRODUCTION then
 	public include config_production.e
 
+elsifdef TEST then
+	public include config_test.e
+
 elsifdef CKL then
 	public include dbconfig_ck.e
 
