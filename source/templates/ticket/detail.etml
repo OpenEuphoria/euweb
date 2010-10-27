@@ -165,7 +165,7 @@ end if
 	%>
 		<h4>
 			<a name="<%= _h(comment[comment_db:ID]) %>"></a>
-			<span>Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %>
+			<span><%= _h(i) %>. Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %>
 			<%= _h(comment[comment_db:CREATED_AT]) %>
 		</h4>
 
