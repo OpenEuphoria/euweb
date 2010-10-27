@@ -207,9 +207,20 @@ public procedure set_password(sequence uname, sequence password)
 end procedure
 
 public function is_old_account(sequence user)
-	object o = edbi:query_object("SELECT LENGTH(password) FROM users WHERE user=%s", { user[USER_NAME] })
+	object o = edbi:query_row("SELECT LENGTH(password), LENGTH(security_question), LENGTH(security_answer) FROM users WHERE user=%s", { user[USER_NAME] })
 	if sequence(o) then
-		if o < 40 then
+		-- OLD password
+		if o[1] < 40 then
+			return 1
+		end if
+
+		-- No security question
+		if sequence(o[2]) or o[2] = 0 then
+			return 1
+		end if
+
+		-- No security answer
+		if sequence(o[3]) or o[3] = 0 then
 			return 1
 		end if
 	end if
