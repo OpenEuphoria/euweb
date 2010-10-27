@@ -155,8 +155,6 @@ end if
 	</form>
 
 	<a name="comments"></a>
-	<h4><span>Comments</span></h4>
-
 	<%
 	object comments = @comments
 
