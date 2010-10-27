@@ -221,11 +221,12 @@
 <% end if %>
 
 {{{paginator}}}
+<%@ include std/math.e %>
 <%
 integer size = 10, mid_size = 5
 integer current_page = #page
 integer per_page = #per_page
-integer last_page = floor(#total / per_page)
+integer last_page = ceil(#total / per_page)
 integer start = current_page
 integer end_page = start + size
 
@@ -244,7 +245,8 @@ else
 	start -= mid_size
 end if
 %>
-Pages
+<%= _h(last_page) %> Page<% if last_page > 1 then %>s<% end if %>
+
 <a href="<%= #base %>?page=1&amp;per_page=<%= sprintf("%d", #per_page) %><%= #qs %>">newest</a>
 ...
 <% for i = start to end_page do %>
