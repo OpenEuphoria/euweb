@@ -466,7 +466,15 @@ wc:add_handler(routine_id("profile_save"), routine_id("validate_profile_save"),
 constant user_list_invars = {
 	{ wc:INTEGER,  "per_page", 20 },
 	{ wc:INTEGER,  "page",		1 },
-	{ wc:SEQUENCE, "search",   "" }
+	{ wc:SEQUENCE, "search",   "" },
+	{ wc:INTEGER,  "sort_id",   1 }
+}
+
+constant user_list_sort = {
+	"user",           -- 1
+	"user DESC",      -- 2
+	"login_time",     -- 3
+	"login_time DESC" -- 4
 }
 
 function user_list(map data, map request)
@@ -476,6 +484,7 @@ function user_list(map data, map request)
 
 	integer per_page = map:get(request, "per_page")
 	integer page	 = map:get(request, "page")
+	integer sort_id  = map:get(request, "sort_id")
 	sequence search	 = map:get(request, "search")
 	integer offset	 = (page - 1) * per_page
 
@@ -494,7 +503,7 @@ function user_list(map data, map request)
 			safeSearch, safeSearch })
 	end if
 
-	users = user_db:get_list(offset, per_page, where)
+	users = user_db:get_list(offset, per_page, where, user_list_sort[sort_id])
 
 	for i = 1 to length(users) do
 		users[i][USER_LAST_LOGIN_AT] = fuzzy_ago(users[i][USER_LAST_LOGIN_AT])

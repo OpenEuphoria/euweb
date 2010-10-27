@@ -20,10 +20,22 @@
 
 <table class="list">
     <tr>
-      <th>Username</th>
+      <th>
+        Username
+        <a style="padding:0px;margin:0px;" href="?search=<%= _h(@search) %>&sort_id=1"
+          ><img src="/images/famfam/bullet_arrow_up.png" alt="up" style="padding:0px;margin:0px;"/></a>
+        <a style="padding:0px;margin:0px;" href="?search=<%= _h(@search) %>&sort_id=2"
+          ><img src="/images/famfam/bullet_arrow_down.png" alt="down" style="padding:0px;margin:0px;"/></a>
+      </th>
       <th>Name</th>
       <th>Email</th>
-      <th>Last Login</th>
+      <th>
+        Last Login
+        <a style="padding:0px;margin:0px;" href="?search=<%= _h(@search) %>&sort_id=3"
+          ><img src="/images/famfam/bullet_arrow_up.png" alt="up" style="padding:0px;margin:0px;"/></a>
+        <a style="padding:0px;margin:0px;" href="?search=<%= _h(@search) %>&sort_id=4"
+          ><img src="/images/famfam/bullet_arrow_down.png" alt="down" style="padding:0px;margin:0px;"/></a>
+      </th>
     </tr>
 
     <%
@@ -47,7 +59,7 @@
 
 <div class="centered">
     <%
-    sequence qs = sprintf("&amp;search=%s", { _h(@search) })
+    sequence qs = sprintf("&amp;search=%s&amp;sort_id=%d", { _h(@search), @sort_id })
     %>
     <%- euweb:paginator qs=!qs page=@page per_page=@per_page total=@user_count %>
 </div>
