@@ -164,6 +164,11 @@ function opened(map data, map request)
 end function
 wc:add_handler(routine_id("opened"), -1, "ticket", "index", index_vars)
 
+function unassigned_tickets(map data, map request)
+	return real_index(data, request, "t.assigned_to_id=0 AND tstat.is_open=1")
+end function
+wc:add_handler(routine_id("unassigned_tickets"), -1, "ticket", "unassigned", index_vars)
+
 function confirm_tickets(map data, map request)
 	map:put(request, "status_id", 8)
 	return real_index(data, request, "tstat.id=8")

@@ -12,6 +12,7 @@ end if
 
 quick_links &= {
     { "/ticket/index.wc", "Open Tickets" },
+    { "/ticket/unassigned.wc", "Unassigned Tickets" },
     { "/ticket/confirm.wc", "Needs Confirmed" },
     { "/ticket/closed.wc", "Closed Tickets" }
 }
