@@ -1,6 +1,6 @@
 --****
 -- == User database support
--- 
+--
 
 namespace user_db
 
@@ -18,11 +18,11 @@ include db.e
 include md5.e
 
 global object current_user = 0
-global enum USER_ID, USER_NAME, USER_FULL_NAME, USER_LOCATION, USER_EMAIL, USER_SHOW_EMAIL, 
-	USER_LAST_LOGIN_AT, USER_DISABLED, USER_DISABLED_REASON, USER_IP_ADDR, USER_FORUM_DEFAULT_VIEW,
-	USER_LOCAL_JS, USER_ROLES
+global enum USER_ID, USER_NAME, USER_FULL_NAME, USER_LOCATION, USER_EMAIL, USER_SHOW_EMAIL,
+	USER_LAST_LOGIN_AT, USER_DISABLED, USER_DISABLED_REASON, USER_IP_ADDR,
+	USER_FORUM_DEFAULT_VIEW, USER_LOCAL_JS, USER_ROLES
 
-constant select_fields = `id, user, name, location, email, show_email, login_time, disabled, 
+constant select_fields = `id, user, name, location, email, show_email, login_time, disabled,
 	disabled_reason, ip_addr, forum_default_view, local_js`
 
 function salt(sequence salt, sequence message)
@@ -60,9 +60,9 @@ function get_roles(integer id)
 	if atom(roles) then
 		return {}
 	end if
-	
+
 	for i = 1 to length(roles) do
-		roles[i] = roles[i][1] 
+		roles[i] = roles[i][1]
 	end for
 
 	return roles
@@ -73,7 +73,7 @@ public function get(integer id)
     if atom(user) then
     	return 0
 	end if
-	
+
 	user &= { get_roles(id) }
 
 	return user
@@ -84,26 +84,26 @@ public function get_by_sess_id(sequence sess_id, sequence ip)
 	if atom(user) then
 		return 0
 	end if
-	
+
 	user &= { get_roles(user[USER_ID]) }
-	
+
 	return user
 end function
 
 public function get_by_login(sequence code, sequence password)
 	-- try the new method first, it's hoped that it will become the most common
-	object u = edbi:query_row("SELECT " & select_fields & 
+	object u = edbi:query_row("SELECT " & select_fields &
 		" FROM users WHERE (LOWER(user)=LOWER(%s) OR LOWER(email)=LOWER(%s)) AND password=SHA1(%s)",
 		{ code, code, password })
-	
+
 	if atom(u) then
 		ifdef X86_64 then
-			u = edbi:query_row("SELECT " & select_fields & 
-				" FROM users WHERE user=%s AND password=md5(%s) LIMIT 1", 
+			u = edbi:query_row("SELECT " & select_fields &
+				" FROM users WHERE user=%s AND password=md5(%s) LIMIT 1",
 				{ code, salt(code,password) })
 		elsedef
-			u = edbi:query_row("SELECT " & select_fields & 
-				" FROM users WHERE user=%s AND password=%s LIMIT 1", 
+			u = edbi:query_row("SELECT " & select_fields &
+				" FROM users WHERE user=%s AND password=%s LIMIT 1",
 				{ code, md5hex(salt(code,password)) })
 		end ifdef
 		if atom(u) then
@@ -114,11 +114,11 @@ public function get_by_login(sequence code, sequence password)
 		-- we can safely update the password to the new SHA1 format now
 		update_password(code, password)
 	end if
-	
+
 	if u[USER_DISABLED] then
 		return { 0, "Your account is disabled. Reason: " & u[USER_DISABLED_REASON] }
 	end if
-	
+
 	u &= { get_roles(u[USER_ID]) }
 
 	return u
@@ -129,27 +129,27 @@ public function get_by_code(sequence code)
     if atom(user) then
     	return 0
 	end if
-	
+
 	user &= { get_roles(user[USER_ID]) }
 
 	return user
 end function
 
 global function has_role(sequence role, object user=current_user)
-	if atom(user) then 
+	if atom(user) then
 		return 0
 	end if
 
 	if length(user) >= USER_ROLES and sequence(user[USER_ROLES]) then
 		if find("admin", user[USER_ROLES]) then
 			return 1
-		end if 
+		end if
 
 		return find(role, user[USER_ROLES])
 	else
 		-- user must be just a user name
-		object o = edbi:query_object(`SELECT ur.role_name 
-			FROM user_roles ur, users u 
+		object o = edbi:query_object(`SELECT ur.role_name
+			FROM user_roles ur, users u
 			WHERE u.id=ur.user_id AND ur.role_name=%s AND u.user=%s`, { role, user })
 		return sequence(o)
 	end if
@@ -157,13 +157,13 @@ end function
 
 public function set_user_ip(sequence user, sequence ip)
 	datetime rnd = datetime:now()
-	sequence sk = datetime:format(rnd, "%S.#%m") & ip & 
+	sequence sk = datetime:format(rnd, "%S.#%m") & ip &
 		datetime:format(rnd, "%S%Y&(*") & user[USER_NAME] &
 		datetime:format(rnd, "%s$%M!%H#%Y@%m*%de.<\"")
 
-	edbi:execute("UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%d", { 
+	edbi:execute("UPDATE users SET sess_id=SHA1(%s), ip_addr=%s, login_time=CURRENT_TIMESTAMP WHERE id=%d", {
 		sk, ip, user[USER_ID] })
-	
+
 	return edbi:query_object("SELECT sess_id FROM users WHERE id=%d", { user[USER_ID] })
 end function
 
@@ -173,10 +173,10 @@ public function create(sequence code, sequence password, sequence email)
 	then
 		crash("Couldn't insert user into the database: %s", { edbi:error_message() })
 	end if
-	
+
 	integer id = edbi:last_insert_id()
 	edbi:execute("INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
-	
+
 	return id
 end function
 
@@ -202,7 +202,7 @@ public procedure enable(sequence uname)
 end procedure
 
 public procedure set_password(sequence uname, sequence password)
-	edbi:execute("UPDATE users SET password=SHA1(%s) WHERE user=%s", { 
+	edbi:execute("UPDATE users SET password=SHA1(%s) WHERE user=%s", {
 		password, uname })
 end procedure
 
@@ -213,20 +213,20 @@ public function is_old_account(sequence user)
 			return 1
 		end if
 	end if
-	
+
 	return 0
 end function
 
 public function update_security(sequence uname, sequence security_question, sequence security_answer,
 		sequence password)
-	object result = edbi:execute(`UPDATE users SET security_question=%s, 
+	object result = edbi:execute(`UPDATE users SET security_question=%s,
 		security_answer=SHA1(LOWER(%s)), password=SHA1(%s) WHERE LOWER(user)=LOWER(%s)`, {
 			security_question, security_answer, password, uname})
 
 	if result then
 		return 0
 	end if
-	
+
 	return 1
 end function
 
@@ -252,3 +252,28 @@ public function get_recent_users(integer limit=10)
 		limit })
 end function
 
+--**
+-- Get the number of users
+
+public function count(sequence where = "")
+    sequence sql = "SELECT COUNT(id) FROM users"
+    if length(where) > 0 then
+		sql &= " WHERE " & where
+    end if
+
+	return edbi:query_object(sql)
+end function
+
+--**
+-- Get a list of users
+
+public function get_list(integer offset=0, integer per_page=10, sequence where="")
+	sequence sql = "SELECT " & select_fields & " FROM users"
+	if length(where) then
+		sql &= " WHERE " & where
+	end if
+	sql &= " ORDER BY user"
+	sql &= " LIMIT %d OFFSET %d"
+
+	return edbi:query_rows(sql, { per_page, offset })
+end function

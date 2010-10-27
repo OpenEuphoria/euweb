@@ -1,11 +1,12 @@
 --****
 -- == User module
--- 
+--
 
 -- StdLib includes
 include std/datetime.e as dt
 include std/error.e
 include std/map.e
+include std/search.e
 include std/net/http.e
 include std/net/url.e
 include std/types.e
@@ -29,9 +30,10 @@ include templates/user/old_account.etml as t_old_account
 include templates/user/update_ok.etml as t_update_ok
 include templates/user/forgot_password.etml as t_forgot_password
 include templates/user/forgot_password_ok.etml as t_forgot_password_ok
+include templates/user/list.etml as t_list
 
 -- Local includes
-include config.e 
+include config.e
 include db.e
 include format.e
 include fuzzydate.e
@@ -82,7 +84,7 @@ public function profile(map data, map invars)
 
 		return { TEXT, t_profile:template(data) }
 	end if
-	
+
 	map:put(data, "invalid_profile", 0)
 
 	user[USER_LAST_LOGIN_AT] = fuzzy_ago(user[USER_LAST_LOGIN_AT])
@@ -100,7 +102,7 @@ public function profile(map data, map invars)
 	map:put(data, "user_ip_addr", user[USER_IP_ADDR])
 	map:put(data, "user_local_js", user[USER_LOCAL_JS])
 	map:put(data, "user_roles", user[USER_ROLES])
-	
+
 	return { TEXT, t_profile:template(data) }
 end function
 wc:add_handler(routine_id("profile"), -1, "user", "profile", profile_invars)
@@ -123,12 +125,12 @@ public function validate_do_login(integer data, map vars)
 	if atom(map:get(vars, "code")) then
 		dump_map("user_login", vars)
 	end if
-	
+
 	sequence code = map:get(vars, "code")
-	
+
 	-- Only do data validation if doing a login, the other option here is that
 	-- the user has forgotten their password.
-	
+
 	if equal(map:get(vars, "login"), "Login") then
 		sequence password = map:get(vars, "password")
 		sequence u = user_db:get_by_login(code, password)
@@ -140,26 +142,26 @@ public function validate_do_login(integer data, map vars)
 		if atom(u) then
 			errors = wc:add_error(errors, "form", "Invalid user code")
 		elsif is_old_account(u) then
-			errors = wc:add_error(errors, "user", `User account is an old account and 
-				does not support password resetting. You must contact a system 
+			errors = wc:add_error(errors, "user", `User account is an old account and
+				does not support password resetting. You must contact a system
 				administrator for assistance`)
 		end if
 	end if
 
-	return errors	
+	return errors
 end function
 
 public function do_login(map data, map invars)
-	if equal(map:get(invars, "login"), "Forgot Password") or 
-		sequence(map:get(invars, "security_answer", 0)) 
+	if equal(map:get(invars, "login"), "Forgot Password") or
+		sequence(map:get(invars, "security_answer", 0))
 	then
 		object u = user_db:get_by_code(map:get(invars, "code"))
-		
+
 		map:put(data, "re_public_key", RECAPTCHA_PUBLIC_KEY)
 		map:put(data, "security_question", user_db:get_security_question(u[USER_NAME]))
 		map:put(data, "security_answer", map:get(invars, "security_answer", ""))
 		map:put(data, "code", u[USER_NAME])
-		
+
 		return { TEXT, t_forgot_password:template(data) }
 
 	elsif sequence(map:get(invars, "update_account")) then
@@ -168,7 +170,7 @@ public function do_login(map data, map invars)
 		return { TEXT, t_old_account:template(data) }
 	else
 		current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
-		
+
 		_login(current_user)
 
 		if user_db:is_old_account(current_user) then
@@ -202,7 +204,7 @@ sequence signup_invars = {
 
 function validate_do_signup(integer data, map:map vars)
 	sequence errors = wc:new_errors("user", "signup")
-	
+
 	sequence code = map:get(vars, "code")
 	if length(code) < 4 then
 		errors = wc:add_error(errors, "code", "User code must be at least 4 characters long")
@@ -211,14 +213,14 @@ function validate_do_signup(integer data, map:map vars)
 	elsif is_code_used(code) then
 		errors = wc:add_error(errors, "code", "User code is already in use.")
 	end if
-	
+
 	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
 	if length(password) < 5 then
 		errors = wc:add_error(errors, "password", "Password must be at least 5 characters long.")
 	elsif not equal(password, password_confirm) then
 		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
 	end if
-	
+
 	sequence email = map:get(vars, "email")
 	if not valid:valid_email(email) then
 		errors = wc:add_error(errors, "email", "Email is invalid")
@@ -229,7 +231,7 @@ function validate_do_signup(integer data, map:map vars)
 	-- No reason to do the costly tests if we already have errors.
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
-		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", { 
+		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", {
 			url:encode(RECAPTCHA_PRIVATE_KEY), url:encode(server_var("REMOTE_ADDR")),
 			url:encode(map:get(vars, "recaptcha_challenge_field")),
 			url:encode(map:get(vars, "recaptcha_response_field")) })
@@ -250,13 +252,13 @@ end function
 public function do_signup(map data, map invars)
 	user_db:create(map:get(invars, "code"), map:get(invars, "password"),
 		map:get(invars, "email"))
-	
+
 	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
 	_login(current_user)
 
 	return { TEXT, t_signup_ok:template(data) }
 end function
-wc:add_handler(routine_id("do_signup"), routine_id("validate_do_signup"), "user", "do_signup", 
+wc:add_handler(routine_id("do_signup"), routine_id("validate_do_signup"), "user", "do_signup",
 	signup_invars)
 
 public function logout(map data, map invars)
@@ -278,12 +280,12 @@ sequence update_account_invars = {
 
 function validate_update_account(integer data, map:map vars)
 	sequence errors = wc:new_errors("user", "do_login")
-	
+
 	sequence security_question = map:get(vars, "security_question")
 	if length(security_question) = 0 then
 		errors = wc:add_error(errors, "security_question", "Security question cannot be empty.")
 	end if
-	
+
 	sequence security_answer = map:get(vars, "security_answer")
 	if length(security_answer) = 0 then
 		errors = wc:add_error(errors, "security_answer", "Security answer cannot be empty.")
@@ -295,14 +297,14 @@ function validate_update_account(integer data, map:map vars)
 	elsif not equal(password, password_confirm) then
 		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
 	end if
-	
+
 	return errors
 end function
 
 public function update_account(map data, map invars)
 	user_db:update_security(current_user[USER_NAME], map:get(invars, "security_question"),
 		map:get(invars, "security_answer"), map:get(invars, "password"))
-	
+
 	return { TEXT, t_update_ok:template(data) }
 end function
 wc:add_handler(routine_id("update_account"), routine_id("validate_update_account"),
@@ -319,7 +321,7 @@ sequence forgot_password_invars = {
 
 public function validate_forgot_password(integer data, map vars)
 	sequence errors = wc:new_errors("user", "do_login")
-	
+
 	sequence code = map:get(vars, "code")
 	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
 	sequence security_answer = map:get(vars, "security_answer")
@@ -329,19 +331,19 @@ public function validate_forgot_password(integer data, map vars)
 	elsif not equal(password, password_confirm) then
 		errors = wc:add_error(errors, "password", "Password and password confirmation do not match.")
 	end if
-	
+
 	if not is_security_ok(code, security_answer) then
 		errors = wc:add_error(errors, "security_answer", "Security answer is incorrect")
 	end if
-	
+
 	-- No reason to do the costly tests if we already have errors.
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
-		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", { 
+		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", {
 			url:encode(RECAPTCHA_PRIVATE_KEY), url:encode(server_var("REMOTE_ADDR")),
 			url:encode(map:get(vars, "recaptcha_challenge_field")),
 			url:encode(map:get(vars, "recaptcha_response_field")) })
-		
+
 		object recaptcha_result = get_url(recaptcha_url, postdata)
 		if length(recaptcha_result) < 2 then
 	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
@@ -373,13 +375,13 @@ function profile_edit(map data, map invars)
 	if atom(u) then
 		crash("Invalid user code %s", { map:get(invars, "user") })
 	end if
-	
+
 	if not has_role("user_admin") then
 		if not equal(current_user[USER_ID], u[USER_ID]) then
 			return { TEXT, t_security:template(data) }
 		end if
 	end if
-	
+
 	map:put(data, "id", u[USER_ID])
 	map:put(data, "user", u[USER_NAME])
 	map:put(data, "full_name", u[USER_FULL_NAME])
@@ -390,7 +392,7 @@ function profile_edit(map data, map invars)
 	map:put(data, "local_js", u[USER_LOCAL_JS])
 
 	if map:has(invars, "post") then
-		map:copy(invars, data) 
+		map:copy(invars, data)
 	end if
 
 	return { TEXT, t_profile_edit:template(data) }
@@ -409,12 +411,12 @@ sequence profile_save_invars = {
 
 function validate_profile_save(map data, map vars)
 	sequence errors = wc:new_errors("user", "profile_edit")
-	
+
 	object u = user_db:get_by_code(map:get(vars, "user"))
 	if atom(u) then
 		errors = wc:add_error(errors, "form", "Invalid user code")
 	end if
-	
+
 	if not has_role("user_admin") then
 		if not equal(current_user[USER_ID], u[USER_ID]) then
 			errors = wc:add_error(errors, "form", "You are not authorized to edit this profile")
@@ -426,7 +428,7 @@ function validate_profile_save(map data, map vars)
 	end if
 
 	sequence password=map:get(vars, "password"), password_confirm=map:get(vars, "password_confirm")
-	
+
 	-- Only validate password if they have supplied a new one.
 	if length(password) > 0 then
 		if length(password) < 5 then
@@ -441,9 +443,9 @@ end function
 
 function profile_save(map data, map vars)
 	object r = edbi:execute(`UPDATE users SET name=%s, location=%s, forum_default_view=%s,
-		show_email=%d, email=%s, login_time=login_time, local_js=%d WHERE user=%s`, { 
-			map:get(vars, "full_name"), 
-			map:get(vars, "location"), 
+		show_email=%d, email=%s, login_time=login_time, local_js=%d WHERE user=%s`, {
+			map:get(vars, "full_name"),
+			map:get(vars, "location"),
 			map:get(vars, "forum_default_view"),
 			equal("on", map:get(vars, "show_email")),
 			map:get(vars, "email"),
@@ -458,6 +460,49 @@ function profile_save(map data, map vars)
 
 	return { TEXT, t_profile_edit_ok:template(data) }
 end function
-wc:add_handler(routine_id("profile_save"), routine_id("validate_profile_save"), 
+wc:add_handler(routine_id("profile_save"), routine_id("validate_profile_save"),
 	"user", "profile_save", profile_save_invars)
 
+constant user_list_invars = {
+	{ wc:INTEGER,  "per_page", 20 },
+	{ wc:INTEGER,  "page",		1 },
+	{ wc:SEQUENCE, "search",   "" }
+}
+
+function user_list(map data, map request)
+	if not has_role("user_admin") then
+		return { TEXT, t_security:template(data) }
+	end if
+
+	integer per_page = map:get(request, "per_page")
+	integer page	 = map:get(request, "page")
+	sequence search	 = map:get(request, "search")
+	integer offset	 = (page - 1) * per_page
+
+	map:copy(request, data)
+
+	sequence users, where = ""
+
+	if length(search) then
+		sequence safeSearch = match_replace("\\",
+					match_replace("'",
+						match_replace("*", search, "%%", 0),
+					"''", 0),
+				"\\\\")
+
+		where = sprintf("user LIKE '%s' OR email LIKE '%s'", {
+			safeSearch, safeSearch })
+	end if
+
+	users = user_db:get_list(offset, per_page, where)
+
+	for i = 1 to length(users) do
+		users[i][USER_LAST_LOGIN_AT] = fuzzy_ago(users[i][USER_LAST_LOGIN_AT])
+	end for
+
+	map:put(data, "users", users)
+	map:put(data, "user_count", user_db:count(where))
+
+	return { TEXT, t_list:template(data) }
+end function
+wc:add_handler(routine_id("user_list"), -1, "user", "list", user_list_invars)

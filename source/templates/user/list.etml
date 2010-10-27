@@ -1,0 +1,55 @@
+<%@
+
+  include std/datetime.e as dt
+  include templates/euweb.etag as euweb
+  include webclay/escape.e
+  include user_db.e as user_db
+%>
+
+<%- euweb:head title="User List" active="home" %>
+
+<h3><span>User</span> List <span class="small">(<%= _h(@user_count) %> users)</span></h3>
+
+<%- euweb:errors %>
+
+<form method="GET" style="margin-bottom:10px;">
+<strong>Search:</strong>
+<input type="text" name="search" value="<%= _h(@search) %>" />
+<input type="submit" value="Search" />
+</form>
+
+<table class="list">
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Last Login</th>
+    </tr>
+
+    <%
+      sequence users = @users
+      for i = 1 to length(users) do
+        object user = users[i]
+       	%>
+    <tr>
+      <td>
+        <a href="/user/profile/<%= _h(user[user_db:USER_NAME]) %>.wc"
+          ><%= _h(user[user_db:USER_NAME]) %></a>
+      </td>
+      <td><%= _h(user[user_db:USER_FULL_NAME]) %></td>
+      <td><%= _h(user[user_db:USER_EMAIL]) %></td>
+      <td><%= _h(user[user_db:USER_LAST_LOGIN_AT]) %></td>
+    </tr>
+        <%
+      end for
+    %>
+</table>
+
+<div class="centered">
+    <%
+    sequence qs = sprintf("&amp;search=%s", { _h(@search) })
+    %>
+    <%- euweb:paginator qs=!qs page=@page per_page=@per_page total=@user_count %>
+</div>
+
+<%- euweb:foot %>

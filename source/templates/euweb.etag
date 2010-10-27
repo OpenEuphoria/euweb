@@ -154,6 +154,11 @@
 				<% end if %>
 
 				<% if has_role("admin") then %>
+					<h4><span>Admin</span> Menu</h4>
+					<ul class="links">
+						<li><a href="/user/list.wc">User List</a></li>
+					</ul>
+
 					<h4><span>Recent</span> Users</h4>
 					<ul class="links">
 						<%

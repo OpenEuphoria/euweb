@@ -88,9 +88,7 @@ function real_index(map data, map request, sequence where="")
 	integer type_id		= map:get(request, "type_id")
 	integer product_id	= get_product_id(request, data)
 
-	log:log("status_id=%d", { status_id })
 	map:copy(request, data)
-	log:log("status_id=%d", { status_id })
 
 	sequence local_where = {}
 	if category_id > -1 then
