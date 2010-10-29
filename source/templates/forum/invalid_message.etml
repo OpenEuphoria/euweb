@@ -1,4 +1,4 @@
-<%@ 
+<%@
 include std/math.e
 include templates/euweb.etag as euweb
 include forum_db.e
@@ -7,7 +7,7 @@ include forum_db.e
 <%
 sequence page_title = "Forum: " & @subject
 integer is_forum_admin = has_role("forum_moderator")
-integer is_owner = 0	
+integer is_owner = 0
 if sequence(current_user) then
 	is_owner = equal(current_user[USER_ID], @post_by_id)
 end if
@@ -19,16 +19,12 @@ end if
 
 <div class="post forum">
     <h3>Invalid Post</h3>
-	<ul class="post_info">
-	
-	<div class="post_tools">
-		<% if has_role("user") then %>
-			<a href="/forum/post.wc">new topic</a>
-		<% end if %>
-		 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
-		 <a href="/forum.wc">topic index</a>
-		 
-	</div>
+    <p>
+      This post is invalid or has been removed.
+    </p>
+    <p>
+      <a href="/forum.wc">Topic Index</a>
+    </p>
 </div>
 
 <%
