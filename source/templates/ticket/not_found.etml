@@ -1,0 +1,13 @@
+<%@
+include templates/euweb.etag as euweb
+
+include local.etag as local
+%>
+
+<%- euweb:head title="Ticket Not Found" active="ticket" %>
+
+Ticket was not found, please refer to the
+<a href="/ticket/index.wc">Ticket Index</a> and possibly the
+<a href="/ticket/change_product.wc?url=/ticket/index.wc">Product Listing</a>.
+
+<%- local:foot %>

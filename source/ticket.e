@@ -20,6 +20,7 @@ include templates/ticket/create_ok.etml as t_create_ok
 include templates/ticket/detail.etml as t_detail
 include templates/ticket/update_ok.etml as t_update_ok
 include templates/ticket/change_product.etml as t_change_product
+include templates/ticket/not_found.etml as t_not_found
 
 include dump.e
 include config.e
@@ -297,6 +298,9 @@ sequence detail_vars = {
 
 function detail(map data, map request)
 	object ticket = ticket_db:get(map:get(request, "id"))
+	if atom(ticket) then
+		return { TEXT, t_not_found:template(data) }
+	end if
 
 	if map:get(request, "remove_comment_id") > -1 then
 		if not has_role("admin") then
