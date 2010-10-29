@@ -158,13 +158,13 @@ function real_index(map data, map request, sequence where="")
 	end if
 
 	map:put(data, "static_status_items", {
-		{ -2, "All Opened", "active_ticket" },
-		{ -3, "All Closed", "closed_ticket" }
+		{ -2, "** All Opened **", "active_ticket" },
+		{ -3, "** All Closed **", "closed_ticket" }
 	})
 
 	sequence static_developer_items = {}
 	if has_role("developer") or has_role("admin") then
-		static_developer_items = { { current_user[user_db:USER_ID], "Me", "me" } }
+		static_developer_items = { { current_user[user_db:USER_ID], "** Me **", "me" } }
 	end if
 
 	map:put(data, "static_developer_items", static_developer_items)
