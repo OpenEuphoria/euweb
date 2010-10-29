@@ -1,6 +1,6 @@
-<%@ 
+<%@
   include std/math.e
-  
+
   include webclay/escape.e
   include templates/euweb.etag as euweb
   include local.etag as local
@@ -57,14 +57,14 @@
 	</ul>
 	</p>
 
-    <h4>New Ticket for <span><%= _h(@product_name) %></span> <span class="small">(<a href="/ticket/change_product.wc">select another product</a>)</span></h4>
+    <h4>New Ticket for <span><%= _h(@product_name) %></span> <span class="small">(<a href="/ticket/change_product.wc?url=/ticket/create.wc">select another product</a>)</span></h4>
 
 	<%- euweb:errors %>
 
 	<form method="POST" action="/ticket/do_create.wc">
 		<input type="hidden" name="id" value="<%= _h(@id) %>" />
 
-		<table class="form">		
+		<table class="form">
 			<tr>
 				<th>Ticket Type:</th>
 				<td>
@@ -103,7 +103,7 @@
 					<%- euweb:creole_previewer name="content" %>
 				</td>
 			</tr>
-			
+
 			<tr>
 				<th>&nbsp;</th>
 				<td>

@@ -25,7 +25,7 @@ sequence products = @products
 for i = 1 to length(products) do
     sequence product = products[i]
     %>
-    <li><a href="/ticket/index.wc?product_id=<%= _h(product[1]) %>"><%= product[2] %></a></li>
+    <li><a href="<%= @url %>?product_id=<%= _h(product[1]) %>"><%= product[2] %></a></li>
 <% end for %>
 </ul>
 

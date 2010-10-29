@@ -389,9 +389,16 @@ function update(map data, map request)
 end function
 wc:add_handler(routine_id("update"), routine_id("validate_update"), "ticket", "update", update_vars)
 
+sequence change_product_vars = {
+	{ wc:SEQUENCE, "url", "/ticket/index.wc" }
+}
+
 function change_product(map data, map request)
 	sequence products = edbi:query_rows("SELECT id, name FROM ticket_product ORDER BY name")
+
+	map:copy(request, data)
 	map:put(data, "products", products)
+
 	return { TEXT, t_change_product:template(data) }
 end function
 wc:add_handler(routine_id("change_product"), -1, "ticket", "change_product", {})
