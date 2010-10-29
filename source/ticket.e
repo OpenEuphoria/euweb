@@ -26,7 +26,7 @@ include config.e
 include db.e
 include comment_db.e
 include ticket_db.e
-include user_db.e
+include user_db.e as user_db
 include fuzzydate.e
 include format.e
 
@@ -68,6 +68,7 @@ sequence index_vars = {
 	{ wc:INTEGER,  "status_id",	  -1 },
 	{ wc:INTEGER,  "type_id",	  -1 },
 	{ wc:INTEGER,  "product_id",  -1 },
+	{ wc:INTEGER,  "user_id",     -1 },
 	{ wc:SEQUENCE, "milestone",	  "" }
 }
 
@@ -86,6 +87,7 @@ function real_index(map data, map request, sequence where="")
 	integer severity_id = map:get(request, "severity_id")
 	integer status_id	= map:get(request, "status_id")
 	integer type_id		= map:get(request, "type_id")
+	integer user_id     = map:get(request, "user_id")
 	integer product_id	= get_product_id(request, data)
 
 	map:copy(request, data)
@@ -99,12 +101,21 @@ function real_index(map data, map request, sequence where="")
 	end if
 	if status_id > -1 then
 		local_where = append(local_where, sprintf("tstat.id=%d", { status_id }))
+	elsif status_id = -2 then
+		local_where = append(local_where, "tstat.is_open=1")
+	elsif status_id = -3 then
+		local_where = append(local_where, "tstat.is_open=0")
 	end if
 	if type_id > -1 then
 		local_where = append(local_where, sprintf("ttype.id=%d", { type_id }))
 	end if
 	if product_id > -1 then
 		local_where = append(local_where, sprintf("tprod.id=%d", { product_id }))
+	end if
+	if user_id > -1 then
+		local_where = append(local_where,
+			sprintf("(t.submitted_by_id=%d OR t.assigned_to_id=%d)", {
+				user_id, user_id }))
 	end if
 	if length(milestone) > 0 then
 		local_where = append(local_where, sprintf("t.milestone='%s'", {
@@ -145,6 +156,18 @@ function real_index(map data, map request, sequence where="")
 		map:put(data, "tickets", tickets)
 		map:put(data, "ticket_count", ticket_db:count(where))
 	end if
+
+	map:put(data, "static_status_items", {
+		{ -2, "All Opened", "active_ticket" },
+		{ -3, "All Closed", "closed_ticket" }
+	})
+
+	sequence static_developer_items = {}
+	if has_role("developer") or has_role("admin") then
+		static_developer_items = { { current_user[user_db:USER_ID], "Me", "me" } }
+	end if
+
+	map:put(data, "static_developer_items", static_developer_items)
 
 	return { TEXT, t_index:template(data) }
 end function

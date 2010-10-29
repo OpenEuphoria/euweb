@@ -828,3 +828,7 @@ padding-top: 5px;
 padding-bottom: 5px;
 overflow-x: auto;
 }
+
+option.active_ticket,option.active_user { background-color: #ddffdd; }
+option.closed_ticket,option.disabled_user { background-color: #ffdddd; }
+option.me { background-color: #aaaaff; }

@@ -277,9 +277,15 @@ end if
 <%@ include edbi/edbi.e %>
 <%@ include std/text.e %>
 <%
-  object rows = edbi:query_rows(#option_sql)
-  if not sequence(rows) then
-      rows = {}
+  integer static_count = 0
+  object rows = {}
+  sequence static_items = #static_items
+  if length(static_items) then
+    rows = static_items
+  end if
+  object db_rows = edbi:query_rows(#option_sql)
+  if sequence(db_rows) then
+      rows &= db_rows
   end if
   sequence id
   if length(#id) then
@@ -299,10 +305,14 @@ end if
     <% for i = 1 to length(rows) do
       object this_id = rows[i][1]
       object this_text = rows[i][2]
+      object cls = "normal"
+      if length(rows[i]) > 2 then
+        cls = rows[i][3]
+      end if
     %>
   <option value="<%= _h(this_id) %>"
     <% if equal(this_id, #selected) then %>selected="selected"<% end if %>
-    ><%= _h(this_text) %></option>
+    class="<%= cls %>"><%= _h(this_text) %></option>
   <% end for %>
 </select>
 

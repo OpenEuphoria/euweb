@@ -43,7 +43,23 @@
                 <th>Severity:</th>
                 <td><%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %></td>
                 <th>Status:</th>
-                <td><%- euweb:select include_empty=1 name="status_id" selected=@status_id option_sql="SELECT id,name FROM ticket_status ORDER BY position" %></td>
+                <td>
+                    <%- euweb:select
+                        include_empty=1
+                        name="status_id"
+                        static_items=@static_status_items
+                        selected=@status_id
+                        option_sql="SELECT id,name,IF(is_open,'active_ticket','closed_ticket') AS cls FROM ticket_status ORDER BY position"
+                    %>
+                </td>
+                <th>Developer:</th>
+                <td>
+                    <%- euweb:select
+                        include_empty=1
+                        name="user_id"
+                        static_items=@static_developer_items
+                        selected=@user_id
+                        option_sql="SELECT id,user,IF(disabled=0,'active_user','disabled_user') AS cls FROM users INNER JOIN user_roles ON (users.id=user_roles.user_id) WHERE role_name IN ('admin','developer') GROUP BY (users.id) ORDER BY disabled,user" %></td>
             </tr>
         </table>
 
@@ -103,8 +119,8 @@
 
 <div class="centered">
     <%
-    sequence qs = sprintf("&amp;type_id=%d&amp;category_id=%d&amp;severity_id=%d&amp;status_id=%d",
-        { @type_id, @category_id, @severity_id, @status_id })
+    sequence qs = sprintf("&amp;type_id=%d&amp;category_id=%d&amp;severity_id=%d&amp;status_id=%d&amp;user_id=%d",
+        { @type_id, @category_id, @severity_id, @status_id, @user_id })
     %>
     <%- euweb:paginator qs=!qs page=@page per_page=@per_page total=@ticket_count %>
 </div>
