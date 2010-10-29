@@ -291,11 +291,20 @@ wc:add_handler(routine_id("do_create"), routine_id("validate_do_create"), "ticke
 	create_vars)
 
 sequence detail_vars = {
-	{ wc:INTEGER, "id", -1 }
+	{ wc:INTEGER, "id",                -1 },
+	{ wc:INTEGER, "remove_comment_id", -1 }
 }
 
 function detail(map data, map request)
 	object ticket = ticket_db:get(map:get(request, "id"))
+
+	if map:get(request, "remove_comment_id") > -1 then
+		if not has_role("admin") then
+			return { TEXT, t_security:template(data) }
+		end if
+
+		ticket_db:remove_comment(map:get(request, "remove_comment_id"))
+	end if
 
 	-- Trick it for incoming links that may be switching between products
 	map:put(request, "product_id", ticket[ticket_db:PRODUCT_ID])

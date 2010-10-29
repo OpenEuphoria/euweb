@@ -13,6 +13,7 @@
 <%- euweb:head title="Ticket Detail" active="ticket" %>
 <%
 object ticket = @ticket
+integer is_admin = has_role("admin")
 integer is_dev = has_role("developer")
 integer is_user = sequence(current_user)
 integer is_owner = 0
@@ -81,7 +82,11 @@ end if
 				<th>Status:</th>
 				<td>
 					<% if is_dev or is_owner then %>
-						<%- euweb:select name="status_id" selected=!ticket[ticket_db:STATUS_ID] option_sql="SELECT id,name FROM ticket_status ORDER BY position" %>
+						<%- euweb:select
+                                                    name="status_id"
+                                                    selected=!ticket[ticket_db:STATUS_ID]
+                                                    option_sql="SELECT id,name,IF(is_open,'active_ticket','closed_ticket') AS cls FROM ticket_status ORDER BY position"
+                                                %>
 					<% else %>
 						<%= _h(ticket[ticket_db:STATUS]) %>
 					<% end if %>
@@ -168,6 +173,12 @@ end if
 		</h4>
 
 		<%= comment[comment_db:BODY] %>
+		<% if is_admin then %>
+		<div class="tools">
+			<a href="?remove_comment_id=<%= _h(comment[comment_db:ID]) %>">remove comment</a>
+		</div>
+		<% end if %>
+
 	<% end for %>
 </div>
 

@@ -98,3 +98,10 @@ public function update(integer id, integer type_id, integer severity_id,
 		svn_rev=%s WHERE id=%d""", { type_id, severity_id, category_id,
 			reported_release, milestone, assigned_to_id, status_id, svn_rev, id })
 end function
+
+--**
+-- Remove a ticket comment
+
+public function remove_comment(integer id)
+	return edbi:execute("DELETE FROM comment WHERE id=%d", { id })
+end function
