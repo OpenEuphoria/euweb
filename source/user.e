@@ -235,7 +235,11 @@ function validate_do_signup(integer data, map:map vars)
 			url:encode(map:get(vars, "recaptcha_response_field")) })
 
 		if length(RECAPTCHA_PUBLIC_KEY) then
-			object recaptcha_result = http_get(recaptcha_url, postdata)
+			ifdef OLD_GET_URL then
+				object recaptcha_result = get_url(recaptcha_url, postdata)
+			elsedef
+				object recaptcha_result = http_get(recaptcha_url, postdata)
+			end ifdef
 			if length(recaptcha_result) < 2  then
 				errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
 			elsif not match("true", recaptcha_result[2]) = 1 then
@@ -342,7 +346,11 @@ public function validate_forgot_password(integer data, map vars)
 			url:encode(map:get(vars, "recaptcha_challenge_field")),
 			url:encode(map:get(vars, "recaptcha_response_field")) })
 
-		object recaptcha_result = http_post(recaptcha_url, postdata)
+		ifdef OLD_GET_URL then
+			object recaptcha_result = get_url(recaptcha_url, postdata)
+		elsedef
+			object recaptcha_result = http_post(recaptcha_url, postdata)
+		end ifdef
 		if length(recaptcha_result) < 2 then
 	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
 		elsif not match("true", recaptcha_result[2]) = 1 then
