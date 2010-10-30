@@ -64,7 +64,7 @@ end function
 --
 
 public function update(sequence name, sequence wiki_text, sequence change_msg,
-		sequence user=current_user)
+			sequence user=current_user)
 	integer status
 
 	status = edbi:execute("begin")
@@ -80,6 +80,19 @@ public function update(sequence name, sequence wiki_text, sequence change_msg,
 	status = edbi:execute("commit")
 
 	return result
+end function
+
+--**
+-- Revert a wiki page to a prior revision
+
+public function revert(sequence name, integer revision, sequence modify_reason,
+			sequence user=current_user)
+	object wiki = get(name, revision)
+	if atom(wiki) then
+		return 0
+	end if
+
+	return update(name, wiki[WIKI_TEXT], modify_reason, user)
 end function
 
 --**

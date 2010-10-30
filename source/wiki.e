@@ -15,6 +15,7 @@ include templates/wiki/edit.etml as t_edit
 include templates/wiki/saved.etml as t_saved
 include templates/wiki/page_list.etml as t_page_list
 include templates/wiki/history.etml as t_history
+include templates/wiki/revert.etml as t_revert
 
 include user_db.e as user_db
 include wiki_db.e as wiki_db
@@ -194,3 +195,44 @@ function history(map data, map request)
 	return { TEXT, t_history:template(data) }
 end function
 wc:add_handler(routine_id("history"), -1, "wiki", "history", history_vars)
+
+sequence revert_vars = {
+	{ wc:SEQUENCE, "page"          },
+	{ wc:SEQUENCE, "modify_reason" },
+	{ wc:INTEGER,  "rev",       -1 }
+}
+
+function validate_revert(map data, map request)
+	sequence errors = wc:new_errors("wiki", "view")
+
+	if not has_role("user") then
+		errors = wc:add_error(errors, "form", "You are not authorized to revert wiki pages")
+	end if
+
+	if map:get(request, "rev", -1) = -1 then
+		errors = wc:add_error(errors, "form", "Invalid revision")
+	end if
+
+	return errors
+end function
+
+function revert(map data, map request)
+	sequence modify_reason = map:get(request, "modify_reason")
+	sequence page = map:get(request, "page")
+	integer rev = map:get(request, "rev")
+
+	map:copy(request, data)
+
+	if length(modify_reason) then
+		modify_reason = sprintf("%s (reverted to %d)", { modify_reason, rev })
+		wiki_db:revert(page, rev, modify_reason)
+		map:put(data, "op", 2)
+		return { TEXT, t_revert:template(data) }
+	end if
+
+	map:put(data, "op", 1)
+
+	return { TEXT, t_revert:template(data) }
+end function
+wc:add_handler(routine_id("revert"), routine_id("validate_revert"),
+	"wiki", "revert", revert_vars)

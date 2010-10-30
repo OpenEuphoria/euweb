@@ -27,6 +27,7 @@ if length(history) = 0 then
 
   <table class="list forum">
     <tr>
+      <th>Rev</th>
       <th>Author</th>
       <th>Date</th>
       <th>Change Message</th>
@@ -39,6 +40,13 @@ if length(history) = 0 then
 %>
 
     <tr>
+      <td align="right">
+        <% if item[WIKI_REV] = 0 then %>
+        tip
+        <% else %>
+        <%= _h(item[WIKI_REV]) %>
+        <% end if %>
+      </td>
       <td>
         <%-euweb:user_profile user=!item[WIKI_CREATED_BY] show_public_roles=0 %>
       </td>
@@ -48,8 +56,11 @@ if length(history) = 0 then
       <td>
         <%= _h(item[WIKI_CHANGE_MSG]) %>
       </td>
-      <td>
+      <td nowrap="nowrap">
         <a href="/wiki/view/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">view</a>
+        <% if has_role("user") then %>
+        :: <a href="/wiki/revert/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">revert to</a>
+        <% end if %>
       </td>
     </tr>
 

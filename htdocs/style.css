@@ -537,6 +537,13 @@ div.error_box {
 	padding-bottom: 10px;
 }
 
+div.msg_box {
+background-color: #ddffdd;
+border: 1px solid #55ff55;
+padding: 15px 5px 10px 5px;
+margin-bottom: 10px;
+}
+
 #main_inner ul, #main_inner ol {
 	padding-bottom: 0px;
 	margin-bottom: 0px;
