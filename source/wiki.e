@@ -121,6 +121,11 @@ function validate_save(map data, map request)
 end function
 
 function save(map data, map request)
+	if equal(map:get(request, "save"), "Preview") then
+		map:put(data, "text_formatted", format_body(map:get(request, "text")))
+		return edit(data, request)
+	end if
+
 	wiki_db:update(
 		map:get(request, "page"),
 		map:get(request, "text"),

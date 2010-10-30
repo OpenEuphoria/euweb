@@ -11,10 +11,10 @@ include local.etag as local
   <%- euweb:errors %>
 
   <form method="post" action="/wiki/save/<%= _h(@page) %>.wc">
-    <% if length(@body_formatted) then %>
+    <% if length(@text_formatted) then %>
     <h3><span>Preview</span> Message</h3>
     <div class="wiki">
-      <%= @body_formatted %>
+      <%= @text_formatted %>
     </div>
     <input class="button" type="submit" name="save" value="Save" />
     <br />&nbsp;
