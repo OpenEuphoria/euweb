@@ -133,7 +133,7 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 	switch pAction do
 		case InternalLink then
 			lHTMLText = sprintf("<a href=\"/wiki/view/%s.wc\">%s</a>", {
-				pParms[1], pParms[1] })
+				pParms[1], pParms[2] })
 
 		case  InterWikiLink then
 			lHTMLText = ""
