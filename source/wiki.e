@@ -16,6 +16,7 @@ include templates/wiki/saved.etml as t_saved
 include templates/wiki/page_list.etml as t_page_list
 include templates/wiki/history.etml as t_history
 include templates/wiki/revert.etml as t_revert
+include templates/wiki/remove.etml as t_remove
 
 include user_db.e as user_db
 include wiki_db.e as wiki_db
@@ -236,3 +237,38 @@ function revert(map data, map request)
 end function
 wc:add_handler(routine_id("revert"), routine_id("validate_revert"),
 	"wiki", "revert", revert_vars)
+
+
+sequence remove_vars = {
+	{ wc:SEQUENCE, "page"          },
+	{ wc:SEQUENCE, "modify_reason" }
+}
+
+function validate_remove(map data, map request)
+	sequence errors = wc:new_errors("wiki", "view")
+
+	if not has_role("user") then
+		errors = wc:add_error(errors, "form", "You are not authorized to remove wiki pages")
+	end if
+
+	return errors
+end function
+
+function remove(map data, map request)
+	sequence modify_reason = map:get(request, "modify_reason")
+	sequence page = map:get(request, "page")
+
+	map:copy(request, data)
+
+	if length(modify_reason) then
+		wiki_db:remove(page, modify_reason)
+		map:put(data, "op", 2)
+		return { TEXT, t_remove:template(data) }
+	end if
+
+	map:put(data, "op", 1)
+
+	return { TEXT, t_remove:template(data) }
+end function
+wc:add_handler(routine_id("remove"), routine_id("validate_remove"),
+	"wiki", "remove", remove_vars)

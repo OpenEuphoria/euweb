@@ -96,6 +96,24 @@ public function revert(sequence name, integer revision, sequence modify_reason,
 end function
 
 --**
+-- Remove a wiki page
+--
+-- This does not really remove it, it simply updates the tip to the newest
+-- revision number. This makes it "headless" and it no longer appears anywhere
+--
+
+public function remove(sequence name, sequence modify_reason="removed",
+			sequence user=current_user)
+	object new_rev = edbi:query_object("SELECT MAX(rev) + 1 FROM wiki_page WHERE name=%s", { name })
+	if new_rev > 0 then
+		return edbi:execute("UPDATE wiki_page SET rev=%d WHERE name=%s and rev=0", {
+			new_rev, name })
+	end if
+
+	return 0
+end function
+
+--**
 -- Get a list of pages belonging to a given category
 
 public function get_category_list(sequence category)

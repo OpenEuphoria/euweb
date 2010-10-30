@@ -1,0 +1,40 @@
+<%@
+include templates/euweb.etag as euweb
+include local.etag as local
+%>
+
+<%- euweb:head title="Wiki Remove" active="wiki" %>
+
+<h3>Remove <span><%= _h(@page) %></span></h3>
+
+<%- euweb:errors %>
+
+<div class="wiki">
+<div class="wiki_body">
+
+<% if @op = 1 then %>
+
+<form method="GET" style="margin: 25px 0px 25px 0px;">
+
+Reason for reverting
+<input type="text" size="80" name="modify_reason" />
+<input type="submit" value="Remove" /> <br />
+<i style="padding-left: 40px; color: red">Reason is required</i>
+</form>
+
+<% elsif @op = 2 then %>
+
+<div class="msg_box">
+<%= _h(@page) %> has been removed.
+</div>
+
+<% end if %>
+
+<div class="wiki_tools">
+<a href="/wiki/view/home.wc">Wiki Home</a>
+</div>
+
+</div>
+</div>
+
+<%- local:foot %>
