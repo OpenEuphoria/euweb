@@ -8,6 +8,11 @@ include fuzzydate.e
 
 <h3>Wiki <span><%= @title %></span> List</h3>
 
+<div class="wiki">
+<div class="wiki_tools_top">
+<%= _h(length(@pages)) %> page(s)
+</div>
+
 <% if @is_category_list then %>
 
 <p>
@@ -15,7 +20,7 @@ include fuzzydate.e
     nothing more than a page link prefixed by the word
     Category. Normally these links are at the very bottom of the page
     after a HR line. A few example category links would be
-    [[CategoryDeveloper]], [[CategorySnippet]] and [[CategoryTutorial]].
+    CategoryDeveloper, CategorySnippet and CategoryTutorial.
 </p>
 
 <% elsif @is_backlink_list then %>
@@ -28,7 +33,6 @@ include fuzzydate.e
 
 <% end if %>
 
-<div class="wiki">
 <%
 sequence pages = @pages
 

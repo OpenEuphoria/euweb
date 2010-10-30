@@ -364,7 +364,7 @@ padding: 5px 20px 5px 20px;
 font-size: 0.8em;
 }
 
-#main_inner .post .post_tools_top
+#main_inner .post .post_tools_top, #main_inner .wiki .wiki_tools_top
 {
 border-bottom: dotted 1px #E1E1E1;
 padding: 5px 20px 5px 20px;
