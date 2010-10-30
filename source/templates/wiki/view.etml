@@ -35,15 +35,18 @@ end if
 	      <a href="/wiki/history/<%= _h(@page) %>.wc">history</a>,
 	      <a href="/wiki/backlinks/<%= _h(@page) %>.wc">backlinks</a>
 
-	      <% if wiki[wiki_db:WIKI_REV] = 0 then %>
-		      <% if has_role("user") then %>
-			      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	      <% if has_role("user") then %>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	              <% if wiki[wiki_db:WIKI_REV] = 0 then %>
 			      <a href="/wiki/edit/<%= _h(@page) %>.wc">edit</a>
 			      <% if has_role("admin") then %>
 				      &nbsp;&nbsp;&nbsp;&nbsp;
 				      <a href="/wiki/remove/<%= _h(@page) %>.wc">remove</a>
 			      <% end if %>
+	              <% else %>
+			      <a href="/wiki/revert/<%= _h(@page) %>.wc?rev=<%= _h(@rev) %>">revert to this revision</a>
 		      <% end if %>
+
 	      <% end if %>
       </li>
       <li class="modified">
