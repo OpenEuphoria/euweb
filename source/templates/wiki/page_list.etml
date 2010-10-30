@@ -18,25 +18,46 @@ include fuzzydate.e
     [[CategoryDeveloper]], [[CategorySnippet]] and [[CategoryTutorial]].
 </p>
 
+<% elsif @is_backlink_list then %>
+
+<p>
+    Wiki pages link from one to another very easily. Many times you
+    can find related data via the backlink list. Backlinks are pages
+    that link <strong>to</strong> the page you are viewing.
+</p>
+
 <% end if %>
 
 <div class="wiki">
-<ul>
 <%
 sequence pages = @pages
 
+if length(pages) = 0 then %>
+
+<p><strong>No pages found.</strong></p>
+
+<% else %>
+<p>
+<ul>
+<%
 for i = 1 to length(pages) do
   sequence page = pages[i]
 %>
 <li>
       <a href="/wiki/view/<%= _h(page[1]) %>.wc"><%= _h(page[1]) %></a>
       updated <%= fuzzy_ago(page[2]) %> by
-      <%-euweb:user_profile user=!page[3] show_public_roles=1 %>
+      <%-euweb:user_profile user=!page[3] show_public_roles=0 %>
 </li>
 <% end for %>
 </ul>
+</p>
+<% end if %>
 
 <div class="wiki_tools">
+<% if @is_backlink_list then %>
+<a href="/wiki/view/<%= _h(@page) %>.wc"><%= _h(@page) %></a>,
+<% end if %>
+
 <a href="/wiki/view/home.wc">Wiki Home</a>
 </div>
 

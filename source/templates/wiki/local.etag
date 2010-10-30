@@ -3,6 +3,7 @@
 <%
 sequence quick_links = {
     { "/wiki/view/home.wc", "Wiki Home" },
+    { "/wiki/view/Categories.wc", "Categories" },
     { "/wiki/pagelist.wc", "Page Index" },
     { "/recent.wc?wiki=1", "Recent Changes" }
 }

@@ -27,6 +27,7 @@ function category_view(map data, sequence page)
 	map:put(data, "page", page)
 	map:put(data, "title", page)
 	map:put(data, "is_category_list", 1)
+	map:put(data, "is_backlink_list", 0)
 
 	return { TEXT, t_page_list:template(data) }
 end function
@@ -142,7 +143,33 @@ function page_list(map data, map request)
 	map:put(data, "pages", page_list)
 	map:put(data, "title", "Page")
 	map:put(data, "is_category_list", 0)
+	map:put(data, "is_backlink_list", 0)
 
 	return { TEXT, t_page_list:template(data) }
 end function
 wc:add_handler(routine_id("page_list"), -1, "wiki", "pagelist", {})
+
+sequence backlink_vars = {
+	{ wc:SEQUENCE, "page" }
+}
+
+function backlinks(map data, map request)
+	sequence page = map:get(request, "page")
+
+	object page_list = edbi:query_rows("""
+			SELECT w.name, w.created_at, u.user
+			FROM wiki_page AS w
+			INNER JOIN users AS u ON (w.created_by_id=u.id)
+			WHERE w.rev = 0 AND MATCH(wiki_text) AGAINST(%s IN BOOLEAN MODE)
+			ORDER BY w.name
+		""", { page })
+
+	map:put(data, "page", page)
+	map:put(data, "pages", page_list)
+	map:put(data, "title", page & " Backlink")
+	map:put(data, "is_category_list", 0)
+	map:put(data, "is_backlink_list", 1)
+
+	return { TEXT, t_page_list:template(data) }
+end function
+wc:add_handler(routine_id("backlinks"), -1, "wiki", "backlinks", backlink_vars)
