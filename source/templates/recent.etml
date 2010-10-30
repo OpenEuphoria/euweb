@@ -10,6 +10,21 @@
 
 <h3><span>Recent</span> Activity</h3>
 
+<form method="GET" style="margin: 5px 0px 5px 0px;">
+
+<input type="checkbox" name="forum" value="1"
+      <% if @forum then %>checked="checked" <% end if %>/> Forum
+<input type="checkbox" name="news" value="1"
+      <% if @news then %>checked="checked" <% end if %>/> News
+<input type="checkbox" name="ticket" value="1"
+      <% if @ticket then %>checked="checked" <% end if %>/> Ticket
+<input type="checkbox" name="wiki" value="1"
+      <% if @wiki then %>checked="checked" <% end if %>/> Wiki
+
+<input type="submit" value="Refresh" />
+
+</form>
+
 <table class="list forum">
     <tr>
         <th width="1%">&nbsp;</th>

@@ -94,6 +94,8 @@ sequence recent_vars = {
 }
 
 function recent(map data, map request)
+	map:copy(request, data)
+
 	integer page     = map:get(request, "page")
 	integer per_page = map:get(request, "per_page")
 	integer forum    = map:get(request, "forum")
@@ -107,6 +109,11 @@ function recent(map data, map request)
 		news = 1
 		wiki = 1
 	end if
+
+	map:put(data, "forum", forum)
+	map:put(data, "ticket", ticket)
+	map:put(data, "news", news)
+	map:put(data, "wiki", wiki)
 
 	integer total_count = 0
 	sequence queries = {}
@@ -134,8 +141,6 @@ function recent(map data, map request)
 		queries = append(queries, q_wiki)
 		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page")
 	end if
-
-	map:copy(request, data)
 
 	sequence sql = join(queries, " UNION ALL ") & """
 		ORDER BY created_at DESC LIMIT %d OFFSET %d
