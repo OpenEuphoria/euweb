@@ -15,7 +15,7 @@
     <% end if %>
 
     <% if @parent_id > 0 then %>
-	
+
     	<h3><span>Reply</span> to '<%= _h(@subject) %>'</h3>
 
     <% elsif @fork_id > 0 then %>
@@ -35,7 +35,7 @@
 	<input type="hidden" name="parent_id" value="<%= _h(@parent_id) %>" />
 	<input type="hidden" name="fork" value="<%= _h(@fork) %>" />
 	<input type="hidden" name="fork_id" value="<%= _h(@fork_id) %>" />
-	
+
 	Subject:<br />
 	<input type="text" id="subject" name="subject" value="<%= _h(@subject) %>" size="80" />
 	<div style="padding:0;margin:0;">
@@ -54,7 +54,7 @@
 
 <h4><span>More</span> Common Formatting</h4>
 <p>
-<a href="http://openeuphoria.org/wiki/euwiki.cgi?CreoleHelp">To see even more formatting options, click here.</a>
+See <a href="/wiki/view/CreoleHelp.wc">CreoleHelp</a> to see even more formatting options.
 </p>
 <pre>
 Force a line break \\

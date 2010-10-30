@@ -38,7 +38,7 @@ include local.etag as local
 
 <h4><span>More</span> Common Formatting</h4>
 <p>
-<a href="http://openeuphoria.org/wiki/euwiki.cgi?CreoleHelp">To see even more formatting options, click here.</a>
+See <a href="/wiki/view/CreoleHelp.wc">CreoleHelp</a> to see even more formatting options.
 </p>
 <pre>
 Force a line break \\

@@ -17,7 +17,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 	sequence message = messages[i]
 	sequence div_class = "normal"
 	integer is_owner = 0
-	
+
 	if sequence(current_user) then
 		is_owner = equal(current_user[USER_ID], message[MSG_POST_BY_ID])
 	end if
@@ -31,7 +31,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 		<h3><%= sprintf("%d", i) %>. <%= _h(message[MSG_SUBJECT]) %></h3>
 		<a name="<%= _h(message[MSG_ID]) %>"></a>
 		<ul class="post_info">
-			<li class="date">Posted by <%- euweb:user_profile user=!message[MSG_AUTHOR_NAME] show_public_roles=1 %> 
+			<li class="date">Posted by <%- euweb:user_profile user=!message[MSG_AUTHOR_NAME] show_public_roles=1 %>
 			<%= message[MSG_CREATED_AT] %></li>
 			<li class="comments">
 				<%= _h(message[MSG_VIEWS]) %> views
@@ -41,8 +41,8 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 				Last edited <%= message[MSG_LAST_EDIT_AT] %>
 			</li>
 			<% end if %>
-		</ul>					
-		
+		</ul>
+
 		<%= message[MSG_BODY_FORMATTED] %>
 
 		<div class="post_tools">
@@ -64,8 +64,8 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 			<% if not equal(message[MSG_PARENT_ID], 0) then %>
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 				<a href="#<%= _h(message[MSG_PARENT_ID]) %>"
-					onclick="Effect.ScrollTo('<%= _h(message[MSG_PARENT_ID]) %>', { duration: 0.25 }  ); 
-					new Effect.Highlight($('<%= _h(message[MSG_PARENT_ID]) %>'), 
+					onclick="Effect.ScrollTo('<%= _h(message[MSG_PARENT_ID]) %>', { duration: 0.25 }  );
+					new Effect.Highlight($('<%= _h(message[MSG_PARENT_ID]) %>'),
 						{ startcolor: '#ffff99', endcolor: '#ffffff', queue: 'end' }); return false;"
 				>goto parent</a>
 			 <% end if %>
@@ -81,7 +81,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 <%
 sequence quick_links = {
     { "/forum/index.wc", "Forum Home" },
-    { "/wiki/euwiki.cgi?CreoleHelp", "Creole Markup"}
+    { "/wiki/view/CreoleHelp.wc", "Creole Markup"}
 }
 
 if has_role("user") then
