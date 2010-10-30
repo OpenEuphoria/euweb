@@ -91,6 +91,7 @@ public function get_category_list(sequence category)
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (w.created_by_id=u.id)
 			WHERE w.rev = 0 AND MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
+			ORDER BY w.name
 		""", { "+" & category })
 end function
 
