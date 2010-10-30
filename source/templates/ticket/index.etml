@@ -88,7 +88,7 @@
                   <img src="/images/famfam/<% if ticket[ticket_db:TYPE_ID] = 1 then %>bug<% else %>bell<% end if %>.png"
                       alt="<%= _h(ticket[ticket_db:TYPE]) %>" />
                 </td>
-                <td colspan="7" width="99%">
+                <td colspan="6" width="99%">
                     <a style="font-size:1.1em; font-weight:bold;" href="/ticket/<%= _h(ticket[ticket_db:ID]) %>.wc"
                         ><%= _h(ticket[ticket_db:SUBJECT]) %></a>
                 </td>
