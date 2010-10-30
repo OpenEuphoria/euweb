@@ -290,7 +290,7 @@ font-size: 1.7em;
 padding: 3px 5px 3px 5px;
 }
 
-#main_inner .post ul, #main_inner .wiki ul
+#main_inner .post ul
 {
 padding-top: 0px;
 padding-bottom: 0px;
@@ -298,11 +298,28 @@ margin-bottom: 2em;
 margin-left: 3em;
 }
 
-#main_inner .post ul.post_info, #main_inner .wiki ul.wiki_info
+#main_inner .post ul.post_info
 {
 list-style: none;
 font-size: 0.8em;
 border-bottom: 1px dotted #E1E1E1;
+margin-top: 1em;
+padding-bottom: 1em;
+}
+
+#main_inner .wiki ul
+{
+padding-top: 0px;
+padding-bottom: 0px;
+margin-bottom: 2em;
+/*margin-left: 3em;*/
+}
+
+#main_inner .wiki ul.wiki_info
+{
+list-style: none;
+font-size: 0.8em;
+border-top: 1px dotted #E1E1E1;
 margin-top: 1em;
 padding-bottom: 1em;
 }
