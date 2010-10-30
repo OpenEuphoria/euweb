@@ -141,8 +141,6 @@ function recent(map data, map request)
 		ORDER BY created_at DESC LIMIT %d OFFSET %d
 	"""
 
-	log:log("%s", { sql })
-
 	object items = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
 
 	for i = 1 to length(items) do
