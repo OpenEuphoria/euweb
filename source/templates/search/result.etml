@@ -8,8 +8,9 @@ include search.e
 
 <table class="list forum">
     <tr>
+        <th width="2%">&nbsp;</th>
         <th width="2%">Type</th>
-        <th width="96%">Subject</th>
+        <th width="94%">Subject</th>
         <th width="2%">Age</th>
     </tr>
 
@@ -20,6 +21,7 @@ for i = 1 to length(items) do
     sequence item = items[i]
 %>
 	<tr>
+		<td><img src="/images/famfam/<%= item[S_ICON] %>"/></td>
 		<td><%= item[S_TYPE] %></td>
 		<td>
         <%

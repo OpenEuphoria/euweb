@@ -13,27 +13,28 @@ include webclay/escape.e as esc
 include templates/search/result.etml as t_result
 
 include fuzzydate.e
+include item_icons.e
 
 sequence result_vars = {
-	{ wc:INTEGER, "page", 1 },
-	{ wc:INTEGER, "per_page", 20 },
-	{ wc:SEQUENCE, "s" },
-	{ wc:INTEGER, "ticket", 0 },
-	{ wc:INTEGER, "news", 0 },
-	{ wc:INTEGER, "forum", 0 },
-	{ wc:INTEGER, "wiki", 0 }
+	{ wc:INTEGER,  "page",      1 },
+	{ wc:INTEGER,  "per_page", 20 },
+	{ wc:INTEGER,  "ticket",    0 },
+	{ wc:INTEGER,  "news",      0 },
+	{ wc:INTEGER,  "forum",     0 },
+	{ wc:INTEGER,  "wiki",      0 },
+	{ wc:SEQUENCE, "s" }
 }
 
-public enum S_TYPE, S_ID, S_DATE, S_SUBJECT
+public enum S_TYPE, S_ID, S_DATE, S_SUBJECT, S_ICON
 
 constant
-	q_forum = `SELECT 'forum', id, created_at, subject FROM messages
+	q_forum = `SELECT 'forum', id, created_at, subject, '' FROM messages
 		WHERE MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE)`,
-	q_news = `SELECT 'news', id, publish_at AS created_at, subject FROM news
+	q_news = `SELECT 'news', id, publish_at AS created_at, subject, '' FROM news
 		WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`,
-	q_ticket = `SELECT 'ticket', id, created_at, subject FROM ticket
+	q_ticket = `SELECT 'ticket', id, created_at, subject, '' FROM ticket
 		WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`,
-	q_wiki = `SELECT 'wiki', name, created_at, name FROM wiki_page
+	q_wiki = `SELECT 'wiki', name, created_at, name, '' FROM wiki_page
 		WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`
 
 function result(map:map data, map:map request)
@@ -85,6 +86,7 @@ function result(map:map data, map:map request)
 
 	for i = 1 to length(rows) do
 		rows[i][S_DATE] = fuzzy_ago(rows[i][S_DATE])
+		rows[i][S_ICON] = type_icon(rows[i][S_TYPE])
 	end for
 
 	map:put(data, "items", rows)

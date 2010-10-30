@@ -22,6 +22,7 @@ include wiki_db.e as wiki_db
 
 include config.e
 include fuzzydate.e
+include item_icons.e
 
 include templates/recent.etml as t_recent
 
@@ -112,14 +113,13 @@ function recent(map data, map request)
 
 	for i = 1 to length(items) do
 		items[i][R_AGE] = fuzzy_ago(items[i][R_AGE])
+		items[i][R_ICON] = type_icon(items[i][R_TYPE])
 		switch items[i][R_TYPE] do
 			case "ticket comment" then
 				items[i][R_URL] = sprintf("/ticket/%d.wc#%d", { items[i][2], items[i][7] })
-				items[i][R_ICON] = "bug_error.png"
 
 			case "news comment" then
 				items[i][R_URL] = sprintf("/news/%d.wc#%d", { items[i][2], items[i][7] })
-				items[i][R_ICON] = "date_error.png"
 
 			case "forum" then
 				if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
@@ -127,23 +127,18 @@ function recent(map data, map request)
 				else
 					items[i][R_URL] = sprintf("/forum/%d.wc#%d", { items[i][2], items[i][2] })
 				end if
-				items[i][R_ICON] = "email.png"
 
 			case "ticket" then
 				items[i][R_URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
-				items[i][R_ICON] = "bug.png"
 
 			case "news" then
 				items[i][R_URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
-				items[i][R_ICON] = "date.png"
 
 			case "wiki" then
 				items[i][R_URL] = sprintf("/wiki/view/%s.wc", { items[i][2] })
-				items[i][R_ICON] = "world.png"
 
 			case else
 				items[i][R_URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
-				items[i][R_ICON] = ""
 		end switch
 	end for
 
