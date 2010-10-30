@@ -142,14 +142,13 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 			lPage = pParms[1][lPos + 1 .. $]
 			for i = 1 to length(KnownWikis) do
 				if equal(lWiki, KnownWikis[i][1]) then
-					lHTMLText = sprintf("<a class=\"euwiki\" href=\"%s%s\">%s</a>",
+					lHTMLText = sprintf("<a href=\"%s%s\">%s</a>",
 						{KnownWikis[i][2], lPage, pParms[2]})
-
 				end if
 			end for
 
 			if length(lHTMLText) = 0 then
-				lHTMLText = "<span class=\"euwiki_error\">Interwiki link failed for "
+				lHTMLText = "<span class=\"error\">Interwiki link failed for "
 				for i = 1 to length(pParms) do
 					lHTMLText &= pParms[i]
 					if i < length(pParms) then
