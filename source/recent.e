@@ -26,43 +26,62 @@ include item_icons.e
 
 include templates/recent.etml as t_recent
 
-public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_ICON, R_ADDITIONAL
+public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_COMMENT_ID, R_ICON, R_ADDITIONAL
 
 constant q_forum = """
-	SELECT 'forum', id, created_at, author_name, subject, '', 0, '' FROM messages
-"""
 
-constant q_tickets = """
-		SELECT 'ticket', t.id, t.created_at, u.user, t.subject, '', 0,
-				CONCAT(p.name, ' - ', c.name)
-			FROM ticket AS t
-			INNER JOIN users AS u ON (u.id=t.submitted_by_id)
-			INNER JOIN ticket_product AS p ON (p.id=t.product_id)
-			INNER JOIN ticket_category AS c ON (c.id=t.category_id)
-	UNION ALL
-		SELECT 'ticket comment', t.id, c.created_at, u.user, t.subject, '', c.id, p.name
-			FROM comment AS c
-			INNER JOIN ticket AS t ON (t.id = c.item_id)
-			INNER JOIN ticket_product AS p ON (p.id = t.product_id)
-			INNER JOIN users AS u ON (u.id = c.user_id)
-			WHERE c.module_id=1
-"""
+	SELECT
+		'forum' AS typ, CONCAT(id, ''), created_at, author_name, subject, '' AS url, '0' AS comment_id,
+		'' AS icon, '' AS additional
+	FROM messages
 
-constant q_news = """
-        SELECT 'news', n.id, n.publish_at AS created_at, u.user, n.subject, '', 0, ''
-            FROM news AS n
-            INNER JOIN users AS u ON (u.id=n.submitted_by_id)
-    UNION ALL
-        SELECT 'news comment', n.id, c.created_at, u.user, n.subject, '', c.id, ''
-        	FROM comment AS c
-            INNER JOIN news AS n ON (n.id=c.item_id)
-            INNER JOIN users AS u ON (u.id=c.user_id)
-            WHERE c.module_id=2
 """
 
 constant q_wiki = """
-	SELECT 'wiki', w.name, w.created_at, u.user, w.name, '', 0, w.change_msg FROM
-		wiki_page AS w, users AS u WHERE w.created_by_id=u.id
+
+	SELECT
+		'wiki' AS typ, w.name, w.created_at, u.user, w.name, '' AS url, '0' AS comment_id,
+		'' AS icon, w.change_msg AS additional
+	FROM wiki_page AS w
+	INNER JOIN users AS u ON (u.id=w.created_by_id)
+
+"""
+
+constant q_tickets = """
+
+	SELECT
+			'ticket', CONCAT(t.id, ''), t.created_at, u.user, t.subject, '' AS url, '0' AS comment_id,
+			'' AS icon, CONCAT(p.name, ' - ', c.name) AS additional
+		FROM ticket AS t
+		INNER JOIN users AS u ON (u.id=t.submitted_by_id)
+		INNER JOIN ticket_product AS p ON (p.id=t.product_id)
+		INNER JOIN ticket_category AS c ON (c.id=t.category_id)
+	UNION ALL
+		SELECT 'ticket comment', CONCAT(t.id, ''), c.created_at, u.user, t.subject, '',
+			CONCAT(c.id, ''), '', CONCAT(p.name, ' - ', cat.name)
+		FROM comment AS c
+		INNER JOIN ticket AS t ON (t.id = c.item_id)
+		INNER JOIN ticket_product AS p ON (p.id = t.product_id)
+		INNER JOIN ticket_category AS cat ON (cat.id=t.category_id)
+		INNER JOIN users AS u ON (u.id = c.user_id)
+		WHERE c.module_id=1
+
+"""
+
+constant q_news = """
+
+		SELECT 'news', CONCAT(n.id, ''), n.publish_at AS created_at, u.user, n.subject, '',
+			'0', '', ''
+		FROM news AS n
+		INNER JOIN users AS u ON (u.id=n.submitted_by_id)
+	UNION ALL
+		SELECT 'news comment', CONCAT(n.id, ''), c.created_at, u.user, n.subject, '',
+			CONCAT(c.id, ''), '', ''
+		FROM comment AS c
+		INNER JOIN news AS n ON (n.id=c.item_id)
+		INNER JOIN users AS u ON (u.id=c.user_id)
+		WHERE c.module_id=2
+
 """
 
 sequence recent_vars = {
@@ -118,8 +137,11 @@ function recent(map data, map request)
 
 	map:copy(request, data)
 
-	sequence sql = join(queries, " UNION ALL ") &
-		" ORDER BY created_at DESC LIMIT %d OFFSET %d"
+	sequence sql = join(queries, " UNION ALL ") & """
+		ORDER BY created_at DESC LIMIT %d OFFSET %d
+	"""
+
+	log:log("%s", { sql })
 
 	object items = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
 
@@ -128,29 +150,29 @@ function recent(map data, map request)
 		items[i][R_ICON] = type_icon(items[i][R_TYPE])
 		switch items[i][R_TYPE] do
 			case "ticket comment" then
-				items[i][R_URL] = sprintf("/ticket/%d.wc#%d", { items[i][2], items[i][7] })
+				items[i][R_URL] = sprintf("/ticket/%s.wc#%s", { items[i][R_ID], items[i][R_COMMENT_ID] })
 
 			case "news comment" then
-				items[i][R_URL] = sprintf("/news/%d.wc#%d", { items[i][2], items[i][7] })
+				items[i][R_URL] = sprintf("/news/%s.wc#%s", { items[i][R_ID], items[i][R_COMMENT_ID] })
 
 			case "forum" then
 				if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
-					items[i][R_URL] = sprintf("/forum/m/%d.wc", { items[i][2] })
+					items[i][R_URL] = sprintf("/forum/m/%s.wc", { items[i][R_ID] })
 				else
-					items[i][R_URL] = sprintf("/forum/%d.wc#%d", { items[i][2], items[i][2] })
+					items[i][R_URL] = sprintf("/forum/%s.wc#%s", { items[i][R_ID], items[i][R_ID] })
 				end if
 
 			case "ticket" then
-				items[i][R_URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
+				items[i][R_URL] = sprintf("/ticket/%s.wc", { items[i][R_ID] })
 
 			case "news" then
-				items[i][R_URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
+				items[i][R_URL] = sprintf("/news/%s.wc", { items[i][R_ID] })
 
 			case "wiki" then
-				items[i][R_URL] = sprintf("/wiki/view/%s.wc", { items[i][2] })
+				items[i][R_URL] = sprintf("/wiki/view/%s.wc", { items[i][R_ID] })
 
 			case else
-				items[i][R_URL] = sprintf("/%s/%d.wc#%d", { items[i][1], items[i][2], items[i][2] })
+				items[i][R_URL] = sprintf("/%s/%s.wc#%s", { items[i][R_TYPE], items[i][R_ID], items[i][R_COMMENT_ID] })
 		end switch
 	end for
 
