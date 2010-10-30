@@ -131,6 +131,9 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 	lSpacer = ""
 
 	switch pAction do
+		case CamelCase then
+			lHTMLText = pParms
+
 		case InternalLink then
 			lHTMLText = sprintf("<a href=\"/wiki/view/%s.wc\">%s</a>", {
 				pParms[1], pParms[2] })
