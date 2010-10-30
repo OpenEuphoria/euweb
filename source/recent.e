@@ -29,29 +29,39 @@ include templates/recent.etml as t_recent
 public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_ICON, R_ADDITIONAL
 
 constant q_forum = """
-	SELECT 'forum', id, created_at, author_name, subject, '', 0, '' FROM messages"""
+	SELECT 'forum', id, created_at, author_name, subject, '', 0, '' FROM messages
+"""
 
 constant q_tickets = """
-		SELECT 'ticket', t.id, t.created_at, u.user, t.subject, '', 0, ''
-			FROM ticket AS t, users AS u
-			WHERE t.submitted_by_id=u.id
+		SELECT 'ticket', t.id, t.created_at, u.user, t.subject, '', 0, p.name
+			FROM ticket AS t
+			INNER JOIN users AS u ON (u.id=t.submitted_by_id)
+			INNER JOIN ticket_product AS p ON (p.id=t.product_id)
 	UNION ALL
-		SELECT 'ticket comment', t.id, c.created_at, u.user, t.subject, '', c.id, '' FROM
-			comment AS c, ticket AS t, users AS u WHERE c.module_id=1 AND
-			c.item_id=t.id AND u.id=c.user_id"""
+		SELECT 'ticket comment', t.id, c.created_at, u.user, t.subject, '', c.id, p.name
+			FROM comment AS c
+			INNER JOIN ticket AS t ON (t.id = c.item_id)
+			INNER JOIN ticket_product AS p ON (p.id = t.product_id)
+			INNER JOIN users AS u ON (u.id = c.user_id)
+			WHERE c.module_id=1
+"""
 
 constant q_news = """
-		SELECT 'news', n.id, n.publish_at, u.user, n.subject, '', 0, ''
-			FROM news AS n, users AS u
-			WHERE n.submitted_by_id=u.id
-	UNION ALL
-		SELECT 'news comment', n.id, c.created_at, u.user, n.subject, '', c.id, '' FROM
-			comment AS c, news AS n, users AS u WHERE c.module_id=2 AND
-			c.item_id=n.id AND u.id=c.user_id"""
+        SELECT 'news', n.id, n.publish_at AS created_at, u.user, n.subject, '', 0, ''
+            FROM news AS n
+            INNER JOIN users AS u ON (u.id=n.submitted_by_id)
+    UNION ALL
+        SELECT 'news comment', n.id, c.created_at, u.user, n.subject, '', c.id, ''
+        	FROM comment AS c
+            INNER JOIN news AS n ON (n.id=c.item_id)
+            INNER JOIN users AS u ON (u.id=c.user_id)
+            WHERE c.module_id=2
+"""
 
 constant q_wiki = """
 	SELECT 'wiki', w.name, w.created_at, u.user, w.name, '', 0, w.change_msg FROM
-		wiki_page AS w, users AS u WHERE w.created_by_id=u.id"""
+		wiki_page AS w, users AS u WHERE w.created_by_id=u.id
+"""
 
 sequence recent_vars = {
 	{ wc:INTEGER, "page",      1 },
