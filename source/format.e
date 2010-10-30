@@ -6,6 +6,12 @@ include config.e
 include creole.e
 include html_gen.e
 
+include webclay/logging.e as log
+
+include wiki_db.e as wiki_db
+
+integer generate_html_rid = -1
+
 sequence smilies = {
 	":-)",     "<img src=\"" & ROOT_URL & "/images/ksk-smile.png\" alt=\"smile\" />",
 	":-P",     "<img src=\"" & ROOT_URL & "/images/ksk-tongue.png\" alt=\"tongue\" />",
@@ -35,8 +41,59 @@ sequence KnownWikis = {
 	{"TICKET",  	"http://openeuphoria.org/ticket/view.wc?id="},
 	{"MESSAGE", 	"http://openeuphoria.org/forum/view.wc?id="},
 	{"NEWS",		"http://openeuphoria.org/news/view.wc?id="},
+	{"WIKI",        "http://openeuphoria.org/wiki/view.wc?page="},
 	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&amp;revision="}
 }
+
+export function format_body(sequence body, integer format_quotes=1)
+	body = creole_parse(body, generate_html_rid, "0")
+	body = search:match_replace("&amp;#", body, "&#")
+
+	for i = 1 to length(smilies) by 2 do
+		body = search:match_replace(smilies[i], body, smilies[i+1])
+	end for
+
+	return body
+end function
+
+function creole_plugin_wikipage(sequence params)
+	sequence result = ""
+	sequence style = "none"
+	sequence page = "--INVALID-PAGE--"
+	integer toc_heading = 1
+
+	for i = 2 to length(params) do
+		switch params[i][1] do
+			case "style" then
+				style = params[i][2]
+
+			case "page" then
+				page = params[i][2]
+
+			case "heading" then
+				if find(params[i][2], { "on", "off", "hide", "0" }) then
+					toc_heading = 0
+				end if
+		end switch
+	end for
+
+	if toc_heading then
+		result &= sprintf("<a href=\"/wiki/view/%s.wc\">%s</a>:\n", {
+			page, page })
+	end if
+
+	result &= sprintf("<div class=\"wiki %s\">", { style })
+	object wikipage = wiki_db:get(page)
+	if atom(wikipage) then
+		return "<strong>INVALID PAGE</strong>"
+	end if
+
+	result &= format_body(wikipage[wiki_db:WIKI_TEXT])
+
+	result &= "</div>"
+
+	return result
+end function
 
 function generate_html(integer pAction, sequence pParms, object pContext)
 	sequence lHTMLText
@@ -106,7 +163,14 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 			lHTMLText = pParms[1]
 
 		case Plugin then
+			lInstance = pParms[4]
+			lParms = keyvalues(pParms[1], -1, -2)
 			lHTMLText = ""
+
+			switch upper(lParms[1][2]) do
+				case "WIKIPAGE" then
+					--lHTMLText = creole_plugin_wikipage(lParms)
+			end switch
 
 		case HostID then
 			lHTMLText = "euforum"
@@ -123,16 +187,6 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 	end switch
 
 	return lHTMLText
-
 end function
 
-export function format_body(sequence body, integer format_quotes=1)
-	body = creole_parse(body, routine_id("generate_html"), "0")
-	body = search:match_replace("&amp;#", body, "&#")
-
-	for i = 1 to length(smilies) by 2 do
-		body = search:match_replace(smilies[i], body, smilies[i+1])
-	end for
-
-	return body
-end function
+generate_html_rid = routine_id("generate_html")
