@@ -32,6 +32,11 @@ end if
 
     <ul class="wiki_info">
       <li>
+	      <% if wiki[wiki_db:WIKI_REV] > 0 then %>
+                      <a href="/wiki/view/<%= _h(@page) %>.wc">view current revision</a>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	      <% end if %>
+
 	      <a href="/wiki/history/<%= _h(@page) %>.wc">history</a>,
 	      <a href="/wiki/backlinks/<%= _h(@page) %>.wc">backlinks</a>
 
