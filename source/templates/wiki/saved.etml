@@ -1,0 +1,18 @@
+<%@
+include templates/euweb.etag as euweb
+include local.etag as local
+%>
+
+<%- euweb:head title="Wiki Saved" active="wiki" %>
+
+<div id="wiki">
+<p>Wiki page '<%= _h(@page) %>' was saved.</p>
+<p>
+      <a href="/wiki/view/<%= _h(@page) %>.wc">View</a>
+      or
+      <a href="/wiki/view/home.wc">Wiki Home</a>
+</p>
+</div>
+
+
+<%- local:foot %>

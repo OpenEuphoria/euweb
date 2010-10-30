@@ -221,7 +221,6 @@ function create(map data, map request)
 	end if
 
 	integer product_id = get_product_id(request, data)
-	log:log("product_id=%d", { product_id })
 
 	map:put(data, "id", "-1")
 	map:copy(request, data)

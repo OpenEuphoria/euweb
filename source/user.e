@@ -62,11 +62,9 @@ public function profile(map data, map invars)
 	-- If the current user is an admin, check on the query string for admin
 	-- actions that may take place
 	if has_role("user_admin") then
-		log:log("User adim, yes")
 		if sequence(map:get(invars, "remove_role")) then
 			user_db:remove_role(uname, map:get(invars, "remove_role"))
 		elsif sequence(map:get(invars, "add_role")) then
-			log:log("add_role, yes")
 			user_db:add_role(uname, map:get(invars, "add_role"))
 		elsif sequence(map:get(invars, "disabled_reason")) then
 			user_db:disable(uname, map:get(invars, "disabled_reason"))
@@ -237,7 +235,7 @@ function validate_do_signup(integer data, map:map vars)
 			url:encode(map:get(vars, "recaptcha_response_field")) })
 
 		if length(RECAPTCHA_PUBLIC_KEY) then
-			object recaptcha_result = get_url(recaptcha_url, postdata)
+			object recaptcha_result = http_get(recaptcha_url, postdata)
 			if length(recaptcha_result) < 2  then
 				errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
 			elsif not match("true", recaptcha_result[2]) = 1 then
@@ -344,7 +342,7 @@ public function validate_forgot_password(integer data, map vars)
 			url:encode(map:get(vars, "recaptcha_challenge_field")),
 			url:encode(map:get(vars, "recaptcha_response_field")) })
 
-		object recaptcha_result = get_url(recaptcha_url, postdata)
+		object recaptcha_result = http_post(recaptcha_url, postdata)
 		if length(recaptcha_result) < 2 then
 	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
 		elsif not match("true", recaptcha_result[2]) = 1 then
@@ -499,8 +497,8 @@ function user_list(map data, map request)
 					"''", 0),
 				"\\\\")
 
-		where = sprintf("user LIKE '%s' OR email LIKE '%s'", {
-			safeSearch, safeSearch })
+		where = sprintf("user LIKE '%s' OR email LIKE '%s' OR name LIKE '%s'", {
+			safeSearch, safeSearch, safeSearch })
 	end if
 
 	users = user_db:get_list(offset, per_page, where, user_list_sort[sort_id])

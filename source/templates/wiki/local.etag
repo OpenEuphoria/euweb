@@ -1,0 +1,12 @@
+{{{foot}}}
+<%@ include templates/euweb.etag as euweb %>
+<%
+sequence quick_links = {
+    { "/wiki/view/home.wc", "Wiki Home" },
+    { "/wiki/pagelist.wc", "Page Index" },
+    { "/recent.wc?wiki=1", "Recent Changes" }
+}
+
+%>
+
+<%- euweb:foot quick_links=!quick_links %>

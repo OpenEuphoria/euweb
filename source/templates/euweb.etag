@@ -41,7 +41,7 @@
 				  		>Forum</a>
 				</li>
 				<li>
-					<a href="/wiki/wiki.cgi"
+					<a href="/wiki/view/home.wc"
 				  		<% if equal(#active, "wiki") then %>class="active"<% end if %>
 				  		>Wiki</a>
 				</li>
@@ -108,6 +108,7 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="news" value="1" <% if @s_news then %>checked="checked"<% end if %> /> News<br />
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="ticket" value="1" <% if @s_ticket then %>checked="checked"<% end if %> /> Tickets<br />
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="forum" value="1" <% if @s_forum then %>checked="checked"<% end if %> /> Forum<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="wiki" value="1" <% if @s_wiki then %>checked="checked"<% end if %> /> Wiki<br />
 					</div>
 				</form>
 

@@ -1,0 +1,48 @@
+<%@
+include templates/euweb.etag as euweb
+
+include wiki_db.e
+include local.etag as local
+
+%>
+
+<%- euweb:head title="Wiki View" active="wiki" %>
+
+<%- euweb:errors %>
+
+<%
+sequence wiki = @wiki
+%>
+
+  <div class="wiki" id="wiki_<%= _h(wiki[WIKI_NAME]) %>">
+    <h3><%= _h(wiki[WIKI_NAME]) %></h3>
+    <a name="<%= _h(wiki[WIKI_NAME]) %>"></a>
+    <ul class="wiki_info">
+      <li class="modified">
+        Last modified
+        <%= wiki[WIKI_CREATED_AT] %>
+        by
+        <%-euweb:user_profile user=!wiki[WIKI_CREATED_BY] show_public_roles=1 %>
+      </li>
+    </ul>
+
+    <div class="wiki_body">
+    <%= wiki[wiki_db:WIKI_TEXT_FORMATTED] %>
+    </div>
+
+    <div class="wiki_tools">
+      <a href="/wiki/history/<%= _h(@page) %>.wc">history</a>,
+      <a href="/wiki/backlinks/<%= _h(@page) %>.wc">backlinks</a>
+
+      <% if has_role("user") then %>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="/wiki/edit/<%= _h(@page) %>.wc">edit</a>
+      <% if has_role("admin") then %>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="/wiki/remove/<%= _h(@page) %>.wc">remove</a>
+      <% end if %>
+      <% end if %>
+    </div>
+  </div>
+
+<%- local:foot %>

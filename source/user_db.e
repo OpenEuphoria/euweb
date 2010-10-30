@@ -287,7 +287,5 @@ public function get_list(integer offset=0, integer per_page=10, sequence where="
 	sql &= " ORDER BY " & sort
 	sql &= " LIMIT %d OFFSET %d"
 
-	log:log(sql, { per_page, offset })
-
 	return edbi:query_rows(sql, { per_page, offset })
 end function

@@ -1,6 +1,6 @@
-<%@ 
+<%@
 include std/net/url.e
-include templates/euweb.etag as euweb 
+include templates/euweb.etag as euweb
 include search.e
 %>
 
@@ -22,13 +22,22 @@ for i = 1 to length(items) do
 	<tr>
 		<td><%= item[S_TYPE] %></td>
 		<td>
-			<a href="/<%= item[S_TYPE] %>/<%= _h(item[S_ID]) %>.wc#<%= _h(item[S_ID]) %>"
+        <%
+        sequence typeUrl
+        if equal("wiki", item[S_TYPE]) then
+	        typeUrl = "wiki/view"
+        else
+        	typeUrl = item[S_TYPE]
+        end if
+        %>
+
+			<a href="/<%= typeUrl %>/<%= _h(item[S_ID]) %>.wc#<%= _h(item[S_ID]) %>"
 				><%= _h(item[S_SUBJECT]) %></a>
 		</td>
 		<td nowrap="nowrap"><%= _h(item[S_DATE]) %></td>
 	</tr>
-<% 
-end for 
+<%
+end for
 %>
 </table>
 
@@ -38,11 +47,11 @@ end for
 		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page - 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>">previous page</a>
 		&#187;
 	<% end if %>
-	
+
 	<% if length(items) = @per_page then %>
 		&#171;
 		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page + 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>">next page</a>
-		&#187; 
+		&#187;
 	<% end if %>
 </p>
 

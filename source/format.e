@@ -28,7 +28,7 @@ sequence smilies = {
 	":zzz:",   "<img src=\"" & ROOT_URL & "/images/ksk-zzz.png\" alt=\"zzz\" />"
 }
 
-sequence KnownWikis = { 
+sequence KnownWikis = {
 	{"WIKICREOLE",	"http://wikicreole.org/wiki/"},
 	{"OHANA",		"http://wikiohana.net/cgi-bin/wiki.pl/"},
 	{"WIKIPEDIA",	"http://wikipedia.org/wiki/"},
@@ -75,7 +75,8 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 
 	switch pAction do
 		case InternalLink then
-			lHTMLText = pParms[1]
+			lHTMLText = sprintf("<a href=\"/wiki/view/%s.wc\">%s</a>", {
+				pParms[1], pParms[1] })
 
 		case  InterWikiLink then
 			lHTMLText = ""
@@ -84,9 +85,9 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 			lPage = pParms[1][lPos + 1 .. $]
 			for i = 1 to length(KnownWikis) do
 				if equal(lWiki, KnownWikis[i][1]) then
-					lHTMLText = sprintf("<a class=\"euwiki\" href=\"%s%s\">%s</a>", 
+					lHTMLText = sprintf("<a class=\"euwiki\" href=\"%s%s\">%s</a>",
 						{KnownWikis[i][2], lPage, pParms[2]})
-				
+
 				end if
 			end for
 
@@ -118,7 +119,7 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 
 		case else
 			lHTMLText = html_generator(pAction, pParms)
-			
+
 	end switch
 
 	return lHTMLText

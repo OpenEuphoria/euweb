@@ -1,0 +1,12 @@
+<%@
+include templates/euweb.etag as euweb
+include local.etag as local
+%>
+
+<%- euweb:head title="Wiki Not Found" active="wiki" %>
+
+<div id="wiki">
+Wiki page '<%= _h(@page) %>' was not found.
+</div>
+
+<%- local:foot %>

@@ -287,9 +287,10 @@ margin-top: 0.95em;
 #main_inner .post h3
 {
 font-size: 1.7em;
+padding: 3px 5px 3px 5px;
 }
 
-#main_inner .post ul
+#main_inner .post ul, #main_inner .wiki ul
 {
 padding-top: 0px;
 padding-bottom: 0px;
@@ -297,7 +298,7 @@ margin-bottom: 2em;
 margin-left: 3em;
 }
 
-#main_inner .post ul.post_info
+#main_inner .post ul.post_info, #main_inner .wiki ul.wiki_info
 {
 list-style: none;
 font-size: 0.8em;
@@ -306,7 +307,7 @@ margin-top: 1em;
 padding-bottom: 1em;
 }
 
-#main_inner .post ul.post_info li
+#main_inner .post ul.post_info li, #main_inner .wiki ul.wiki_info li
 {
 background-position: 0em 0.2em;
 background-repeat: no-repeat;
@@ -314,7 +315,7 @@ display: inline;
 padding-left: 18px;
 }
 
-#main_inner .post ul.post_info li.date
+#main_inner .post ul.post_info li.date, #main_inner .wiki ul.wiki_info li.created
 {
 background-image: url('images/n5.gif');
 }
@@ -325,14 +326,14 @@ background-image: url('images/n6.gif');
 margin-left: 1.1em;
 }
 
-#main_inner .post ul.post_info li.edited
+#main_inner .post ul.post_info li.edited, #main_inner .wiki ul.wiki_info li.modified
 {
 background-image: url('images/post_new_message.png');
 margin-left: 1.1em;
 font-weight: bold;
 }
 
-#main_inner .post .post_tools
+#main_inner .post .post_tools, #main_inner .wiki .wiki_tools
 {
 border-top: dotted 1px #E1E1E1;
 padding: 5px 20px 5px 20px;
@@ -351,6 +352,10 @@ font-size: 0.8em;
 border-bottom: dotted 1px #E1E1E1;
 padding: 5px 20px 5px 20px;
 font-size: 0.8em;
+}
+
+#main_inner .wiki .wiki_body {
+margin: 0px 0px 0px 10px;
 }
 
 /* Footer */
@@ -555,6 +560,12 @@ div.error_box {
 
 #main_inner table.list td {
 	padding: 2px 5px 2px 5px;
+}
+
+#main_inner table.list div.additional {
+  margin: 2px 0px 0px 10px;
+  font-size: 0.8em;
+  font-style: italic;
 }
 
 #main_inner .current_page {

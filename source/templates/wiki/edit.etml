@@ -1,0 +1,68 @@
+<%@
+include templates/euweb.etag as euweb
+
+include wiki_db.e
+include local.etag as local
+
+%>
+
+  <%- euweb:head title="Wiki View" active="wiki" %>
+
+  <%- euweb:errors %>
+
+  <form method="post" action="/wiki/save/<%= _h(@page) %>.wc">
+    <% if length(@body_formatted) then %>
+    <h3><span>Preview</span> Message</h3>
+    <div class="wiki">
+      <%= @body_formatted %>
+    </div>
+    <input class="button" type="submit" name="save" value="Save" />
+    <br />&nbsp;
+    <% end if %>
+
+    Change Reason:<br />
+    <input type="text" id="modify_reason" name="modify_reason" value="<%= _h(@modify_reason) %>" size="80" />
+    <div style="padding:0;margin:0;">
+      Body:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      common formatting: <code>**bold text**, //italic text//, ##code text##, [[http://google.com|Google]]</code>
+    </div>
+    <textarea name="text" rows="15" cols="80" style="width: 100%;"><%= _h(@text) %></textarea>
+    <br />
+    <input class="button" type="submit" name="save" value="Save" />
+    <input class="button" type="submit" name="save" value="Preview" />
+</form>
+
+<script type="text/javascript">
+	$('modify_reason').focus();
+</script>
+
+<h4><span>More</span> Common Formatting</h4>
+<p>
+<a href="http://openeuphoria.org/wiki/euwiki.cgi?CreoleHelp">To see even more formatting options, click here.</a>
+</p>
+<pre>
+Force a line break \\
+
+&lt;eucode&gt;
+-- eucode
+&lt;/eucode&gt;
+
+&#123;&#123;&#123;
+General Code or console input/output
+&#125;&#125;&#125;
+
+|| Table Header 1 || Table Header 2 ||
+| Table Col 1     | Table Col 2      |
+
+: Indented paragraph
+
+* Bullet List 1
+* Bullet List 2
+** Bullet List 2.1
+
+# Numbered List 1
+# Numbered List 2
+## Numbered List 2.1
+</pre>
+
+<%- local:foot %>

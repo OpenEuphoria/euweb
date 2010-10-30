@@ -1,0 +1,45 @@
+<%@
+include templates/euweb.etag as euweb
+include local.etag as local
+include fuzzydate.e
+%>
+
+<%- euweb:head title="Wiki Saved" active="wiki" %>
+
+<h3>Wiki <span><%= @title %></span> List</h3>
+
+<% if @is_category_list then %>
+
+<p>
+    Wiki pages can contain one or more categories. A category is
+    nothing more than a page link prefixed by the word
+    Category. Normally these links are at the very bottom of the page
+    after a HR line. A few example category links would be
+    [[CategoryDeveloper]], [[CategorySnippet]] and [[CategoryTutorial]].
+</p>
+
+<% end if %>
+
+<div class="wiki">
+<ul>
+<%
+sequence pages = @pages
+
+for i = 1 to length(pages) do
+  sequence page = pages[i]
+%>
+<li>
+      <a href="/wiki/view/<%= _h(page[1]) %>.wc"><%= _h(page[1]) %></a>
+      updated <%= fuzzy_ago(page[2]) %> by
+      <%-euweb:user_profile user=!page[3] show_public_roles=1 %>
+</li>
+<% end for %>
+</ul>
+
+<div class="wiki_tools">
+<a href="/wiki/view/home.wc">Wiki Home</a>
+</div>
+
+</div>
+
+<%- local:foot %>
