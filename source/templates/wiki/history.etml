@@ -1,0 +1,71 @@
+<%@
+include templates/euweb.etag as euweb
+
+include wiki_db.e
+
+include local.etag as local
+
+include fuzzydate.e
+
+%>
+
+<%- euweb:head title="Wiki History" active="wiki" %>
+
+<%- euweb:errors %>
+
+<%
+sequence history = @history
+
+if length(history) = 0 then
+%>
+
+<p>
+<strong>No history was found</strong>
+</p>
+
+<% else %>
+
+  <table class="list forum">
+    <tr>
+      <th>Author</th>
+      <th>Date</th>
+      <th>Change Message</th>
+      <th>&nbsp;</th>
+    </tr>
+
+<%
+    for i = 1 to length(history) do
+      sequence item = history[i]
+%>
+
+    <tr>
+      <td>
+        <%-euweb:user_profile user=!item[WIKI_CREATED_BY] show_public_roles=0 %>
+      </td>
+      <td nowrap="nowrap">
+        <%= fuzzy_ago(item[WIKI_CREATED_AT]) %>
+      </td>
+      <td>
+        <%= _h(item[WIKI_CHANGE_MSG]) %>
+      </td>
+      <td>
+        <a href="/wiki/view/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">view</a>
+      </td>
+    </tr>
+
+<%
+    end for
+%>
+
+  </table>
+
+<% end if %>
+
+
+<div class="wiki_tools">
+<a href="/wiki/view/<%= _h(@page) %>.wc"><%= _h(@page) %></a>,
+<a href="/wiki/view/home.wc">Wiki Home</a>
+</div>
+
+
+<%- local:foot %>

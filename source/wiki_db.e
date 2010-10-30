@@ -93,3 +93,11 @@ public function get_category_list(sequence category)
 			WHERE w.rev = 0 AND MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
 		""", { "+" & category })
 end function
+
+--**
+-- Get the history for a page
+
+public function get_history(sequence page)
+	return edbi:query_rows(BASE_QUERY &
+		" WHERE w.name = %s ORDER BY IF(w.rev=0,9999999,w.rev) DESC", { page })
+end function

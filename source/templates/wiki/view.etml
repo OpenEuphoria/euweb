@@ -12,10 +12,19 @@ include local.etag as local
 
 <%
 sequence wiki = @wiki
+
+sequence heading
+if wiki[WIKI_REV] = 0 then
+    heading = sprintf("<span>%s</span>", { _h(wiki[WIKI_NAME]) })
+else
+    heading = sprintf("Historical <span>%s</span>, Revision %d", {
+    	_h(wiki[WIKI_NAME]), wiki[WIKI_REV] })
+end if
+
 %>
 
-  <div class="wiki" id="wiki_<%= _h(wiki[WIKI_NAME]) %>">
-    <h3><%= _h(wiki[WIKI_NAME]) %></h3>
+  <div class="wiki">
+    <h3><%= heading %></h3>
     <a name="<%= _h(wiki[WIKI_NAME]) %>"></a>
     <div class="wiki_body">
     <%= wiki[wiki_db:WIKI_TEXT_FORMATTED] %>
@@ -23,17 +32,19 @@ sequence wiki = @wiki
 
     <ul class="wiki_info">
       <li>
-      <a href="/wiki/history/<%= _h(@page) %>.wc">history</a>,
-      <a href="/wiki/backlinks/<%= _h(@page) %>.wc">backlinks</a>
+	      <a href="/wiki/history/<%= _h(@page) %>.wc">history</a>,
+	      <a href="/wiki/backlinks/<%= _h(@page) %>.wc">backlinks</a>
 
-      <% if has_role("user") then %>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="/wiki/edit/<%= _h(@page) %>.wc">edit</a>
-      <% if has_role("admin") then %>
-      &nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="/wiki/remove/<%= _h(@page) %>.wc">remove</a>
-      <% end if %>
-      <% end if %>
+	      <% if wiki[wiki_db:WIKI_REV] = 0 then %>
+		      <% if has_role("user") then %>
+			      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			      <a href="/wiki/edit/<%= _h(@page) %>.wc">edit</a>
+			      <% if has_role("admin") then %>
+				      &nbsp;&nbsp;&nbsp;&nbsp;
+				      <a href="/wiki/remove/<%= _h(@page) %>.wc">remove</a>
+			      <% end if %>
+		      <% end if %>
+	      <% end if %>
       </li>
       <li class="modified">
         Last modified

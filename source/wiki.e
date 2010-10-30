@@ -14,6 +14,7 @@ include templates/wiki/view.etml as t_view
 include templates/wiki/edit.etml as t_edit
 include templates/wiki/saved.etml as t_saved
 include templates/wiki/page_list.etml as t_page_list
+include templates/wiki/history.etml as t_history
 
 include user_db.e as user_db
 include wiki_db.e as wiki_db
@@ -178,3 +179,18 @@ function backlinks(map data, map request)
 	return { TEXT, t_page_list:template(data) }
 end function
 wc:add_handler(routine_id("backlinks"), -1, "wiki", "backlinks", backlink_vars)
+
+sequence history_vars = {
+	{ wc:SEQUENCE, "page" }
+}
+
+function history(map data, map request)
+	sequence page = map:get(request, "page")
+	object history = wiki_db:get_history(page)
+
+	map:put(data, "history", history)
+	map:put(data, "page", page)
+
+	return { TEXT, t_history:template(data) }
+end function
+wc:add_handler(routine_id("history"), -1, "wiki", "history", history_vars)
