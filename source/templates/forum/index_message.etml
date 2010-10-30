@@ -1,6 +1,11 @@
-<%@ include std/math.e %>
-<%@ include templates/euweb.etag as euweb %>
-<%@ include forum_db.e %>
+<%@
+
+include std/math.e
+include templates/euweb.etag as euweb
+include local.etag as local
+
+include forum_db.e
+%>
 
 <%- euweb:head title="Forum Index" active="forum" %>
 
@@ -14,10 +19,10 @@
         <th width="20%">Age</th>
         <th width="2%">Views</th>
     </tr>
-    
-    <% 
+
+    <%
     sequence messages = @messages
-    for i = 1 to length(messages) do 
+    for i = 1 to length(messages) do
         sequence message = messages[i]
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
@@ -44,14 +49,4 @@
     <%= _h(@message_count) %> messages
 </div>
 
-<%
-sequence quick_links = {
-    { "/forum/index.wc", "Forum Home" }
-}
-
-if has_role("user") then
-    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
-end if
-%>
-
-<%- euweb:foot quick_links=!quick_links %>
+<%- local:foot %>

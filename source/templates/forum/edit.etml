@@ -1,5 +1,11 @@
-<%@ include templates/euweb.etag as euweb %>
-<%@    sequence div_class = "normal" %>
+<%@
+
+include templates/euweb.etag as euweb
+include local.etag as local
+
+sequence div_class = "normal"
+
+%>
 
 <%- euweb:head title="Forum Edit" active="forum" %>
 
@@ -16,7 +22,7 @@
 
 <form method="post" action="/forum/update.wc">
 	<input type="hidden" name="id" value="<%= _h(@id) %>" />
-	
+
 	Subject:<br />
 	<input type="text" id="subject" name="subject" value="<%= _h(@subject) %>" size="80" />
 	<div style="padding:0;margin:0;">
@@ -59,14 +65,4 @@ General Code or console input/output
 ## Numbered List 2.1
 </pre>
 
-<%
-sequence quick_links = {
-    { "/forum/index.wc", "Forum Home" }
-}
-
-if has_role("user") then
-    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
-end if
-%>
-
-<%- euweb:foot quick_links=!quick_links %>
+<%- local:foot %>

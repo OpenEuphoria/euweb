@@ -1,5 +1,11 @@
-<%@ include templates/euweb.etag as euweb %>
-<%@ include forum_db.e %>
+<%@
+
+include templates/euweb.etag as euweb
+include local.etag as local
+
+include forum_db.e
+
+%>
 
 <%- euweb:head title="Forum Index" active="forum" %>
 
@@ -17,15 +23,5 @@
 	<a href="/forum/remove_confirmed.wc?id=<%= _h(@id) %>">Yes</a>
 </p>
 
-<%
-sequence quick_links = {
-    { "/forum/index.wc", "Forum Home" }
-}
-
-if has_role("user") then
-    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
-end if
-%>
-
-<%- euweb:foot quick_links=!quick_links %>
+<%- local:foot %>
 

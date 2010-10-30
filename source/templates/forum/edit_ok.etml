@@ -1,4 +1,9 @@
-<%@ include templates/euweb.etag as euweb %>
+<%@
+
+include templates/euweb.etag as euweb
+include local.etag as local
+
+%>
 
 <%- euweb:head title="Forum Edit" active="forum" %>
 
@@ -13,4 +18,4 @@
  	<a href="/forum/index.wc">Return to Topic List</a>
 </p>
 
-<%- euweb:foot %>
+<%- local:foot %>

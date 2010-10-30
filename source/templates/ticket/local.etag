@@ -2,7 +2,8 @@
 <%@ include templates/euweb.etag as euweb %>
 <%
 sequence quick_links = {
-    { "/ticket/change_product.wc?url=/ticket/index.wc", "Select another Product" }
+    { "/ticket/change_product.wc?url=/ticket/index.wc", "Select another Product" },
+    { "/recent.wc?ticket=1", "Recent Ticket Activity" }
 }
 
 if has_role("user") then

@@ -1,0 +1,17 @@
+{{{foot}}}
+<%@
+include templates/euweb.etag as euweb
+%>
+
+<%
+sequence quick_links = {
+    { "/forum/index.wc", "Forum Home" },
+    { "/recent.wc?forum=1", "Recent Forum Activity" }
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+end if
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
