@@ -33,10 +33,12 @@ constant q_forum = """
 """
 
 constant q_tickets = """
-		SELECT 'ticket', t.id, t.created_at, u.user, t.subject, '', 0, p.name
+		SELECT 'ticket', t.id, t.created_at, u.user, t.subject, '', 0,
+				CONCAT(p.name, ' - ', c.name)
 			FROM ticket AS t
 			INNER JOIN users AS u ON (u.id=t.submitted_by_id)
 			INNER JOIN ticket_product AS p ON (p.id=t.product_id)
+			INNER JOIN ticket_category AS c ON (c.id=t.category_id)
 	UNION ALL
 		SELECT 'ticket comment', t.id, c.created_at, u.user, t.subject, '', c.id, p.name
 			FROM comment AS c
