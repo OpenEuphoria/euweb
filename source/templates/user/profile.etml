@@ -58,7 +58,7 @@ end function
 		<tr>
 			<th>Wiki page:</th>
 			<td>
-				<a href="http://openeuphoria.org/wiki/euwiki.cgi?<%= @user_name %>"><%= @user_name %></a>
+				<a href="/wiki/view/<%= @user_name %>.wc"><%= @user_name %></a>
 			</td>
 		</tr>
 		<tr>
