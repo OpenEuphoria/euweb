@@ -62,6 +62,9 @@ function assemble_page_list(object page_list)
 					end if
 
 					sequence p = page_list[pgidx]
+					if length(p[1]) = 0 then
+						p[1] = "#"
+					end if
 					if last_group != upper(p[1][1]) or
 							(j = 1 and last_group = last_col_group)
 					then
@@ -81,10 +84,12 @@ function assemble_page_list(object page_list)
 	return new_page_list
 end function
 
-function category_view(map data, sequence page)
-	sequence pages = wiki_db:get_category_list(page)
+function category_view(map data, map request, sequence page)
+	integer all = map:get(request, "all")
+	sequence pages = wiki_db:get_category_list(page, all)
 	sequence page_groups = assemble_page_list(pages)
-
+	
+	map:put(data, "all", all)
 	map:put(data, "num_of_pages", length(pages))
 	map:put(data, "groups", page_groups)
 	map:put(data, "page", page)
@@ -97,13 +102,14 @@ end function
 
 sequence view_vars = {
 	{ wc:SEQUENCE, "page", "home" },
-	{ wc:INTEGER,  "rev",  0 }
+	{ wc:INTEGER,  "rev",  0 },
+	{ wc:INTEGER,  "all",  0 }
 }
 
 function view(map data, map request)
 	sequence page = map:get(request, "page")
 	if length(page) > 8 and equal(page[1..8], "Category") then
-		return category_view(data, page)
+		return category_view(data, request, page)
 	end if
 
 	object w = wiki_db:get(page, map:get(request, "rev"))
@@ -202,14 +208,15 @@ wc:add_handler(routine_id("save"), routine_id("validate_save"), "wiki", "save", 
 
 function page_list(map data, map request)
 	object pages = edbi:query_rows("""
-			SELECT w.name, w.created_at, u.user
+			SELECT w.name, 'world.png', CONCAT('/wiki/view/', w.name, '.wc')
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (w.created_by_id=u.id)
 			WHERE w.rev = 0 ORDER BY w.name
 		""")
 
 	sequence page_groups = assemble_page_list(pages)
-
+	
+	map:put(data, "all", 0)
 	map:put(data, "num_of_pages", length(pages))
 	map:put(data, "groups", page_groups)
 	map:put(data, "title", "Page")
@@ -227,7 +234,7 @@ sequence backlink_vars = {
 function backlinks(map data, map request)
 	sequence page = map:get(request, "page")
 	object pages = edbi:query_rows("""
-			SELECT w.name, w.created_at, u.user
+			SELECT w.name, 'world.png', CONCAT('/wiki/view/', w.name, '.wc')
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (w.created_by_id=u.id)
 			WHERE w.rev = 0 AND MATCH(wiki_text) AGAINST(%s IN BOOLEAN MODE)
@@ -235,7 +242,8 @@ function backlinks(map data, map request)
 		""", { page })
 
 	sequence page_groups = assemble_page_list(pages)
-
+	
+	map:put(data, "all", 0)
 	map:put(data, "num_of_pages", length(pages))
 	map:put(data, "groups", page_groups)
 	map:put(data, "title", page & " Backlink")

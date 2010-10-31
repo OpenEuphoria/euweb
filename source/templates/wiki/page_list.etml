@@ -36,8 +36,16 @@ sequence groups = @groups
     Category. Normally these links are at the very bottom of the page
     after a HR line. A few example category links would be
     CategoryDeveloper, CategorySnippet and CategoryTutorial.
-</p>
-
+    </p>
+    <p style="text-align: center; text-style: italic; font-weight: bold;">
+    Show
+    <% if not @all then %>
+    <a href="/wiki/view/<%= _h(@page) %>.wc?all=1"><strong>all</strong></a>
+    <% else %>
+    <a href="/wiki/view/<%= _h(@page) %>.wc?all=0"><strong>only</strong> wiki</a>
+    <% end if %>
+    resources in this category
+    </p>
 <% elsif @is_backlink_list then %>
 
 <p>
@@ -82,7 +90,7 @@ for i = 1 to num_of_groups do
 end if
 %>
 
-<ul>
+<ul class="page_list">
 
 <%
 
@@ -91,7 +99,7 @@ for k = 1 to length(group[j][2]) do
 %>
 
 <li>
-      <a href="/wiki/view/<%= _h(page[1]) %>.wc"><%= _h(page[1]) %></a>
+      <img src="/images/famfam/<%= page[2] %>"/> <a href="<%= page[3] %>"><%= _h(page[1]) %></a>
 </li>
 
 

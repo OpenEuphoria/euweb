@@ -113,17 +113,54 @@ public function remove(sequence name, sequence modify_reason="removed",
 	return 0
 end function
 
+constant q_category_wiki = """
+SELECT 
+w.name AS name, 'world.png', CONCAT('/wiki/view/', w.name, '.wc')
+FROM wiki_page AS w
+INNER JOIN users AS u ON (w.created_by_id=u.id)
+WHERE w.rev = 0 AND MATCH(w.name,w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
+"""
+
+constant q_category_forum = """
+SELECT m.subject AS name, 'email.png', CONCAT('/forum/', m.id, '.wc')
+FROM messages AS m
+WHERE m.parent_id = 0 AND MATCH(m.subject,m.body) AGAINST(%s IN BOOLEAN MODE)
+"""
+
 --**
 -- Get a list of pages belonging to a given category
+--
+-- Parameters:
+--   * category - category nameame to query for
+--   * all - try to categorize wiki pages, forum messages and tickets
+--
 
-public function get_category_list(sequence category)
-	return edbi:query_rows("""
-			SELECT w.name, w.created_at, u.user
-			FROM wiki_page AS w
-			INNER JOIN users AS u ON (w.created_by_id=u.id)
-			WHERE w.rev = 0 AND MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
-			ORDER BY w.name
-		""", { "+" & category })
+public function get_category_list(sequence category, integer all = 0)
+	-- MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
+	-- 			ORDER BY w.name
+	sequence sql, params = {}
+	
+	if all then
+		sql = q_category_wiki & " UNION ALL " & 
+		q_category_forum
+		params = { "+" & category, "+" & category }
+	else
+		sql = q_category_wiki
+		params = { "+" & category }
+	end if
+
+	sql &= " ORDER BY name"
+	
+	--return edbi:query_rows("""
+	--		SELECT w.name, w.created_at, u.user
+	--		FROM wiki_page AS w
+	--		INNER JOIN users AS u ON (w.created_by_id=u.id)
+	--		WHERE w.rev = 0 AND MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
+	--		ORDER BY w.name
+	--	""", { "+" & category })
+	log:log(sql, params)
+	
+	return edbi:query_rows(sql, params)
 end function
 
 --**
