@@ -32,7 +32,8 @@ end if
 
     <ul class="wiki_info">
       <li>
-	      <% if wiki[wiki_db:WIKI_REV] > 0 then %>
+      <% if wiki[wiki_db:WIKI_REV] > 0 then %>     
+                      <a href="/wiki/diff/<%= _h(@page) %>.wc?rev_to=0&rev_from=<%= _h(@rev) %>">diff to current revision</a>,
                       <a href="/wiki/view/<%= _h(@page) %>.wc">view current revision</a>
                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	      <% end if %>

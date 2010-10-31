@@ -24,14 +24,15 @@ if length(history) = 0 then
 </p>
 
 <% else %>
-
+<form method="GET" action="/wiki/diff/<%= _h(@page) %>.wc">
   <table class="list forum">
     <tr>
       <th>Rev</th>
       <th>Author</th>
       <th>Date</th>
+      <th>Links</th>
       <th>Change Message</th>
-      <th>&nbsp;</th>
+      <th colspan="3" nowrap="nowrap">Diff From->To</th>
     </tr>
 
 <%
@@ -53,14 +54,27 @@ if length(history) = 0 then
       <td nowrap="nowrap">
         <%= fuzzy_ago(item[WIKI_CREATED_AT]) %>
       </td>
+      <td nowrap="nowrap">
+        <a href="/wiki/view/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">view</a>,
+        <% if has_role("user") then %>
+        <a href="/wiki/revert/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">revert to</a>
+        <% end if %>
+      </td>
       <td>
         <%= _h(item[WIKI_CHANGE_MSG]) %>
       </td>
-      <td nowrap="nowrap">
-        <a href="/wiki/view/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">view</a>
-        <% if has_role("user") then %>
-        :: <a href="/wiki/revert/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">revert to</a>
-        <% end if %>
+      <td align="center">
+        <input type="radio" name="rev_from" value="<%= _h(item[WIKI_REV]) %>"
+         <% if i = 2 then %>checked="checked"<% end if %>
+         />
+      </td>
+      <td align="center">
+        <input type="radio" name="rev_to" value="<%= _h(item[WIKI_REV]) %>"
+         <% if i = 1 then %>checked="checked"<%end if %>
+         />
+      </td>
+      <td>
+        <input type="submit" value=" Diff "/>
       </td>
     </tr>
 
@@ -69,7 +83,8 @@ if length(history) = 0 then
 %>
 
   </table>
-
+  
+  </form>
 <% end if %>
 
 

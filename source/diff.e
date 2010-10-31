@@ -1,4 +1,4 @@
-/*include std/sequence.e*/
+include std/sequence.e
 include webclay/escape.e as esc
 
 public function html_diff(sequence currpg, sequence oldpg)

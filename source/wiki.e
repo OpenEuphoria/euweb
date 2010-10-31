@@ -4,6 +4,7 @@
 include std/map.e as map
 include std/text.e
 include std/math.e
+include std/error.e
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
@@ -19,6 +20,7 @@ include templates/wiki/page_list.etml as t_page_list
 include templates/wiki/history.etml as t_history
 include templates/wiki/revert.etml as t_revert
 include templates/wiki/remove.etml as t_remove
+include templates/wiki/diff.etml as t_diff
 
 include user_db.e as user_db
 include wiki_db.e as wiki_db
@@ -26,7 +28,7 @@ include comment_db.e as comment_db
 
 include fuzzydate.e
 include format.e
-
+include diff.e as diff
 
 function assemble_page_list(object page_list)
 	sequence new_page_list = {}
@@ -334,3 +336,31 @@ function remove(map data, map request)
 end function
 wc:add_handler(routine_id("remove"), routine_id("validate_remove"),
 	"wiki", "remove", remove_vars)
+
+sequence diff_vars = {
+	{ wc:SEQUENCE, "page" },
+	{ wc:INTEGER,  "rev_from", -1 },
+	{ wc:INTEGER,  "rev_to",   -1 }
+}
+
+function show_diff(map data, map request)
+	integer  rev_from = map:get(request, "rev_from")
+	integer  rev_to   = map:get(request, "rev_to")
+	sequence page     = map:get(request, "page")
+
+	
+	object page_from = wiki_db:get(page, rev_from)
+	object page_to   = wiki_db:get(page, rev_to)
+
+	if atom(page_from) then
+		crash("from revision not found")
+	elsif atom(page_to) then
+		crash("to revision not found")
+	end if
+
+	map:copy(request, data)
+	map:put(data, "diff", diff:html_diff(page_to[WIKI_TEXT], page_from[WIKI_TEXT]))
+
+	return { TEXT, t_diff:template(data) }
+end function
+wc:add_handler(routine_id("show_diff"), -1, "wiki", "diff", diff_vars)

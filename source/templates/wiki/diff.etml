@@ -1,0 +1,56 @@
+<%@
+ include templates/euweb.etag as euweb
+ 
+ include wiki_db.e
+ include local.etag as local
+ 
+ %>
+
+<%- euweb:head title="Wiki Diff" active="wiki" %>
+
+<%- euweb:errors %>
+
+<%
+ 
+ sequence page   = @page
+ object rev_from = @rev_from
+ object rev_to   = @rev_to
+ 
+ sequence between_msg = "revision "
+ if rev_from = 0 then
+   between_msg &= "tip"
+ else
+   between_msg &= sprintf("#%d", { rev_from })
+ end if
+ between_msg &= " <span>to</span> "
+ if rev_to = 0 then
+   between_msg &= "tip"
+ else
+   between_msg &= sprintf("#%d", { rev_to })
+ end if
+ 
+ %>
+
+<div class="wiki">
+  <h3>
+  Wiki Diff <span><%= _h(page) %></span>, 
+  <%= between_msg %>
+  </h3>
+  
+  <div class="diff">
+  <%= @diff %>  
+  </div>
+  
+  <ul class="wiki_info">
+    <li>
+    <a href="/wiki/view/<%= _h(@page) %>.wc">view current revision</a>,
+    <a href="/wiki/view/<%= _h(page) %>.wc?rev=<%= _h(rev_from) %>"
+     >view #<%= _h(rev_from) %></a>,
+    <a href="/wiki/view/<%= _h(page) %>.wc?rev=<%= _h(rev_to) %>"
+     >view #<%= _h(rev_to) %></a>,
+    <a href="/wiki/history/<%= _h(page) %>.wc">history</a>
+   </li>
+ </ul>
+</div>
+
+<%- local:foot %>
