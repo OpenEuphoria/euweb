@@ -66,10 +66,11 @@ function assemble_page_list(object page_list)
 						p[1] = "#"
 					end if
 					if last_group != upper(p[1][1]) or
-							(j = 1 and last_group = last_col_group)
+						(j = 1 and last_group = last_col_group)
 					then
 						last_group = upper(p[1][1])
-						page_group = append(page_group, { last_group, {} })
+						page_group = append(page_group, { last_group, {}, 
+								j=1 and last_group = last_col_group })
 					end if
 
 					page_group[$][2] = append(page_group[$][2], p)

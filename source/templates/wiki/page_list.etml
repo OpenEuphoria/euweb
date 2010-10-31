@@ -82,10 +82,14 @@ for i = 1 to num_of_groups do
 <td valign="top">
 
 <%
-    for j = 1 to length(group) do
-
-          if group[j][1] > 0 then
-%><div class="index_title"><%= sprintf("%s", group[j][1]) %></div>
+ for j = 1 to length(group) do
+ 
+   if group[j][1] > 0 then
+%>
+<div class="index_title">
+  <%= sprintf("%s", group[j][1]) %>
+  <% if group[j][3] then %>cont...<% end if %>
+</div>
 <%
 end if
 %>
