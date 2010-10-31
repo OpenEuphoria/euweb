@@ -867,3 +867,22 @@ overflow-x: auto;
 option.active_ticket,option.active_user { background-color: #ddffdd; }
 option.closed_ticket,option.disabled_user { background-color: #ffdddd; }
 option.me { background-color: #aaaaff; }
+
+table.nostyle {
+border: 0px;
+}
+
+table.nostyle td {
+background-color: white;
+border: 0px;
+}
+
+table.nostyle th {
+background-color: white;
+border: 0px;
+}
+
+div.index_title {
+font-size: 1.3em;
+font-weight: bold;
+}

@@ -1,16 +1,31 @@
 <%@
+
+include std/math.e
+include std/text.e
+
 include templates/euweb.etag as euweb
 include local.etag as local
+
 include fuzzydate.e
+
 %>
 
 <%- euweb:head title="Wiki Saved" active="wiki" %>
+
+<%
+
+integer num_of_groups = length(@groups)
+integer num_of_pages = @num_of_pages
+
+sequence groups = @groups
+
+%>
 
 <h3>Wiki <span><%= @title %></span> List</h3>
 
 <div class="wiki">
 <div class="wiki_tools_top">
-<%= _h(length(@pages)) %> page(s)
+<%= _h(num_of_pages) %> page(s)
 </div>
 
 <% if @is_category_list then %>
@@ -31,30 +46,71 @@ include fuzzydate.e
     that link <strong>to</strong> the page you are viewing.
 </p>
 
-<% end if %>
-
 <%
-sequence pages = @pages
 
-if length(pages) = 0 then %>
+end if
+
+if num_of_pages = 0 then
+
+%>
 
 <p><strong>No pages found.</strong></p>
 
-<% else %>
-<p>
-<ul>
 <%
-for i = 1 to length(pages) do
-  sequence page = pages[i]
+
+else
+
 %>
+
+<table class="nostyle" width="100%">
+<tr>
+
+<%
+
+for i = 1 to num_of_groups do
+    sequence group = groups[i]
+%>
+
+<td valign="top">
+
+<%
+    for j = 1 to length(group) do
+
+          if group[j][1] > 0 then
+%><div class="index_title"><%= sprintf("%s", group[j][1]) %></div>
+<%
+end if
+%>
+
+<ul>
+
+<%
+
+for k = 1 to length(group[j][2]) do
+      sequence page = group[j][2][k]
+%>
+
 <li>
       <a href="/wiki/view/<%= _h(page[1]) %>.wc"><%= _h(page[1]) %></a>
-      updated <%= fuzzy_ago(page[2]) %> by
-      <%-euweb:user_profile user=!page[3] show_public_roles=0 %>
 </li>
+
+
 <% end for %>
 </ul>
-</p>
+
+<%
+    end for
+%>
+
+</td>
+
+<%
+end for
+%>
+
+</tr>
+</table>
+
 <% end if %>
 
 <div class="wiki_tools">

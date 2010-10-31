@@ -2,6 +2,8 @@
 -- == Wiki System
 
 include std/map.e as map
+include std/text.e
+include std/math.e
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
@@ -25,8 +27,64 @@ include comment_db.e as comment_db
 include fuzzydate.e
 include format.e
 
+
+function assemble_page_list(object page_list)
+	sequence new_page_list = {}
+
+	if sequence(page_list) then
+		integer num_of_pages = length(page_list)
+
+		-- Resulting data:
+		-- { group1, group2, ... }
+		--
+		-- Groups:
+		--
+		-- { { heading, pages }, { heading, pages }, ... }
+
+		if num_of_pages < 30 then
+			new_page_list = { { { 0, page_list } } }
+		else
+			integer per_col = ceil(num_of_pages / 3)
+			integer last_group = 0, last_col_group = 0
+			integer pgidx = 0
+
+			for i = 1 to 3 do
+				sequence page_group = {}
+				sequence pages = {}
+
+				for j = 1 to per_col do
+					pgidx += 1
+
+					if pgidx > num_of_pages then
+						exit
+					end if
+
+					sequence p = page_list[pgidx]
+					if last_group != upper(p[1][1]) or
+							(j = 1 and last_group = last_col_group)
+					then
+						last_group = upper(p[1][1])
+						page_group = append(page_group, { last_group, {} })
+					end if
+
+					page_group[$][2] = append(page_group[$][2], p)
+				end for
+
+				new_page_list = append(new_page_list, page_group)
+				last_col_group = last_group
+			end for
+		end if
+	end if
+
+	return new_page_list
+end function
+
 function category_view(map data, sequence page)
-	map:put(data, "pages", wiki_db:get_category_list(page))
+	sequence pages = wiki_db:get_category_list(page)
+	sequence page_groups = assemble_page_list(pages)
+
+	map:put(data, "num_of_pages", length(pages))
+	map:put(data, "groups", page_groups)
 	map:put(data, "page", page)
 	map:put(data, "title", page)
 	map:put(data, "is_category_list", 1)
@@ -141,14 +199,17 @@ end function
 wc:add_handler(routine_id("save"), routine_id("validate_save"), "wiki", "save", save_vars)
 
 function page_list(map data, map request)
-	object page_list = edbi:query_rows("""
+	object pages = edbi:query_rows("""
 			SELECT w.name, w.created_at, u.user
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (w.created_by_id=u.id)
 			WHERE w.rev = 0 ORDER BY w.name
 		""")
 
-	map:put(data, "pages", page_list)
+	sequence page_groups = assemble_page_list(pages)
+
+	map:put(data, "num_of_pages", length(pages))
+	map:put(data, "groups", page_groups)
 	map:put(data, "title", "Page")
 	map:put(data, "is_category_list", 0)
 	map:put(data, "is_backlink_list", 0)
@@ -163,8 +224,7 @@ sequence backlink_vars = {
 
 function backlinks(map data, map request)
 	sequence page = map:get(request, "page")
-
-	object page_list = edbi:query_rows("""
+	object pages = edbi:query_rows("""
 			SELECT w.name, w.created_at, u.user
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (w.created_by_id=u.id)
@@ -172,8 +232,10 @@ function backlinks(map data, map request)
 			ORDER BY w.name
 		""", { page })
 
-	map:put(data, "page", page)
-	map:put(data, "pages", page_list)
+	sequence page_groups = assemble_page_list(pages)
+
+	map:put(data, "num_of_pages", length(pages))
+	map:put(data, "groups", page_groups)
 	map:put(data, "title", page & " Backlink")
 	map:put(data, "is_category_list", 0)
 	map:put(data, "is_backlink_list", 1)
