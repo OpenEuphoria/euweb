@@ -26,13 +26,14 @@ include item_icons.e
 
 include templates/recent.etml as t_recent
 
-public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_COMMENT_ID, R_ICON, R_ADDITIONAL
+public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_COMMENT_ID, 
+R_ICON, R_ADDITIONAL, R_EDIT_COUNT
 
 constant q_forum = """
 
 	SELECT
 		'forum' AS typ, CONCAT(id, ''), created_at, author_name, subject, '' AS url, '0' AS comment_id,
-		'' AS icon, '' AS additional
+		'' AS icon, '' AS additional, 0 AS recent_edit_cn
 	FROM messages
 
 """
@@ -41,9 +42,14 @@ constant q_wiki = """
 
 	SELECT
 		'wiki' AS typ, w.name, w.created_at, u.user, w.name, '' AS url, '0' AS comment_id,
-		'' AS icon, w.change_msg AS additional
+		'' AS icon, w.change_msg AS additional,  
+			(SELECT COUNT(*) FROM wiki_page AS wp 
+				WHERE wp.name=w.name AND 
+				wp.created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)) 
+			AS recent_edit_cnt
 	FROM wiki_page AS w
 	INNER JOIN users AS u ON (u.id=w.created_by_id)
+	WHERE w.rev = 0
 
 """
 
@@ -51,14 +57,15 @@ constant q_tickets = """
 
 	SELECT
 			'ticket', CONCAT(t.id, ''), t.created_at, u.user, t.subject, '' AS url, '0' AS comment_id,
-			'' AS icon, CONCAT(p.name, ' - ', c.name) AS additional
+			'' AS icon, CONCAT(p.name, ' - ', c.name) AS additional, 0 AS recent_edit_cnt
 		FROM ticket AS t
 		INNER JOIN users AS u ON (u.id=t.submitted_by_id)
 		INNER JOIN ticket_product AS p ON (p.id=t.product_id)
 		INNER JOIN ticket_category AS c ON (c.id=t.category_id)
 	UNION ALL
 		SELECT 'ticket comment', CONCAT(t.id, ''), c.created_at, u.user, t.subject, '',
-			CONCAT(c.id, ''), '', CONCAT(p.name, ' - ', cat.name)
+		CONCAT(c.id, ''), '', CONCAT(p.name, ' - ', cat.name),
+		0 AS recent_edit_cnt
 		FROM comment AS c
 		INNER JOIN ticket AS t ON (t.id = c.item_id)
 		INNER JOIN ticket_product AS p ON (p.id = t.product_id)
@@ -71,12 +78,12 @@ constant q_tickets = """
 constant q_news = """
 
 		SELECT 'news', CONCAT(n.id, ''), n.publish_at AS created_at, u.user, n.subject, '',
-			'0', '', ''
+			'0', '', '', 0 AS recent_edit_cnt
 		FROM news AS n
 		INNER JOIN users AS u ON (u.id=n.submitted_by_id)
 	UNION ALL
 		SELECT 'news comment', CONCAT(n.id, ''), c.created_at, u.user, n.subject, '',
-			CONCAT(c.id, ''), '', ''
+			CONCAT(c.id, ''), '', '', 0 AS recent_edit_cnt
 		FROM comment AS c
 		INNER JOIN news AS n ON (n.id=c.item_id)
 		INNER JOIN users AS u ON (u.id=c.user_id)
@@ -142,9 +149,11 @@ function recent(map data, map request)
 		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page")
 	end if
 
-	sequence sql = join(queries, " UNION ALL ") & """
-		ORDER BY created_at DESC LIMIT %d OFFSET %d
+	sequence sql = join(queries, " UNION ALL ") &  """
+	ORDER BY created_at DESC LIMIT %d OFFSET %d
 	"""
+
+	log:log("sql=%s", { sql })
 
 	object items = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
 

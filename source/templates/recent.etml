@@ -37,7 +37,12 @@
     <%
     sequence items = @items
     for i = 1 to length(items) do
-        sequence item = items[i]
+    	sequence item = items[i]
+        sequence edit_count = ""
+        if length(item) = R_EDIT_COUNT and item[R_EDIT_COUNT] > 1 then
+       		edit_count = sprintf("(%d recent edits)", { 
+                	item[R_EDIT_COUNT] })
+        end if
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap" align="center">
@@ -49,7 +54,10 @@
             <td>
                 <a href="<%= item[recent:R_URL] %>"><%= _h(item[recent:R_TITLE]) %></a>
                 <% if length(item[recent:R_ADDITIONAL]) then %>
-                    <div class="additional"><%= _h(item[recent:R_ADDITIONAL]) %></div>
+                <div class="additional">
+                  <%= _h(item[recent:R_ADDITIONAL]) %>
+                  <%= edit_count %>
+                </div>
                 <% end if %>
             </td>
             <td nowrap="nowrap">
