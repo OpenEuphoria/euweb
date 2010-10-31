@@ -10,7 +10,7 @@ include fuzzydate.e
 
 %>
 
-<%- euweb:head title="Wiki Saved" active="wiki" %>
+<%- euweb:head title="Wiki Page List" active="wiki" %>
 
 <%
 
