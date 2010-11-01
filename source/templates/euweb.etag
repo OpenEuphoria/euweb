@@ -353,8 +353,13 @@ function preview_<%= #name %>() {
 <%
  integer width = to_number(#width)
  integer percent = #percent
-%>
-<div style="width: <%= #width %>%; position: relative; border: 1px solid black;">
+ 
+ sequence message = #message
+ if not length(message) then
+ message = sprintf("%d%%", { percent })
+ end if
+ %>
+<div style="width: <%= #width %>%; position: relative; border: 1px solid black; vertical-align: middle;">
   <div style="width: <%= _h(percent) %>%; background-color: #ccffcc; position: absolute; top: 0; left: 0;">&nbsp;</div>
-  <div style="text-align: center; position: relative;"><%= _h(#percent) %>%</div>
+  <div style="text-align: center; position: relative; vertical-align: middle;"><%= message %></div>
 </div>

@@ -72,7 +72,10 @@
       <%
        integer milestone_progress = @milestone_progress
        %>
-      <%- euweb:progress_bar width=100 percent=!milestone_progress %>
+      <%- euweb:progress_bar 
+       width=100 
+       message=@milestone_progress_text
+       percent=!milestone_progress %>
     </div>
     <% end if %>
     

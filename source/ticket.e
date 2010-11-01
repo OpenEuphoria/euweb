@@ -132,7 +132,8 @@ function real_index(map data, map request, sequence where="")
     
     integer by_milestone = 0
     integer milestone_progress = 0
-    
+    sequence milestone_progress_text = ""
+	
     if length(milestone) > 0 then
         sequence safe_milestone = match_replace("\\",
             match_replace("'", milestone, "''", 0),
@@ -159,6 +160,9 @@ function real_index(map data, map request, sequence where="")
 		if total_count > 0 then
 			milestone_progress = 100 - floor((active_count / total_count) * 100)
 		end if
+	
+		milestone_progress_text = sprintf("%d of %d completed (%d%%)", {
+				active_count, total_count, milestone_progress })
     end if
 
     if length(local_where) then
@@ -219,7 +223,8 @@ function real_index(map data, map request, sequence where="")
     map:put(data, "static_developer_items", static_developer_items)
     map:put(data, "by_milestone", by_milestone)
     map:put(data, "milestone_progress", milestone_progress)
-    
+    map:put(data, "milestone_progress_text", milestone_progress_text)
+	
     return { TEXT, t_index:template(data) }
 end function
 
