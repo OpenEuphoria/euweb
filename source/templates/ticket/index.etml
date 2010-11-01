@@ -22,7 +22,7 @@
 <% else %>
 
     <h3><span><%= _h(@product_name) %></span> Tickets (<%= _h(@ticket_count) %>) <span class="small">(<a href="/ticket/change_product.wc?url=/ticket/index.wc">select another product</a>)</span></h3>
-
+    
     <form method="GET" style="margin-bottom:10px;">
         <input type="hidden" name="per_page" value="<%= _h(@per_page) %>" />
         <input type="hidden" name="page" value="<%= _h(@page) %>" />
@@ -65,7 +65,16 @@
 
         <input type="submit" class="button" value="Filter" />
     </form>
-
+    
+    <% if @by_milestone then %>
+    <div style="padding-bottom: 10px">
+      <%
+       integer milestone_progress = @milestone_progress
+       %>
+      <%- euweb:progress_bar width=100 percent=!milestone_progress %>
+    </div>
+    <% end if %>
+    
     <table class="list forum">
         <tr>
             <th width="1%">#</th>
