@@ -174,8 +174,18 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 					--lHTMLText = creole_plugin_wikipage(lParms)
 			end switch
 
+		case Quoted then
+			-- Highlight a quoted section.
+			if length(pParms[2]) > 0 then
+				lHTMLText = "\n<div class=\"quote\"><div class=\"attribution\"><span class=\"name\">" &
+					pParms[1] &
+					" said...</span></div>\n" &
+					"<div class=\"body\">" & pParms[2] & "</div>" &
+					"\n</div>\n"
+			end if
+		
 		case HostID then
-			lHTMLText = "euforum"
+			lHTMLText = "euweb"
 
 		case OptReparseHeadings then
 			lHTMLText = ""

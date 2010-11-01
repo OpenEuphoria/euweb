@@ -614,27 +614,38 @@ margin-bottom: 10px;
 }
 
 #main_inner .quote {
-	margin: 1em;
-	padding: 5px 20px 5px 20px;
-	border: 1px solid gray;
-	background-color: #f8f8f8;
+    margin: 1em;
+    border: 1px solid gray;
+    background-color: #f8f8f8;
+}
+
+#main_inner .quote .attribution {
+    border-bottom: 1px dotted black;
+    padding: 2px;
+    margin-bottom: 1ex;
+    background-color: #ccccff;
+    color: #558888;
+}
+
+#main_inner .quote .attribution .name {
+    font-weight: bold;
 }
 
 #main_inner .quote .quote {
-	background-color: #f0f0f0;
+    background-color: #f0f0f0;
 }
 
 #main_inner .quote .quote .quote {
-	background-color: #e8e8e8;
+    background-color: #e8e8e8;
 }
 
 #main_inner .quote .quote .quote .quote {
-	background-color: #e0e0e0;
+    background-color: #e0e0e0;
 }
 
 #main_inner .forum {
-	border: dotted 1px #C1C1C1;
-	overflow-x: auto;
+    border: dotted 1px #C1C1C1;
+    overflow-x: auto;
 }
 
 #main_inner .forum p {
