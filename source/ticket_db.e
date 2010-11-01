@@ -63,6 +63,7 @@ public function get_list(integer offset=0, integer per_page=10, sequence where="
 	end if
 	sql &= " ORDER BY tsev.position DESC, t.created_at"
 	sql &= " LIMIT %d OFFSET %d"
+
 	return edbi:query_rows(sql, { per_page, offset })
 end function
 

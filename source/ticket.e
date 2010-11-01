@@ -115,6 +115,8 @@ function real_index(map data, map request, sequence where="")
         local_where = append(local_where, "tstat.is_open=1")
     elsif status_id = -3 then
         local_where = append(local_where, "tstat.is_open=0")
+	elsif status_id = -4 then
+		local_where = append(local_where, "tstat.is_open=1 AND tstat.id != 10")
     end if
     if type_id > -1 then
         local_where = append(local_where, sprintf("ttype.id=%d", { type_id }))
@@ -205,7 +207,8 @@ function real_index(map data, map request, sequence where="")
 
     map:put(data, "static_status_items", {
         { -2, "** All Opened **", "active_ticket" },
-        { -3, "** All Closed **", "closed_ticket" }
+        { -3, "** All Closed **", "closed_ticket" },
+		{ -4, "** Not Blocked **", "active_ticket" }
     })
 
     sequence static_developer_items = {}
