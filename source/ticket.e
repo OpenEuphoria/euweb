@@ -9,6 +9,7 @@ include std/get.e
 include std/map.e
 include std/search.e
 include std/sequence.e
+include std/text.e
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
@@ -286,16 +287,12 @@ function validate_do_create(map data, map request)
         errors = wc:add_error(errors, "type_id", "You must select a ticket type.")
     end if
 
-    if atom(map:get(request, "subject")) or atom(map:get(request, "content")) then
-        dump_map("ticket_create", request)
+    if length(trim(map:get(request, "subject"))) = 0 then
+        errors = wc:add_error(errors, "subject", "Subject cannot be blank.")
     end if
 
-    if length(map:get(request, "subject")) = 0 then
-        errors = wc:add_error(errors, "subject", "Subject cannot be empty.")
-    end if
-
-    if length(map:get(request, "content")) = 0 then
-        errors = wc:add_error(errors, "content", "Content cannot be empty.")
+    if length(trim(map:get(request, "content"))) = 0 then
+        errors = wc:add_error(errors, "content", "Content cannot be blank.")
     end if
 
     return errors
