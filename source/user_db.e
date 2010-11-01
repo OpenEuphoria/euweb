@@ -167,13 +167,20 @@ public function set_user_ip(sequence user, sequence ip)
 	return edbi:query_object("SELECT sess_id FROM users WHERE id=%d", { user[USER_ID] })
 end function
 
-public function create(sequence code, sequence password, sequence email)
-	if edbi:execute("INSERT INTO users (user, password, email) VALUES (%s,SHA1(%s),%s)", {
-		code, password, email })
+public function create(sequence code, sequence password, sequence email, 
+		sequence security_question, sequence security_answer)
+	if edbi:execute("""
+		INSERT INTO users (
+			user, password, email, security_question, security_answer
+		) 
+		VALUES (
+			%s, SHA1(%s), %s, %s, SHA1(%s)
+		)""", { code, password, email, security_question, security_answer })
 	then
-		crash("Couldn't insert user into the database: %s", { edbi:error_message() })
+		crash("Couldn't insert user into the database: %s", { 
+				edbi:error_message() })
 	end if
-
+	
 	integer id = edbi:last_insert_id()
 	edbi:execute("INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
 
