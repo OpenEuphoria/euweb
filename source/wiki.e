@@ -185,8 +185,10 @@ function validate_save(map data, map request)
 		errors = wc:add_error(errors, "form", "You are not authorized to edit wiki pages")
 	end if
 
-	if length(map:get(request, "modify_reason")) = 0 then
-		errors = wc:add_error(errors, "modify_reason", "Please enter a reason for this change")
+	if not equal(map:get(request, "save"), "Preview") then
+		if length(map:get(request, "modify_reason")) = 0 then
+			errors = wc:add_error(errors, "modify_reason", "Please enter a reason for this change")
+		end if
 	end if
 
 	return errors
