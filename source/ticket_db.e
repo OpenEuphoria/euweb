@@ -16,7 +16,7 @@ public constant MODULE_ID=1
 public enum ID, CREATED_AT, SUBMITTED_BY_ID, ASSIGNED_TO_ID, SEVERITY_ID,
 	CATEGORY_ID, STATUS_ID, REPORTED_RELEASE, MILESTONE, SUBJECT, CONTENT,
 	RESOLVED_AT, SVN_REV, SUBMITTED_BY, ASSIGNED_TO, SEVERITY, CATEGORY, STATUS,
-	PRODUCT_ID, PRODUCT, TYPE_ID, TYPE
+	PRODUCT_ID, PRODUCT, TYPE_ID, TYPE, ICON
 
 constant BASE_FROM = """
 FROM
@@ -38,7 +38,7 @@ constant BASE_QUERY = """SELECT
     t.content, t.resolved_at, t.svn_rev, tsb.user AS submitted_by,
     tas.user AS assigned_to, tsev.name AS severity, tcat.name AS category,
     tstat.name AS status, t.product_id, tprod.name, t.type_id,
-    ttype.name
+    ttype.name, '' as icon
 """ & BASE_FROM
 
 --**

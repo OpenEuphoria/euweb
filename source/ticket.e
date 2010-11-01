@@ -173,6 +173,18 @@ function real_index(map data, map request, sequence where="")
     -- we will have to query the db specifically for the product name.
     if length(tickets) > 0 then
         map:put(data, "product_name", tickets[1][ticket_db:PRODUCT])
+	
+		for i = 1 to length(tickets) do
+			switch tickets[i][TYPE_ID] do
+				case 1 then
+					tickets[i][ticket_db:ICON] = "bug"
+				case 2 then
+					tickets[i][ticket_db:ICON] = "bell"
+				case 3 then
+					tickets[i][ticket_db:ICON] = "script_gear"
+			end switch
+		end for
+		
     else
         map:put(data, "product_name", edbi:query_object("SELECT name FROM ticket_product WHERE id=%d", {
             product_id }))
