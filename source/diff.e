@@ -1,26 +1,21 @@
---Program to show the differences between two text files.
---Author: R. M. Forno - Version 2.1 - 2002/07/15.
-
---Syntax: ex diff21 <file1_name> <file2_name> [<option>]
-
---Output goes to standard output, so it can be redirected to a file.
-
---<option> may be omitted; its default value is 0. In this case, the
--- output consists of the lines from file1 that do not match file2 lines,
--- preceded by the > sign, then the lines from file2 that do not match
--- file1 lines, preceded by the < sign, and then the matching lines without
--- a preceding sign. This starts again when no more matching lines remain.
---If <option> is 0, then the output will be as described above.
---If <option> is 1, then only the number of the lines will be shown,
--- instead of the lines themselves.
---If <option> is 2, then the matching lines will not be shown, but the
--- non-matching lines will appear entirely.
---If <option> is 3, then the matching lines will not be shown, and only
--- the numbers of the non-matching lines will appear, preceded either
--- by the > or < sign.
---Other values of <option> are invalid.
-
---This program does not guarantee that an optimal output will be generated
+-- ======== EUWEB COMMENT ========
+--
+-- This code was found in The Archive. It was originally used as a 
+-- stand alone program. It has been modified for EuWEB to be used
+-- as a library function.
+--
+-- The original source can be found on the archive as:
+--
+-- http://www.rapideuphoria.com/diff.zip
+--
+-- The chosen algorithm was diff21.ex
+--
+-- ======== END OF EUWEB COMMENT ========
+--
+-- Program to show the differences between two text files.
+-- Author: R. M. Forno - Version 2.1 - 2002/07/15.
+--
+-- This program does not guarantee that an optimal output will be generated
 -- (optimal in the sense of maximizing the number of matched lines),
 -- but this optimal will be attained in about 99% of the practical cases.
 -- The sub-optimal solutions will be usually very good, too.
@@ -32,8 +27,8 @@
 -- for the user.
 -- This version is usually slower than Version 1 when no backtracking is
 -- specified (in Version 1).
-
---The matching of lines is done on the basis of strict equality.
+--
+-- The matching of lines is done on the basis of strict equality.
 -- But the user has the option of changing this by providing his/her
 -- own comparison function.
 -- The include file compare.e contains the function custom_compare,
@@ -41,8 +36,8 @@
 -- provide a different custom_compare function, for example to
 -- disregard heading blanks, or case of letters, etc. The only
 -- place to make this modification is the compare.e include file.
-
---Versions 3.0 and 4.0 use slightly different algorithms.
+--
+-- Versions 3.0 and 4.0 use slightly different algorithms.
 
 function custom_compare(object a, object b)
 	return compare(a,b)
@@ -555,83 +550,23 @@ function BestMatch(sequence s3, sequence t3, sequence sl,
     return best_count & best_pairs
 end function
 
-function ReadIn(sequence fn)
-	--Read-in input files as sequences.
-    sequence s
-    object x
-    integer f
-    s = {}
-    f = open(fn, "r")
-    if f < 0 then
-		puts(2, "Error - cannot open " & fn)
-		abort(3)
-    end if
-    while 1 do
-		x = gets(f)
-		if atom(x) then
-			exit
-		end if
-		s = append(s, x)
-    end while
-    close(f)
-    return s
-end function
+public enum 
+--**
+-- Unchanged line
+UNCHANGED, 
+--**
+-- Inserted line
+INSERTED, 
+--**
+-- Removed line
+REMOVED
 
-function OutOption(integer j, integer option, sequence s)
-    if option = 0 or option = 2 then
-		return s[j]
-    end if
-    return sprintf("%d\n", j)
-end function
-
-procedure OutDiff(sequence best_pairs, integer option)
-	--Ouput resulting in, out, and equal lines.
-    sequence x
-    integer a, b, u, v, z, zs, zt
-    a = 1
-    b = 1
-    zs = 1
-    zt = 1
-    for i = 1 to length(best_pairs) do
-		x = best_pairs[i]
-		u = x[1]
-		v = x[2]
-		z = 0
-		for j = a to u - 1 do
-			z += sl[j]
-		end for
-		for j = zs to zs + z - 1 do
-			puts(1, ">" & OutOption(j, option, s))
-		end for
-		zs += z
-		z = 0
-		for j = b to v - 1 do
-			z += tl[j]
-		end for
-		for j = zt to zt + z - 1 do
-			puts(1, "<" & OutOption(j, option, t))
-		end for
-		zt += z
-		z = sl[u]
-		for j = zs to zs + z - 1 do
-			if option <= 1 then
-				puts(1, OutOption(j, option, s))
-			end if
-		end for
-		zs += z
-		zt += z
-		a = u + 1
-		b = v + 1
-    end for
-    for j = zs to length(s) do
-		puts(1, ">" & OutOption(j, option, s))
-    end for
-    for j = zt to length(t) do
-		puts(1, "<" & OutOption(j, option, t))
-    end for
-end procedure
-
-public enum UNCHANGED, INSERTED, REMOVED
+--
+-- Instead of outputting to the screen, make a sequence
+-- of the changes. Difference will return this.
+--
+-- { { CHANGE_TYPE, LINE_TEXT }, ... }
+--
 
 function Changes(sequence best_pairs)
 	--Ouput resulting in, out, and equal lines.
@@ -694,6 +629,28 @@ function GenIndex(integer len)
     end for
     return s
 end function
+
+--**
+-- Compute the differences between `ss` and `tt`. 
+--
+-- Parameters:
+--   * ss - a sequence of lines { line1, line2, ... }
+--   * tt - a sequence of lines { line1, line2, ... }
+--
+-- Returns:
+--   A sequence of changes.
+--
+--   <eucode>
+--   {
+--     { CHANGE_TYPE, LINE_TEXT },
+--     { CHANGE_TYPE, LINE_TEXT },
+--     ...
+--   }
+--   </eucode>
+--
+-- See Also:
+--   [[:INSERTED]], [[:REMOVED]], [[:UNCHANGED]]
+--
 
 public function Difference(sequence ss, sequence tt)
 	--Main procedure.
