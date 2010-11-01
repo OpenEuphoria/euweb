@@ -65,52 +65,81 @@
 		<input type="hidden" name="id" value="<%= _h(@id) %>" />
 
 		<table class="form">
-			<tr>
-				<th>Ticket Type:</th>
-				<td>
-                    <%- euweb:select name="type_id" selected=@type_id option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
-                </td>
-				<th>Category:</th>
-				<td>
-					<%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql=@category_sql %>
-				</td>
-			</tr>
-			<tr>
-				<th>Severity:</th>
-				<td>
-					<%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
-				</td>
-				<th>Your Release:</th>
-				<td>
-					<input type="text" id="reported_release" name="reported_release" value="<%= _h(@reported_release) %>" size="15"  autocomplete="off" />
-					<%- euweb:autocomplete name="reported_release" sql="SELECT name FROM releases ORDER BY position" %>
-				</td>
-                <th>Milestone:</th>
-                <td>
-                    <%- euweb:select name="milestone" include_blank=1 option_sql=@milestone_sql %>
-                </td>
-			</tr>
-
-			<tr>
-				<th>Subject:</th>
-				<td colspan="5"><input type="text" name="subject" value="<%= _h(@subject) %>" size="75" style="width: 100%" /></td>
-			</tr>
-
-			<tr>
-				<th>Content:</th>
-				<td colspan="5">
-					<textarea id="content" name="content" rows="15" cols="70" style="width: 100%"><%= _h(@content) %></textarea>
-					<%- euweb:creole_previewer name="content" %>
-				</td>
-			</tr>
-
-			<tr>
-				<th>&nbsp;</th>
-				<td>
-					<input type="submit" value="Create Ticket" />
-					<input type="button" value="Preview Content" onclick="preview_content();"/>
-				</td>
-			</tr>
+                  <tr>
+                    <th>Ticket Type:</th>
+                    <td>
+                      <%- euweb:select name="type_id" selected=@type_id option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
+                    </td>
+                    <th>Category:</th>
+                    <td>
+                      <%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql=@category_sql %>
+                    </td>
+                    <th>&nbsp;</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                  
+                  <tr>
+                    <th>Severity:</th>
+                    <td>
+                      <%- euweb:select include_empty=1 name="severity_id" selected=@severity_id option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
+                    </td>
+                    <th>Your Release:</th>
+                    <td>
+                      <input type="text" id="reported_release" name="reported_release" value="<%= _h(@reported_release) %>" size="15"  autocomplete="off" />
+                      <%- euweb:autocomplete name="reported_release" sql="SELECT name FROM releases ORDER BY position" %>
+                    </td>
+                    <th>&nbsp;</th>
+                    <td>&nbsp;</td>
+                  </tr>
+                  
+                  <% if has_role("admin") or has_role("developer") then %>
+                  <tr>
+                    <th>Status:</th>
+                    <td>
+                      <%- euweb:select
+                       name="status_id"
+                       option_sql="SELECT id,name,IF(is_open,'active_ticket','closed_ticket') AS cls FROM ticket_status ORDER BY position"
+                       %>                      
+                    </td>
+                    <th>Assigned To:</th>
+                    <td>
+                      <%- euweb:select 
+                       name="assigned_to_id" 
+                       include_empty=1 
+                       option_sql="SELECT u.id,u.user FROM users AS u, user_roles AS ur WHERE u.id=ur.user_id AND ur.role_name='developer' ORDER BY user" 
+                       %>
+                    </td>
+                    <th>Milestone:</th>
+                    <td>
+                      <%- euweb:select 
+                       name="milestone" 
+                       include_blank=1 
+                       option_sql=@milestone_sql 
+                       %>
+                    </td>
+                  </tr>
+                  <% end if %>
+                  
+                  <tr>
+                    <th>Subject:</th>
+                    <td colspan="5"><input type="text" name="subject" value="<%= _h(@subject) %>" size="75" style="width: 100%" /></td>
+                  </tr>
+                  
+                  <tr>
+                    <th>Content:</th>
+                    <td colspan="5">
+                      <textarea id="content" name="content" rows="15" cols="70" style="width: 100%"><%= _h(@content) %></textarea>
+                      <%- euweb:creole_previewer name="content" %>
+                    </td>
+                  </tr>
+                  
+                  <tr>
+                    <th>&nbsp;</th>
+                    <td>
+                      <input type="submit" value="Create Ticket" />
+                      <input type="button" value="Preview Content" onclick="preview_content();"/>
+                    </td>
+                  </tr>
 		</table>
 	</form>
 

@@ -77,14 +77,25 @@ end function
 -- Insert a new ticket
 
 public function create(integer type_id, integer product_id, integer severity_id,
-		integer category_id, sequence reported_release, sequence milestone, sequence subject,
+		integer category_id, integer status_id, integer assigned_to_id, 
+		sequence reported_release, sequence milestone, sequence subject,
         sequence content)
-	return edbi:execute("""INSERT INTO ticket (assigned_to_id, status_id, created_at,
-		submitted_by_id, type_id, product_id, severity_id, category_id, reported_release, milestone,
-        subject, content) VALUES (0, 1, NOW(), %d, %d, %d, %d, %d, %s, %s, %s, %s)""", {
-			current_user[USER_ID], type_id, product_id, severity_id,
-			category_id, reported_release, milestone, subject, content }
-		)
+	sequence assignment = "NULL"
+	if assigned_to_id > -1 then
+		assignment = sprintf("%d", { assigned_to_id })
+	end if
+	
+	return edbi:execute(
+		"""INSERT INTO ticket (created_at, status_id, submitted_by_id, assigned_to_id,
+		type_id, product_id, severity_id, category_id, reported_release, milestone, 
+		subject, content) 
+		VALUES (NOW(), %d, %d, %S, %d, %d, %d, %d, %s, %s, %s, %s)""", 
+		{
+			status_id, current_user[USER_ID], assignment, type_id, product_id, 
+			severity_id, category_id, reported_release, milestone, subject, 
+			content 
+		}
+	)
 end function
 
 --**
