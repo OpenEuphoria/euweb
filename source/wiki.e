@@ -326,7 +326,7 @@ sequence remove_vars = {
 function validate_remove(map data, map request)
 	sequence errors = wc:new_errors("wiki", "view")
 
-	if not has_role("user") then
+	if not has_role("wiki_admin") then
 		errors = wc:add_error(errors, "form", "You are not authorized to remove wiki pages")
 	end if
 
@@ -363,7 +363,6 @@ function show_diff(map data, map request)
 	integer  rev_to   = map:get(request, "rev_to")
 	sequence page     = map:get(request, "page")
 
-	
 	object page_from = wiki_db:get(page, rev_from)
 	object page_to   = wiki_db:get(page, rev_to)
 
