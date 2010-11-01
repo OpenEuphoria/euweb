@@ -838,9 +838,11 @@ background-color: red;
 }
 .wiki ins.diff {
 background-color: rgb(200, 255, 200);
+text-decoration: none;
 }
 .wiki del.diff {
 background-color: rgb(255, 200, 200);
+text-decoration: none;
 }
 .post pre {
 padding-left: 1ex;
