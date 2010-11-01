@@ -29,8 +29,8 @@ function rss_date(datetime d)
 end function
 
 function latest_tickets(integer count)
-	object rows = edbi:query_rows("""SELECT t.id, t.created_at, u.user, t.subject, t.content
-		FROM ticket AS t, users AS u WHERE t.submitted_by_id=u.id
+	object rows = edbi:query_rows("""SELECT t.id, t.created_at, u.user, t.subject, 
+		t.content FROM ticket AS t, users AS u WHERE t.submitted_by_id=u.id
 		ORDER BY t.created_at DESC LIMIT %d""", { count })
 
 	for i = 1 to length(rows) do
@@ -39,7 +39,7 @@ function latest_tickets(integer count)
 			rows[i][3],
 			sprintf("/ticket/%d.wc", { rows[i][1] }),
 			"Ticket: " & rows[i][4],
-			format_body(rows[i][5], 0)
+			format_body(_h(rows[i][5]), 0)
 		}
 	end for
 
