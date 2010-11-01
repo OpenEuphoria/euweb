@@ -146,7 +146,7 @@ function recent(map data, map request)
 
 	if wiki then
 		queries = append(queries, q_wiki)
-		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page")
+		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page WHERE rev=0")
 	end if
 
 	sequence sql = join(queries, " UNION ALL ") &  """
