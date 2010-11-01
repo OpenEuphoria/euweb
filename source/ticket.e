@@ -159,10 +159,11 @@ function real_index(map data, map request, sequence where="")
     
 		if total_count > 0 then
 			milestone_progress = 100 - floor((active_count / total_count) * 100)
-		end if
-	
-		milestone_progress_text = sprintf("%d of %d completed (%d%%)", {
-				active_count, total_count, milestone_progress })
+			milestone_progress_text = sprintf("%d of %d complete (%d%%)", {
+					total_count - active_count, total_count, milestone_progress })
+		else
+			milestone_progress_text = "No assigned tickets"
+		end if	
     end if
 
     if length(local_where) then
