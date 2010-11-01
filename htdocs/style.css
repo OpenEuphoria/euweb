@@ -306,7 +306,10 @@ border-bottom: 1px dotted #E1E1E1;
 margin-top: 1em;
 padding-bottom: 1em;
 }
-
+#main_inner .wiki_body .error {
+    background-color: #ffdddd;
+    color: #ff0000;
+}
 #main_inner .wiki ul
 {
 padding-top: 0px;
