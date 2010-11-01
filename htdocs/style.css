@@ -836,6 +836,9 @@ border-right: #8090a0 1px solid; padding-right: 3px; border-top:
 font-family: sans-serif;
 background-color: red;
 }
+.wiki .diff {
+font-family: monospace;
+}
 .wiki ins.diff {
 background-color: rgb(200, 255, 200);
 text-decoration: none;

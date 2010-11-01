@@ -38,7 +38,7 @@
   </h3>
   
   <div class="diff">
-  <%= @diff %>  
+    <%= @diff %>  
   </div>
   
   <ul class="wiki_info">

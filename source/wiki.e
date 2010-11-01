@@ -1,13 +1,15 @@
 --****
 -- == Wiki System
 
-include std/map.e as map
-include std/text.e
-include std/math.e
 include std/error.e
+include std/map.e as map
+include std/math.e
+include std/sequence.e
+include std/text.e
 
-include webclay/webclay.e as wc
+include webclay/escape.e as escape
 include webclay/logging.e as log
+include webclay/webclay.e as wc
 
 include edbi/edbi.e
 
@@ -367,8 +369,30 @@ function show_diff(map data, map request)
 		crash("to revision not found")
 	end if
 
+	sequence to_data = split(page_to[WIKI_TEXT], '\n')
+	sequence from_data = split(page_from[WIKI_TEXT], '\n')
+
+	sequence diff_data = diff:Difference(to_data, from_data)
+	
+	sequence html_diff = "<div class=\"diff\">"
+	for i = 1 to length(diff_data) do
+		sequence line = escape:_h(diff_data[i][2])
+		switch diff_data[i][1] do
+			case diff:INSERTED then
+				html_diff &= sprintf(`<ins class="diff">%s</ins><br/>`,
+					{ line })
+			case diff:REMOVED then
+				html_diff &= sprintf(`<del class="diff">%s</del><br/>`,
+					{ line })
+			case else
+				html_diff &= sprintf(`%s<br />`, { line })
+		end switch
+	end for
+
+	html_diff &= "</div>"
+	
 	map:copy(request, data)
-	map:put(data, "diff", diff:html_diff(page_to[WIKI_TEXT], page_from[WIKI_TEXT]))
+	map:put(data, "diff", html_diff)
 
 	return { TEXT, t_diff:template(data) }
 end function
