@@ -10,6 +10,7 @@ include std/text.e
 include webclay/escape.e as escape
 include webclay/logging.e as log
 include webclay/webclay.e as wc
+include webclay/validate.e as valid
 
 include edbi/edbi.e
 
@@ -23,6 +24,7 @@ include templates/wiki/history.etml as t_history
 include templates/wiki/revert.etml as t_revert
 include templates/wiki/remove.etml as t_remove
 include templates/wiki/diff.etml as t_diff
+include templates/wiki/rename.etml as t_rename
 
 include user_db.e as user_db
 include wiki_db.e as wiki_db
@@ -399,3 +401,66 @@ function show_diff(map data, map request)
 	return { TEXT, t_diff:template(data) }
 end function
 wc:add_handler(routine_id("show_diff"), -1, "wiki", "diff", diff_vars)
+
+constant rename_vars = {
+	{ wc:SEQUENCE, "page"         },
+	{ wc:SEQUENCE, "new_page"     },
+	{ wc:INTEGER,  "confirmed", 0 }
+}
+
+function validate_rename(map data, map request)
+	sequence errors = wc:new_errors("wiki", "rename")
+
+	if not has_role("wiki_admin") then
+		errors = wc:add_error(errors, "form", "You are not authorized to edit wiki pages")
+	end if
+
+	if map:get(request, "confirmed") then
+		if not valid:not_empty(map:get(request, "new_page")) then
+			errors = wc:add_error(errors, "new_name", "New page name cannot be blank")
+		end if
+	end if
+
+	return errors
+end function
+
+function rename(map data, map request)
+	map:copy(request, data)
+	map:put(data, "status", 0)
+	
+	return { TEXT, t_rename:template(data) }
+end function
+wc:add_handler(routine_id("rename"), routine_id("validate_rename"), 
+	"wiki", "rename", rename_vars)
+
+
+--**
+-- Rename a wiki page
+--
+
+function do_rename(map data, map request)
+	sequence new_page = map:get(request, "new_page")
+	sequence page = map:get(request, "page")
+
+	map:copy(request, data)
+	
+	if map:get(request, "confirmed") then
+		object result = wiki_db:rename(page, new_page)
+		if atom(result) then
+			map:put(data, "status", -1)
+			map:put(data, "pages_updated", {})
+		else
+			map:put(data, "status", 1)
+			map:put(data, "pages_updated", result)
+		end if
+		
+		map:put(data, "old_page", page)
+		map:put(data, "page", new_page)
+	else
+		map:put(data, "status", 0)
+	end if
+	
+	return { TEXT, t_rename:template(data) }
+end function
+wc:add_handler(routine_id("do_rename"), routine_id("validate_rename"), 
+	"wiki", "do_rename", rename_vars)

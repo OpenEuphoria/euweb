@@ -45,9 +45,10 @@ end if
                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	              <% if wiki[wiki_db:WIKI_REV] = 0 then %>
 			      <a href="/wiki/edit/<%= _h(@page) %>.wc">edit</a>
-			      <% if has_role("admin") then %>
+			      <% if has_role("wiki_admin") then %>
 				      &nbsp;&nbsp;&nbsp;&nbsp;
-				      <a href="/wiki/remove/<%= _h(@page) %>.wc">remove</a>
+				      <a href="/wiki/remove/<%= _h(@page) %>.wc">remove</a>,
+                                      <a href="/wiki/rename/<%= _h(@page) %>.wc">rename</a>
 			      <% end if %>
 	              <% else %>
 			      <a href="/wiki/revert/<%= _h(@page) %>.wc?rev=<%= _h(@rev) %>">revert to this revision</a>

@@ -7,6 +7,7 @@ namespace wiki_db
 include std/datetime.e as dt
 include std/error.e
 include std/get.e
+include std/regex.e as re
 
 include webclay/logging.e as log
 
@@ -64,11 +65,13 @@ end function
 --
 
 public function update(sequence name, sequence wiki_text, sequence change_msg,
-			sequence user=current_user)
+			sequence user=current_user, integer in_tx = 0)
 	integer status
-
-	status = edbi:execute("begin")
-
+	
+	if not in_tx then
+		status = edbi:execute("begin")
+	end if
+	
 	sequence wiki = { 0, name, dt:now(), user[USER_ID], change_msg, wiki_text }
 	integer new_rev = edbi:query_object("SELECT MAX(rev) + 1 FROM wiki_page WHERE name=%s", { name })
 	if new_rev > 0 then
@@ -76,9 +79,11 @@ public function update(sequence name, sequence wiki_text, sequence change_msg,
 	end if
 
 	integer result = create(wiki)
-
-	status = edbi:execute("commit")
-
+	
+	if not in_tx then
+		status = edbi:execute("commit")
+	end if
+	
 	return result
 end function
 
@@ -136,8 +141,6 @@ WHERE m.parent_id = 0 AND MATCH(m.subject,m.body) AGAINST(%s IN BOOLEAN MODE)
 --
 
 public function get_category_list(sequence category, integer all = 0)
-	-- MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
-	-- 			ORDER BY w.name
 	sequence sql, params = {}
 	
 	if all then
@@ -151,15 +154,6 @@ public function get_category_list(sequence category, integer all = 0)
 
 	sql &= " ORDER BY name"
 	
-	--return edbi:query_rows("""
-	--		SELECT w.name, w.created_at, u.user
-	--		FROM wiki_page AS w
-	--		INNER JOIN users AS u ON (w.created_by_id=u.id)
-	--		WHERE w.rev = 0 AND MATCH(w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
-	--		ORDER BY w.name
-	--	""", { "+" & category })
-	log:log(sql, params)
-	
 	return edbi:query_rows(sql, params)
 end function
 
@@ -169,4 +163,54 @@ end function
 public function get_history(sequence page)
 	return edbi:query_rows(BASE_QUERY &
 		" WHERE w.name = %s ORDER BY IF(w.rev=0,9999999,w.rev) DESC", { page })
+end function
+
+--**
+-- Rename a wiki page 
+
+public function rename(sequence page, sequence new_page, sequence user=current_user)
+	object current_page = get(page)
+	if atom(current_page) then
+		return 0
+	end if
+	
+	integer status
+	status = edbi:execute("begin")
+
+	-- rename the main page name
+	status = edbi:execute("UPDATE wiki_page SET name=%s WHERE name=%s",
+		{ new_page, page })
+
+	-- update the page which will create a new revision with our change
+	-- message
+	status = update(new_page, current_page[WIKI_TEXT], 
+		sprintf("Renamed from %s", { page }), user, 1)
+
+	-- find each page referencing 'page' and rename their links
+	object linking_pages = edbi:query_rows("""
+		SELECT name, wiki_text
+		FROM wiki_page
+		WHERE MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE) AND rev=0
+		""", 
+		{  page } )
+	
+	re:regex page_re = re:new("(?<!~)" & page)
+	
+	sequence updated_pages = {}
+	
+	for i = 1 to length(linking_pages) do
+		sequence name      = linking_pages[i][1]
+		sequence wiki_text = linking_pages[i][2]
+	
+		updated_pages = append(updated_pages, name)
+	
+		wiki_text = re:find_replace(page_re, wiki_text, new_page)
+		status = update(name, wiki_text, 
+			sprintf("Referenced page renamed, %s to %s", { page, new_page }),
+			user, 1)
+	end for
+	
+	status = edbi:execute("commit")
+	
+	return updated_pages
 end function

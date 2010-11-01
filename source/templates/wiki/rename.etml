@@ -1,0 +1,70 @@
+<%@
+include templates/euweb.etag as euweb
+include local.etag as local
+%>
+
+<%- euweb:head title="Wiki Rename" active="wiki" %>
+
+<h3>Rename <span><%= _h(@page) %></span></h3>
+
+<%- euweb:errors %>
+
+<div class="wiki">
+<div class="wiki_body">
+
+<% if @status = 0 then %>
+
+<form method="POST" action="/wiki/do_rename/<%= _h(@page) %>.wc" style="margin: 25px 0px 25px 0px;">
+
+New page name
+<input type="text" size="80" name="new_page" />
+<input type="hidden" name="confirmed" value="1" />
+<input type="submit" value="Rename" /> <br />
+</form>
+
+<% elsif @status = 1 then %>
+
+<div class="msg_box">
+  <%= _h(@old_page) %> has been renamed to 
+  <a href="/wiki/view/<%= _h(@page) %>.wc"><%= _h(@page) %></a>
+</div>
+
+<% 
+ sequence pages_updated = @pages_updated
+ 
+ if length(@pages_updated) then
+ %>
+
+<strong>Pages with links renamed were:</strong>
+<ul>
+  <% for i = 1 to length(pages_updated) do
+   sequence updated_page = _h(pages_updated[i])
+   %>
+  <li><a href="/wiki/view/<%= updated_page %>.wc"><%= updated_page %></a></li>
+ <% end for %>
+</ul>
+
+<% else %>
+
+No linking pages found, no other pages were updated.
+
+<% end if %>
+
+<% elsif @status = -1 then %>
+
+<div class="error_box">
+  An error occured while attempting to rename <%= _h(@page) %>
+  to <%= _h(@new_name) %>. Page rename was <strong>not</strong>
+  a success.
+</div>
+
+<% end if %>
+
+<div class="wiki_tools">
+<a href="/wiki/view/home.wc">Wiki Home</a>
+</div>
+
+</div>
+</div>
+
+<%- local:foot %>
