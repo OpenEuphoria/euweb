@@ -244,7 +244,7 @@ background: #fff url('images/n2.gif') 0px 1px repeat-x;
 
 #main_inner p
 {
-margin-bottom: 2.0em;
+margin-bottom: 1.0em;
 }
 
 #main_inner ul
@@ -614,7 +614,7 @@ margin-bottom: 10px;
 }
 
 #main_inner .quote {
-	margin: 5px;
+	margin: 1em;
 	padding: 5px 20px 5px 20px;
 	border: 1px solid gray;
 	background-color: #f8f8f8;
@@ -850,14 +850,14 @@ text-decoration: none;
 background-color: rgb(255, 200, 200);
 text-decoration: none;
 }
-.post pre {
-padding-left: 1ex;
+.post pre, .wiki pre {
 margin-left: 2ex;
-border-left: 2px solid #8090a0;
-margin-right: 1ex;
-background-color: #d0e0f0;
-padding-top: 1em;
-padding-bottom: 1em;
+margin-bottom: 12px;
+margin-right: 1em;
+background-color: #f5f5f5;
+border: 1px solid #a0a0a0;
+border-left: 3px #a0a0a0 solid;
+padding: 1ex 1ex 1ex 2ex;
 overflow-x: auto;
 }
 
