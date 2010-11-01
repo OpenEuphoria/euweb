@@ -63,7 +63,8 @@
             </tr>
         </table>
 
-        <input type="submit" class="button" value="Filter" />
+        <input type="submit" class="button" name="actiontype" value="Filter" />
+        <input type="submit" class="button" name="actiontype" value="New Ticket" />
     </form>
     
     <% if @by_milestone then %>

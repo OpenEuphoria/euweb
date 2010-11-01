@@ -1,6 +1,8 @@
 --****
 -- Ticket System
 
+namespace ticket
+
 include std/convert.e
 include std/error.e
 include std/get.e
@@ -26,7 +28,7 @@ include dump.e
 include config.e
 include db.e
 include comment_db.e
-include ticket_db.e
+include ticket_db.e as ticket_db
 include user_db.e as user_db
 include fuzzydate.e
 include format.e
@@ -70,7 +72,8 @@ sequence index_vars = {
     { wc:INTEGER,  "type_id",     -1 },
     { wc:INTEGER,  "product_id",  -1 },
     { wc:INTEGER,  "user_id",     -1 },
-    { wc:SEQUENCE, "milestone",   "" }
+    { wc:SEQUENCE, "milestone",   "" },
+	{ wc:SEQUENCE, "actiontype",  "" }
 }
 
 function real_index(map data, map request, sequence where="")
@@ -80,6 +83,11 @@ function real_index(map data, map request, sequence where="")
         map:put(data, "no_product_id", 1)
         return change_product(data, request)
     end if
+	
+	-- Special case where New Ticket button is pressed.
+	if equal(map:get(request, "actiontype"), "New Ticket") then
+		return ticket_create(data, request)
+	end if
 
     sequence milestone  = map:get(request, "milestone")
     integer page        = map:get(request, "page")
@@ -243,7 +251,7 @@ sequence create_vars = {
     { wc:SEQUENCE, "subject"            }
 }
 
-function create(map data, map request)
+function ticket_create(map data, map request)
     if not has_role("user") then
         return { TEXT, t_security:template(data) }
     end if
@@ -257,7 +265,7 @@ function create(map data, map request)
 
     return { TEXT, t_create:template(data) }
 end function
-wc:add_handler(routine_id("create"), -1, "ticket", "create", create_vars)
+wc:add_handler(routine_id("ticket_create"), -1, "ticket", "create", create_vars)
 
 function validate_do_create(map data, map request)
     sequence errors = wc:new_errors("ticket", "create")
