@@ -348,3 +348,13 @@ function preview_<%= #name %>() {
 	})
 }
 </script>
+{{{progress_bar}}}
+<%@ include std/convert.e %>
+<%
+ integer width = to_number(#width)
+ integer percent = to_number(#percent)
+%>
+<div style="width: <%= #width %>px; position: relative; border: 1px solid black;">
+  <div style="width: <%= _h(width * (percent / 100)) %>px; background-color: #ccffcc; position: absolute; top: 0; left: 0;">&nbsp;</div>
+  <div style="text-align: center; position: relative;"><%= _h(#percent) %>%</div>
+</div>
