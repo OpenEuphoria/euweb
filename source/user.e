@@ -268,7 +268,6 @@ public function do_signup(map data, map invars)
 	user_db:create(map:get(invars, "code"), map:get(invars, "password"),
 		map:get(invars, "email"), map:get(invars, "security_question"),
 		map:get(invars, "security_answer"))
-	
 
 	current_user = user_db:get_by_login(map:get(invars, "code"), map:get(invars, "password"))
 	_login(current_user)
