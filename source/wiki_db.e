@@ -129,7 +129,7 @@ WHERE w.rev = 0 AND MATCH(w.name,w.wiki_text) AGAINST(%s IN BOOLEAN MODE)
 constant q_category_forum = """
 SELECT m.subject AS name, 'email.png', CONCAT('/forum/', m.id, '.wc')
 FROM messages AS m
-WHERE m.parent_id = 0 AND MATCH(m.subject,m.body) AGAINST(%s IN BOOLEAN MODE)
+WHERE MATCH(m.subject,m.body) AGAINST(%s IN BOOLEAN MODE)
 """
 
 --**
