@@ -64,7 +64,9 @@
         </table>
 
         <input type="submit" class="button" name="actiontype" value="Filter" />
+        <% if has_role("user") then %>
         <input type="submit" class="button" name="actiontype" value="New Ticket" />
+        <% end if %>
     </form>
     
     <% if @by_milestone then %>
