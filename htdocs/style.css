@@ -616,24 +616,20 @@ margin-bottom: 10px;
 #main_inner .quote {
     margin: 1em;
     border: 1px solid gray;
+    border-left: 3px solid #336633;
     background-color: #f8f8f8;
 }
 
 #main_inner .quote .attribution {
-    border-bottom: 1px dotted black;
-    padding: 2px;
-    margin-bottom: 1ex;
-    /*background-color: #ccccff;
-    color: #333399;
-*/
-
-/* colors ccccff, 333399 */
+border-bottom: 1px dotted black;
+padding: 2px 2px 2px 8px;
+margin-bottom: 1ex;
 background-color: #eeffee;
 color: #336633;
 }
 
 #main_inner .quote .attribution .name {
-    font-weight: bold;
+font-weight: bold;
 }
 
 #main_inner .quote .quote {
@@ -872,7 +868,7 @@ margin-bottom: 12px;
 margin-right: 1em;
 background-color: #f5f5f5;
 border: 1px solid #a0a0a0;
-border-left: 3px #a0a0a0 solid;
+border-left: 3px solid #336633;
 padding: 1ex 1ex 1ex 2ex;
 overflow-x: auto;
 }
