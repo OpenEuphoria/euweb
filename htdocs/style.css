@@ -623,8 +623,13 @@ margin-bottom: 10px;
     border-bottom: 1px dotted black;
     padding: 2px;
     margin-bottom: 1ex;
-    background-color: #ccccff;
-    color: #558888;
+    /*background-color: #ccccff;
+    color: #333399;
+*/
+
+/* colors ccccff, 333399 */
+background-color: #eeffee;
+color: #336633;
 }
 
 #main_inner .quote .attribution .name {
