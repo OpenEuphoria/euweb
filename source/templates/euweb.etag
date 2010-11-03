@@ -51,7 +51,7 @@
 						>Manual</a>
 				</li>
 				<li>
-					<a href="/downloads/index.wc"
+					<a href="/wiki/view/DownloadEuphoria.wc"
 				  		<% if equal(#active, "download") then %>class="active"<% end if %>
 				  		>Downloads</a>
 				</li>
