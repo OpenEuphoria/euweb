@@ -27,7 +27,7 @@ end if
     <h3><%= heading %></h3>
     <a name="<%= _h(wiki[WIKI_NAME]) %>"></a>
     <div class="wiki_body">
-    <%= wiki[wiki_db:WIKI_TEXT_FORMATTED] %>
+    <%= wiki[wiki_db:WIKI_HTML] %>
     </div>
 
     <ul class="wiki_info">

@@ -130,7 +130,12 @@ function view(map data, map request)
 	map:copy(request, data)
 
 	w[WIKI_CREATED_AT] = fuzzy_ago(w[WIKI_CREATED_AT])
-	w = append(w, format_body(w[WIKI_TEXT]))
+
+	if length(w[WIKI_HTML]) = 0 then
+		w[WIKI_HTML] = format_body(w[WIKI_TEXT])
+		edbi:execute("UPDATE wiki_page SET wiki_html=%s WHERE rev=0 AND name=%s", {
+				w[WIKI_HTML], page })
+	end if
 
 	map:put(data, "wiki", w)
 

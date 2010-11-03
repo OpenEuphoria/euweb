@@ -18,7 +18,7 @@ include user_db.e as user_db
 public constant MODULE_ID=3
 
 public enum WIKI_REV, WIKI_NAME, WIKI_CREATED_AT, WIKI_CREATED_BY_ID, WIKI_CHANGE_MSG,
-	WIKI_TEXT, WIKI_CREATED_BY, WIKI_TEXT_FORMATTED
+	WIKI_TEXT, WIKI_HTML, WIKI_CREATED_BY
 
 constant BASE_FROM = """
 FROM
@@ -27,7 +27,8 @@ FROM
 """
 
 constant BASE_QUERY = """SELECT
-    w.rev, w.name, w.created_at, w.created_by_id, w.change_msg, w.wiki_text, uc.user
+w.rev, w.name, w.created_at, w.created_by_id, w.change_msg, w.wiki_text, 
+w.wiki_html, uc.user
 """ & BASE_FROM
 
 --**
