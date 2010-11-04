@@ -97,15 +97,20 @@ function save(map data, map request)
 		return { TEXT, t_security:template(data) }
 	end if
 
-	if map:get(request, "id") = -1 then
-		news_db:insert(map:get(request, "subject"), map:get(request, "content"))
+	integer id = map:get(request, "id")
+
+	if id = -1 then
+		id = news_db:insert(map:get(request, "subject"), 
+			map:get(request, "content"))
 	else
-		news_db:save(map:get(request, "id"), map:get(request, "subject"), map:get(request, "content"))
+		news_db:save(id,
+			map:get(request, "subject"), 
+			map:get(request, "content"))
 	end if
 
 	map:copy(request, data)
-
-	return { TEXT, t_edit_ok:template(data) }	
+	
+	return { REDIRECT_303, sprintf("/news/%d.wc", { id }) }
 end function
 wc:add_handler(routine_id("save"), routine_id("validate_save"), "news", "save", save_in)
 
@@ -119,12 +124,20 @@ function view(map data, map request)
 	object item = news_db:get(map:get(request, "id"))
 	
 	if has_role("user") and length(map:get(request, "body")) then
-		comment_db:add_comment(news_db:MODULE_ID, item[news_db:ID], item[news_db:SUBJECT], 
+		comment_db:add_comment(
+			news_db:MODULE_ID, 
+			item[news_db:ID], 
+			item[news_db:SUBJECT], 
 			map:get(request, "body"))
+	
+		integer id = edbi:last_insert_id()
+		return { REDIRECT_303, sprintf("/news/%d.wc#%d", { item[news_db:ID], id }) }
 	end if
 	
 	if has_role("forum_moderator") and map:get(request, "remove_comment") > 0 then
 		comment_db:remove_comment(map:get(request, "remove_comment"))
+	
+		return { REDIRECT_303, sprintf("/news/%d.wc", { item[news_db:ID] }) }
 	end if
 	
 	map:put(data, "item", item)
