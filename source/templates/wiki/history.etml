@@ -55,9 +55,9 @@ if length(history) = 0 then
         <%= fuzzy_ago(item[WIKI_CREATED_AT]) %>
       </td>
       <td nowrap="nowrap">
-        <a href="/wiki/view/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">view</a>,
-        <% if has_role("user") then %>
-        <a href="/wiki/revert/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">revert to</a>
+        <a href="/wiki/view/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">view</a>
+        <% if has_role("user") and not item[WIKI_READ_ONLY] then %>
+        / <a href="/wiki/revert/<%= _h(item[WIKI_NAME]) %>.wc?rev=<%= _h(item[WIKI_REV]) %>">revert to</a>
         <% end if %>
       </td>
       <td>

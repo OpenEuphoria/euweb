@@ -108,7 +108,8 @@ end function
 sequence view_vars = {
 	{ wc:SEQUENCE, "page", "home" },
 	{ wc:INTEGER,  "rev",  0 },
-	{ wc:INTEGER,  "all",  0 }
+	{ wc:INTEGER,  "all",  0 },
+	{ wc:INTEGER,  "read_only", -1 }
 }
 
 function view(map data, map request)
@@ -117,13 +118,26 @@ function view(map data, map request)
 	if length(page) > 8 and equal(page[1..8], "Category") then
 		return category_view(data, request, page)
 	end if
-
+	
+	-- do any updating before we load this pages database record
+	if has_role("wiki_admin") then
+		switch map:get(request, "read_only") do
+			case 0 then
+				wiki_db:mark_writable(page)
+			
+			case 1 then
+				wiki_db:mark_read_only(page)
+		end switch
+	end if
+	
+	-- load the page data
 	object w = wiki_db:get(page, rev)
 	if atom(w) then
 		if has_role("user") then
 			return edit(data, request)
 		else
 			map:copy(request, data)
+			
 			return { TEXT, t_not_found:template(data) }
 		end if
 	end if
@@ -156,6 +170,10 @@ function validate_edit(map data, map request)
 
 	if not has_role("user") then
 		errors = wc:add_error(errors, "form", "You are not authorized to edit wiki pages")
+	end if
+
+	if wiki_db:is_read_only(map:get(request, "page")) then
+		errors = wc:add_error(errors, "form", "This wiki page is read-only")
 	end if
 
 	return errors
@@ -301,6 +319,10 @@ function validate_revert(map data, map request)
 		errors = wc:add_error(errors, "form", "Invalid revision")
 	end if
 
+	if wiki_db:is_read_only(map:get(request, "page")) then
+		errors = wc:add_error(errors, "form", "Wiki page is read only.")
+	end if
+
 	return errors
 end function
 
@@ -336,6 +358,10 @@ function validate_remove(map data, map request)
 
 	if not has_role("wiki_admin") then
 		errors = wc:add_error(errors, "form", "You are not authorized to remove wiki pages")
+	end if
+
+	if wiki_db:is_read_only(map:get(request, "page")) then
+		errors = wc:add_error(errors, "form", "Wiki page is read only.")
 	end if
 
 	return errors
@@ -420,6 +446,10 @@ function validate_rename(map data, map request)
 
 	if not has_role("wiki_admin") then
 		errors = wc:add_error(errors, "form", "You are not authorized to edit wiki pages")
+	end if
+
+	if wiki_db:is_read_only(map:get(request, "page")) then
+		errors = wc:add_error(errors, "form", "This wiki page is read-only")
 	end if
 
 	if map:get(request, "confirmed") then

@@ -18,7 +18,7 @@ include user_db.e as user_db
 public constant MODULE_ID=3
 
 public enum WIKI_REV, WIKI_NAME, WIKI_CREATED_AT, WIKI_CREATED_BY_ID, WIKI_CHANGE_MSG,
-	WIKI_TEXT, WIKI_HTML, WIKI_CREATED_BY
+	WIKI_TEXT, WIKI_HTML, WIKI_READ_ONLY, WIKI_CREATED_BY
 
 constant BASE_FROM = """
 FROM
@@ -28,7 +28,7 @@ FROM
 
 constant BASE_QUERY = """SELECT
 w.rev, w.name, w.created_at, w.created_by_id, w.change_msg, w.wiki_text, 
-w.wiki_html, uc.user
+w.wiki_html, w.read_only, uc.user
 """ & BASE_FROM
 
 --**
@@ -215,3 +215,51 @@ public function rename(sequence page, sequence new_page, sequence user=current_u
 	
 	return updated_pages
 end function
+
+--**
+-- Determine if a wiki page is read-only.
+-- 
+-- Parameters:
+--    * ##name## - name of page
+--
+-- Returns:
+--   1 if read-only otherwise 0
+--
+
+public function is_read_only(sequence name)
+	integer read_only = edbi:query_object(
+		"SELECT read_only FROM wiki_page WHERE name=%s and rev=0", { name })
+
+	return (read_only = 1)
+end function
+
+--**
+-- Mark a wiki page as writable
+-- 
+-- Parameters:
+--    * ##name## - wiki page name
+--
+-- See Also:
+--   [[:is_read_only]], [[:mark_read_only]]
+--
+
+public procedure mark_writable(sequence name)
+	edbi:execute("UPDATE wiki_page SET read_only=0 WHERE name=%s", {
+			name })
+end procedure
+
+--**
+-- Mark a wiki page as read-only
+-- 
+-- Parameters:
+--    * ##name## - wiki page name
+--
+-- See Also:
+--   [[:is_read_only]], [[:mark_writable]]
+--
+
+public procedure mark_read_only(sequence name)
+	edbi:execute("UPDATE wiki_page SET read_only=1 WHERE name=%s", {
+			name })
+end procedure
+
