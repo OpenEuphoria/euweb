@@ -36,6 +36,18 @@ include format.e
 include forum_db.e
 include fuzzydate.e
 
+function message_redirect(sequence message)
+	switch current_user[USER_FORUM_DEFAULT_VIEW] do
+		case FORUM_DEFAULT_VIEW_TOPIC then
+			return { REDIRECT_303, sprintf("/forum/%d.wc?last_id=%d#%d", {
+						message[MSG_TOPIC_ID], message[MSG_ID], message[MSG_ID] })
+			}
+		
+		case FORUM_DEFAULT_VIEW_MESSAGE then
+			return { REDIRECT_303, sprintf("/forum/m/%d.wc", { message[MSG_ID] }) }
+	end switch
+end function
+
 sequence index_vars = {
 	{ wc:INTEGER, "page",   	1 },
 	{ wc:INTEGER, "per_page",  20 }
@@ -259,8 +271,8 @@ function save(map:map data, map:map vars)
 		integer forked_id = map:get(vars, "fork_id")
 		forum_db:update_forked_body(post[MSG_ID], forked_id, post[MSG_SUBJECT])
 	end if
-
-	return { TEXT, t_post_ok:template(data) }
+	
+	return message_redirect(post)
 end function
 wc:add_handler(routine_id("save"), routine_id("validate_save"), "forum", "save", save_vars)
 
@@ -366,8 +378,8 @@ function update(map data, map request)
 	map:put(data, "subject", message[MSG_SUBJECT])
 	map:put(data, "topic_id", message[MSG_TOPIC_ID])
 	map:put(data, "id", message[MSG_ID])
-
-	return { TEXT, t_edit_ok:template(data) }
+	
+	return message_redirect(message)
 end function
 wc:add_handler(routine_id("update"), routine_id("validate_update"), "forum", "update", update_vars)
 
