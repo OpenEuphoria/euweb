@@ -101,6 +101,10 @@ end function
 
 --**
 -- Update a ticket
+--
+-- See Also:
+--   [[:update_full]]
+--
 
 public function update(integer id, integer type_id, integer severity_id,
 		integer category_id, sequence reported_release, sequence milestone, integer assigned_to_id,
@@ -109,6 +113,26 @@ public function update(integer id, integer type_id, integer severity_id,
 		category_id=%d, reported_release=%s, milestone=%s, assigned_to_id=%d, status_id=%d,
 		svn_rev=%s WHERE id=%d""", { type_id, severity_id, category_id,
 			reported_release, milestone, assigned_to_id, status_id, svn_rev, id })
+end function
+
+--**
+-- Update the full details (subject and content) of a ticket
+-- 
+-- Parameters:
+--    * ##ticket_id## - integer id for the ticket to update
+--    * ##subject##   - new subject
+--    * ##content##   - new content
+--
+-- Returns:
+--   Integer success code   
+--
+-- See Also:
+--   [[:update]]
+--
+
+public function update_full(integer id, sequence subject, sequence content)
+	return edbi:execute("UPDATE ticket SET subject=%s, content=%s WHERE id=%d", {
+			subject, content, id })
 end function
 
 --**

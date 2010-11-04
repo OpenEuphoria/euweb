@@ -11,75 +11,111 @@
 %>
 
 <%
-object ticket = @ticket
 integer is_admin = has_role("admin")
 integer is_dev = has_role("developer")
 integer is_user = sequence(current_user)
 integer is_owner = 0
-if is_user and current_user[user_db:USER_ID] = ticket[ticket_db:SUBMITTED_BY_ID] then
+if is_user and current_user[user_db:USER_ID] = @submitted_by_id then
 	is_owner = 1
 end if
 
-sequence chopped_subject = ticket[ticket_db:SUBJECT]
+integer is_full_edit = ((is_admin or is_owner) and @full_edit)
+
+sequence chopped_subject = @subject
 if length( chopped_subject ) > 10 then
     chopped_subject = chopped_subject[1..10] & "..."
 end if
 
-sequence page_title = sprintf("Ticket #%d: %s", {
-        ticket[ticket_db:ID], chopped_subject }) 
+sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject }) 
 %>
 
 <%- euweb:head title=!page_title active="ticket" %>
 
 <form method="POST" action="/ticket/update.wc">
-	<input type="hidden" name="id" value="<%= _h(ticket[ticket_db:ID]) %>" />
+<input type="hidden" name="id" value="<%= _h(@id) %>" />
+<input type="hidden" name="full_edit" value="<%= _h(@full_edit) %>" />
+<input type="hidden" name="submitted_by" value="<%= _h(@submitted_by) %>" />
+<input type="hidden" name="created_at" value="<%= _h(@created_at) %>" />
+<input type="hidden" name="submitted_by_id" value="<%= _h(@submitted_by_id) %>" />
 	<div class="post forum">
 	    <h3>
         <span><%= _h(@product_name) %></span> 
-        Ticket <span>#<%= _h(ticket[ticket_db:ID]) %></span>: 
-        <%= _h(ticket[ticket_db:SUBJECT]) %>
+        Ticket <span>#<%= _h(@id) %></span>: 
+        <%= _h(@subject) %>
         </h3>
 		<%- euweb:errors %>
 		<ul class="post_info">
 			<li class="date">
 				Reported by
-				<%- euweb:user_profile user=!ticket[ticket_db:SUBMITTED_BY] %>
-				<%= _h(ticket[ticket_db:CREATED_AT]) %>
+				<%- euweb:user_profile user=@submitted_by %>
+				<%= _h(@created_at) %>
 			</li>
 			<li class="comments">
 				<a href="#comments"><%= _h(length(@comments)) %> comments</a>
 			</li>
 		</ul>
-
-
-		<%= ticket[ticket_db:CONTENT] %>
-
+        
+        <% if not is_full_edit then %>
+            <%= @content %>
+            <% if is_owner or is_admin then %>
+                <p>
+                <a href="/ticket/<%= _h(@id) %>.wc?full_edit=1">Full Edit</a>
+                </p>
+            <% end if %>
+        <% end if %>
+            
 		<h4><span>Details</span></h4>
 
 		<table class="form" style="width: 100%">
+            <% if is_full_edit then %>
+            <tr>
+                <th nowrap="nowrap">Subject:</th>
+                <td colspan="5">
+                    <input type="text" name="subject" value="<%= _h(@subject) %>" size=60 />
+                </td>
+            </tr>
+            <tr>
+                <th nowrap="nowrap">Content:</th>
+                <td colspan="5">
+                    <textarea name="content" rows=15 cols=70 style="width: 100%"><%= _h(@content) %></textarea>
+                </td>
+            </tr>
+            <% end if %>
 			<tr>
 				<th nowrap="nowrap">Type:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
-						<%- euweb:select name="type_id" selected=!ticket[ticket_db:TYPE_ID] option_sql="SELECT id,name FROM ticket_type ORDER BY name" %>
+                    <%- euweb:select 
+                      name="type_id" 
+                      selected=@type_id 
+                      option_sql="SELECT id,name FROM ticket_type ORDER BY name" 
+                    %>
 					<% else %>
-						<%= _h(ticket[ticket_db:TYPE]) %>
+						<%= _h(@type) %>
 					<% end if %>
 				</td>
 				<th nowrap="nowrap">Severity:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
-						<%- euweb:select name="severity_id" selected=!ticket[ticket_db:SEVERITY_ID] option_sql="SELECT id,name FROM ticket_severity ORDER BY position" %>
+                    <%- euweb:select 
+                      name="severity_id" 
+                      selected=@severity_id 
+                      option_sql="SELECT id,name FROM ticket_severity ORDER BY position" 
+                    %>
 					<% else %>
-						<%= _h(ticket[ticket_db:SEVERITY]) %>
+						<%= _h(@severity) %>
 					<% end if %>
 				</td>
 				<th nowrap="nowrap">Category:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
-						<%- euweb:select name="category_id" selected=!ticket[ticket_db:CATEGORY_ID] option_sql=@category_sql %>
+                    <%- euweb:select 
+                      name="category_id" 
+                      selected=@category_id 
+                      option_sql=@category_sql 
+                    %>
 					<% else %>
-						<%= _h(ticket[ticket_db:CATEGORY]) %>
+						<%= _h(@category) %>
 					<% end if %>
 				</td>
             </tr>
@@ -87,29 +123,34 @@ sequence page_title = sprintf("Ticket #%d: %s", {
 				<th>Assigned To:</th>
 				<td>
 					<% if is_dev then %>
-						<%- euweb:select name="assigned_to_id" include_empty=1 selected=!ticket[ticket_db:ASSIGNED_TO_ID] option_sql="SELECT u.id,u.user FROM users AS u, user_roles AS ur WHERE u.id=ur.user_id AND ur.role_name='developer' ORDER BY user" %>
+                    <%- euweb:select 
+                      name="assigned_to_id" 
+                      include_empty=1 
+                      selected=@assigned_to_id 
+                      option_sql="SELECT u.id,u.user FROM users AS u, user_roles AS ur WHERE u.id=ur.user_id AND ur.role_name='developer' ORDER BY user" 
+                    %>
 					<% else %>
-						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
+						<%= _h(@assigned_to) %>
 					<% end if %>
 				</td>
 				<th>Status:</th>
 				<td>
 					<% if is_dev or is_owner then %>
 						<%- euweb:select
-                                                    name="status_id"
-                                                    selected=!ticket[ticket_db:STATUS_ID]
-                                                    option_sql="SELECT id,name,IF(is_open,'active_ticket','closed_ticket') AS cls FROM ticket_status ORDER BY position"
-                                                %>
+                          name="status_id"
+                          selected=@status_id
+                          option_sql="SELECT id,name,IF(is_open,'active_ticket','closed_ticket') AS cls FROM ticket_status ORDER BY position"
+                        %>
 					<% else %>
-						<%= _h(ticket[ticket_db:STATUS]) %>
+						<%= _h(@status) %>
 					<% end if %>
 				</td>
 				<th nowrap="nowrap">Reported Release:</th>
 				<td nowrap="nowrap">
 					<% if is_dev or is_owner then %>
-						<input type="text" name="reported_release" value="<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>" size="15" />
+						<input type="text" name="reported_release" value="<%= _h(@reported_release) %>" size="15" />
 					<% else %>
-						<%= _h(ticket[ticket_db:REPORTED_RELEASE]) %>
+						<%= _h(@reported_release) %>
 					<% end if %>
 				</td>
 			</tr>
@@ -117,15 +158,15 @@ sequence page_title = sprintf("Ticket #%d: %s", {
 				<th>Fixed in SVN #:</th>
 				<td>
 					<% if is_dev then %>
-						<input type="text" name="svn_rev" value="<%= _h(ticket[ticket_db:SVN_REV]) %>" size="15" style="width:100%;"/>
+						<input type="text" name="svn_rev" value="<%= _h(@svn_rev) %>" size="15" style="width:100%;"/>
 					<% else %>
-						<%= ticket[ticket_db:SVN_REV] %>
+						<%= @svn_rev %>
 					<% end if %>
 				</td>
 				<th>View VCS:</th>
 				<td>
-					<% if length(ticket[ticket_db:SVN_REV]) then
-	 					sequence revs = split_any(ticket[ticket_db:SVN_REV], ", ")
+					<% if length(@svn_rev) then
+	 					sequence revs = split_any(@svn_rev, ", ")
 						for i = 1 to length(revs) do
 							if length(revs[i]) = 0 then continue end if
 						%>
@@ -139,9 +180,14 @@ sequence page_title = sprintf("Ticket #%d: %s", {
                 <th>Milestone:</th>
                 <td>
                     <% if is_dev then %>
-                        <%- euweb:select include_blank=1 name="milestone" selected=!ticket[ticket_db:MILESTONE] option_sql=@milestone_sql %>
+                    <%- euweb:select 
+                      include_blank=1 
+                      name="milestone" 
+                      selected=@milestone 
+                      option_sql=@milestone_sql 
+                    %>
                     <% else %>
-                        <%= _h(ticket[ticket_db:MILESTONE]) %>
+                        <%= _h(@milestone) %>
                     <% end if %>
                 </td>
 			</tr>
@@ -159,7 +205,7 @@ sequence page_title = sprintf("Ticket #%d: %s", {
 			<% if is_dev or is_user then %>
 				<tr>
 					<th>&nbsp;</th>
-					<td colspan="7">
+					<td colspan="6">
 						<% if is_dev or is_owner then %>
 							<input type="submit" value="Update Ticket" />
 						<% elsif is_user then %>
@@ -171,7 +217,7 @@ sequence page_title = sprintf("Ticket #%d: %s", {
 			<% end if %>
 		</table>
 	</form>
-
+    
 	<a name="comments"></a>
 	<%
 	object comments = @comments
@@ -192,7 +238,7 @@ sequence page_title = sprintf("Ticket #%d: %s", {
 		</div>
 		<% end if %>
 
-	<% end for %>
+        <% end for %>
 </div>
 
 <%- local:foot %>

@@ -13,6 +13,7 @@ include std/text.e
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
+include webclay/validate.e as valid
 
 include edbi/edbi.e
 
@@ -347,7 +348,8 @@ wc:add_handler(routine_id("do_create"), routine_id("validate_do_create"), "ticke
 
 sequence detail_vars = {
     { wc:INTEGER, "id",                -1 },
-    { wc:INTEGER, "remove_comment_id", -1 }
+    { wc:INTEGER, "remove_comment_id", -1 },
+	{ wc:INTEGER, "full_edit",          0 }
 }
 
 function detail(map data, map request)
@@ -363,17 +365,41 @@ function detail(map data, map request)
 
         ticket_db:remove_comment(map:get(request, "remove_comment_id"))
     end if
+	
+	if map:get(data, "has_errors") then
+		map:copy(request, data)
+	else
+		map:put(data, "id",               ticket[ticket_db:ID])
+		map:put(data, "type_id",          ticket[ticket_db:TYPE_ID])
+		map:put(data, "type",             ticket[ticket_db:TYPE])
+		map:put(data, "severity_id",      ticket[ticket_db:SEVERITY_ID])
+		map:put(data, "severity",         ticket[ticket_db:SEVERITY])
+		map:put(data, "category_id",      ticket[ticket_db:CATEGORY_ID])
+		map:put(data, "category",         ticket[ticket_db:CATEGORY])
+		map:put(data, "reported_release", ticket[ticket_db:REPORTED_RELEASE])
+		map:put(data, "milestone",        ticket[ticket_db:MILESTONE])
+		map:put(data, "assigned_to_id",   ticket[ticket_db:ASSIGNED_TO_ID])
+		map:put(data, "assigned_to",      ticket[ticket_db:ASSIGNED_TO])
+		map:put(data, "submitted_by_id",  ticket[ticket_db:SUBMITTED_BY_ID])
+		map:put(data, "submitted_by",     ticket[ticket_db:SUBMITTED_BY])
+		map:put(data, "status_id",        ticket[ticket_db:STATUS_ID])
+		map:put(data, "status",           ticket[ticket_db:STATUS])
+		map:put(data, "svn_rev",          ticket[ticket_db:SVN_REV])
+		map:put(data, "subject",          ticket[ticket_db:SUBJECT])
+	
+		if map:get(request, "full_edit") then
+			map:put(data, "content", ticket[ticket_db:CONTENT])
+		else
+			map:put(data, "content", format_body(ticket[ticket_db:CONTENT], 0))
+		end if
+	end if
+	
+    map:put(data, "created_at", fuzzy_ago(ticket[ticket_db:CREATED_AT]))
 
-    -- Trick it for incoming links that may be switching between products
-    map:put(request, "product_id", ticket[ticket_db:PRODUCT_ID])
-
-    ticket[ticket_db:CONTENT] = format_body(ticket[ticket_db:CONTENT], 0)
-    ticket[ticket_db:CREATED_AT] = fuzzy_ago(ticket[ticket_db:CREATED_AT])
-
-    map:put(data, "ticket", ticket)
     map:put(data, "comments", comment_db:get_all(ticket_db:MODULE_ID, map:get(request, "id")))
     map:put(data, "product_name", ticket[ticket_db:PRODUCT])
-
+	map:put(data, "full_edit", map:get(request, "full_edit"))
+	
     get_product_id(request, data)
 
     return { TEXT, t_detail:template(data) }
@@ -390,15 +416,29 @@ sequence update_vars = {
     { wc:INTEGER,  "assigned_to_id" },
     { wc:INTEGER,  "status_id" },
     { wc:SEQUENCE, "svn_rev" },
-    { wc:SEQUENCE, "comment" }
+    { wc:SEQUENCE, "comment" },
+	{ wc:INTEGER,  "full_edit", 0 },
+	{ wc:SEQUENCE, "subject" },
+	{ wc:SEQUENCE, "content" },
+	{ wc:INTEGER, "submitted_by_id" }
 }
 
 function validate_update(map data, map request)
-    sequence errors = wc:new_errors("ticket", "detail")
+    sequence errors = wc:new_errors("ticket", "view")
 
     if not has_role("user") then
         errors = wc:add_error(errors, "form", "You are not authorized to edit or comment on a ticket")
     end if
+
+	if map:get(request, "full_edit") then
+		if not valid:not_empty(map:get(request, "subject")) then
+			errors = wc:add_error(errors, "subject", "Subject cannot be blank.")
+		end if
+	
+		if not valid:not_empty(map:get(request, "content")) then
+			errors = wc:add_error(errors, "content", "Content cannot be blank.")
+		end if
+	end if
 
     return errors
 end function
@@ -428,7 +468,14 @@ function update(map data, map request)
             map:get(request, "status_id"),
             map:get(request, "svn_rev")
         )
-
+	
+		if map:get(request, "full_edit") then
+			ticket_db:update_full(
+				map:get(request, "id"),
+					map:get(request, "subject"),
+					map:get(request, "content"))
+		end if
+		
         if edbi:error_code() then
             map:put(data, "error_code", edbi:error_code())
             map:put(data, "error_message", edbi:error_message())
