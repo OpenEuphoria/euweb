@@ -35,6 +35,7 @@ include db.e
 include format.e
 include forum_db.e
 include fuzzydate.e
+include user_db.e as user_db
 
 function message_redirect(sequence message)
 	switch current_user[USER_FORUM_DEFAULT_VIEW] do

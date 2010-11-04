@@ -331,17 +331,16 @@ function do_create(map data, map request)
         map:get(request, "milestone"),
         map:get(request, "subject"),
         map:get(request, "content"))
-
+	
     if edbi:error_code() then
         map:put(data, "error_code", edbi:error_code())
         map:put(data, "error_message", edbi:error_message())
-    else
-        integer id = edbi:last_insert_id()
-        map:put(data, "error_code", 0)
-        map:put(data, "id", id)
+		return { TEXT, t_update_ok:template(data) }
     end if
-
-    return { TEXT, t_create_ok:template(data) }
+	
+	integer id = edbi:last_insert_id()
+	
+	return { REDIRECT_303, sprintf("/ticket/%d.wc", { id }) }
 end function
 wc:add_handler(routine_id("do_create"), routine_id("validate_do_create"), "ticket", "do_create",
     create_vars)
@@ -436,6 +435,7 @@ function update(map data, map request)
         end if
     end if
 
+	sequence add_redirect = ""
     if length(map:get(request, "comment")) then
         -- Add a comment
         comment_db:add_comment(
@@ -448,12 +448,15 @@ function update(map data, map request)
         if edbi:error_code() then
             map:put(data, "error_code", edbi:error_code())
             map:put(data, "error_message", edbi:error_message())
+			
+			return { TEXT, t_update_ok:template(data) }
         end if
+	
+		add_redirect = sprintf("#%d", { edbi:last_insert_id() })
     end if
-
-    map:put(data, "id", map:get(request, "id"))
-
-    return { TEXT, t_update_ok:template(data) }
+	
+	return { REDIRECT_303, sprintf("/ticket/%d.wc%s", { 
+				map:get(request, "id"), add_redirect }) }
 end function
 wc:add_handler(routine_id("update"), routine_id("validate_update"), "ticket", "update", update_vars)
 
