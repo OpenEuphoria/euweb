@@ -36,7 +36,7 @@ font-size: 10pt;
 font-family: "trebuchet ms", helvetica, sans-serif;
 }
 
-h1,h2,h3,h4,h5,h6,th
+h1,h2,h3,h4,h5,h6
 {
 font-weight: normal;
 /*letter-spacing: -1px;*/
@@ -298,7 +298,11 @@ margin-bottom: 2em;
 margin-left: 3em;
 }
 
-#main_inner .post ul.post_info
+div.creole {
+padding-top: 8px;
+}
+
+#main_inner ul.post_info
 {
 list-style: none;
 font-size: 0.8em;
@@ -327,7 +331,7 @@ margin-top: 1em;
 padding-bottom: 1em;
 }
 
-#main_inner .post ul.post_info li, #main_inner .wiki ul.wiki_info li
+#main_inner ul.post_info li, #main_inner ul.wiki_info li
 {
 background-position: 0em 0.2em;
 background-repeat: no-repeat;
@@ -335,46 +339,46 @@ display: inline;
 padding-left: 18px;
 }
 
-#main_inner .post ul.post_info li.date, #main_inner .wiki ul.wiki_info li.created
+#main_inner ul.post_info li.date, #main_inner ul.wiki_info li.created
 {
 background-image: url('images/n5.gif');
 }
 
-#main_inner .post ul.post_info li.comments
+#main_inner ul.post_info li.comments
 {
 background-image: url('images/n6.gif');
 margin-left: 1.1em;
 }
 
-#main_inner .post ul.post_info li.edited, #main_inner .wiki ul.wiki_info li.modified
+#main_inner ul.post_info li.edited, #main_inner ul.wiki_info li.modified
 {
 background-image: url('images/post_new_message.png');
 margin-left: 1.1em;
 font-weight: bold;
 }
 
-#main_inner .post .post_tools, #main_inner .wiki .wiki_tools
+#main_inner .post_tools, #main_inner .wiki_tools
 {
 border-top: dotted 1px #E1E1E1;
 padding: 5px 20px 5px 20px;
 font-size: 0.8em;
 }
 
-#main_inner .post .post_tools_bottom
+#main_inner .post_tools_bottom
 {
 border-top: dotted 1px #E1E1E1;
 padding: 5px 20px 5px 20px;
 font-size: 0.8em;
 }
 
-#main_inner .post .post_tools_top, #main_inner .wiki .wiki_tools_top
+#main_inner .post_tools_top, #main_inner .wiki_tools_top
 {
 border-bottom: dotted 1px #E1E1E1;
 padding: 5px 20px 5px 20px;
 font-size: 0.8em;
 }
 
-#main_inner .wiki .wiki_body {
+#main_inner .wiki_body {
 margin: 0px 0px 0px 10px;
 }
 
@@ -717,16 +721,19 @@ div.LEVELTOC div.toc_2 { font-size: 1.2em; font-weight: bold; padding: 5px 0px 0
 div.LEVELTOC div.toc_3 { font-weight: bold; font-style: italic; padding-left: 30px; }
 div.LEVELTOC div.toc_4 { padding-left: 60px; }
 
-a.forum_message {padding-right: 20px;background: url("/images/new.png") top right no-repeat;}
+a.forum_message {
+    padding-right: 20px; 
+    background: url("/images/new.png") top right no-repeat;
+}
 a:visited.forum_message {background: 0;padding-right: 0px;}
 
-.post table:not(.form), .wiki table {
+.post table, .wiki table {
 margin-top: 5px;
 border-collapse: collapse;
 border: 2px solid #607080;
 }
 
-.post table:not(.form) {
+.post table {
 margin-bottom: 15px;
 margin-left: 10px;
 }
@@ -735,7 +742,7 @@ margin-left: 10px;
 text-align: right;
 }
 
-.post table:not(.form) th, .wiki table th {
+.post table th, .wiki table th {
 border-width: 0px 1px 0px 1px;
 border-style: solid;
 border-color: #bdbdcf;
@@ -744,13 +751,13 @@ color: white;
 padding: 5px;
 }
 
-.post table:not(.form) tr, .wiki table tr {
+.post table tr, .wiki table tr {
 padding: 3px 0px 3px 0px;
 border-bottom: 1px solid #bfbfcf;
 background-color: #efefff;
 }
 
-.post table:not(.form) td, .wiki table td {
+.post table td, .wiki table td {
 padding: 3px 5px 3px 5px;
 border-width: 0px 1px 0px 1px;
 border-style: solid;
@@ -870,7 +877,7 @@ background-color: #f5f5f5;
 border: 1px solid #a0a0a0;
 border-left: 3px solid #336633;
 padding: 1ex 1ex 1ex 2ex;
-overflow-x: auto;
+overflow: auto;
 }
 
 #content_preview pre {
@@ -881,7 +888,7 @@ margin-right: 10px;
 background-color: #d0e0f0;
 padding-top: 5px;
 padding-bottom: 5px;
-overflow-x: auto;
+overflow: auto;
 }
 
 option.active_ticket,option.active_user { background-color: #ddffdd; }

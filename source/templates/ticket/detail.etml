@@ -37,7 +37,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
 <input type="hidden" name="submitted_by" value="<%= _h(@submitted_by) %>" />
 <input type="hidden" name="created_at" value="<%= _h(@created_at) %>" />
 <input type="hidden" name="submitted_by_id" value="<%= _h(@submitted_by_id) %>" />
-	<div class="post forum">
+	<div>
 	    <h3>
         <span><%= _h(@product_name) %></span> 
         Ticket <span>#<%= _h(@id) %></span>: 
@@ -56,7 +56,10 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
 		</ul>
         
         <% if not is_full_edit then %>
-            <%= @content %>
+            <div class="creole">
+                <%= @content %>
+            </div>
+        
             <% if is_owner or is_admin then %>
                 <p>
                 <a href="/ticket/<%= _h(@id) %>.wc?full_edit=1">Full Edit</a>
