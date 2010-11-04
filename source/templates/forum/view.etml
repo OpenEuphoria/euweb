@@ -34,8 +34,8 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 	%>
 
 	<div class="post forum <%= div_class %>" id="post_<%= _h(message[MSG_ID]) %>">
-		<h3><%= sprintf("%d", i) %>. <%= _h(message[MSG_SUBJECT]) %></h3>
 		<a name="<%= _h(message[MSG_ID]) %>"></a>
+		<h3><%= sprintf("%d", i) %>. <%= _h(message[MSG_SUBJECT]) %></h3>
 		<ul class="post_info">
 			<li class="date">Posted by <%- euweb:user_profile user=!message[MSG_AUTHOR_NAME] show_public_roles=1 %>
 			<%= message[MSG_CREATED_AT] %></li>
