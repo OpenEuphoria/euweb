@@ -208,14 +208,16 @@ function save(map data, map request)
 		return edit(data, request)
 	end if
 
+	sequence page = map:get(request, "page")
+
 	wiki_db:update(
-		map:get(request, "page"),
+		page,
 		map:get(request, "text"),
 		map:get(request, "modify_reason"))
 
-	map:put(data, "page", map:get(request, "page"))
+	map:put(data, "page", page)
 
-	return { TEXT, t_saved:template(data) }
+	return { REDIRECT_303, sprintf("/wiki/view/%s.wc", { page }) }
 end function
 wc:add_handler(routine_id("save"), routine_id("validate_save"), "wiki", "save", save_vars)
 
@@ -313,7 +315,8 @@ function revert(map data, map request)
 		modify_reason = sprintf("%s (reverted to %d)", { modify_reason, rev })
 		wiki_db:revert(page, rev, modify_reason)
 		map:put(data, "op", 2)
-		return { TEXT, t_revert:template(data) }
+	
+		return { REDIRECT_303, sprintf("/wiki/view/%s.wc", { page }) }
 	end if
 
 	map:put(data, "op", 1)
@@ -322,7 +325,6 @@ function revert(map data, map request)
 end function
 wc:add_handler(routine_id("revert"), routine_id("validate_revert"),
 	"wiki", "revert", revert_vars)
-
 
 sequence remove_vars = {
 	{ wc:SEQUENCE, "page"          },
@@ -347,7 +349,7 @@ function remove(map data, map request)
 
 	if length(modify_reason) then
 		wiki_db:remove(page, modify_reason)
-		map:put(data, "op", 2)
+		map:put(data, "op", 2)	
 		return { TEXT, t_remove:template(data) }
 	end if
 
@@ -461,6 +463,8 @@ function do_rename(map data, map request)
 		
 		map:put(data, "old_page", page)
 		map:put(data, "page", new_page)
+	
+		return { REDIRECT_303, sprintf("/wiki/view/%s.wc", { new_page }) }
 	else
 		map:put(data, "status", 0)
 	end if
