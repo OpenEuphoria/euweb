@@ -257,7 +257,6 @@ margin-bottom: 2.0em;
 width: 950px;
 margin: 0 auto;
 padding-top: 3.5em;
-/* overflow-x: scroll; */
 }
 
 #main_inner h3,h4
@@ -650,7 +649,7 @@ font-weight: bold;
 
 #main_inner .forum {
     border: dotted 1px #C1C1C1;
-    overflow-x: auto;
+    overflow: auto;
 }
 
 #main_inner .forum p {
