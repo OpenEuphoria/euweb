@@ -1,5 +1,3 @@
-global atom time_start = time()
-
 without warning
 
 include std/get.e

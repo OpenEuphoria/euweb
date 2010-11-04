@@ -83,7 +83,7 @@
 <%@ include std/datetime.e %>
 <%@ include user_db.e %>
 <%@ include fuzzydate.e %>
-
+<%@ include euphoria/info.e as euinfo %>
 			</div>
 
 		</div>
@@ -199,7 +199,7 @@
 	-->
 	<% if has_role("admin") then %>
 		<br />
-		Total execution time: <%= _h(time() - time_start) %>
+		Total execution time: <%= sprintf("%.3fs", { time() - euinfo:start_time() }) %>
 	<% end if %>
 </div>
 
