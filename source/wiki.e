@@ -113,11 +113,12 @@ sequence view_vars = {
 
 function view(map data, map request)
 	sequence page = map:get(request, "page")
+	integer rev = map:get(request, "rev")
 	if length(page) > 8 and equal(page[1..8], "Category") then
 		return category_view(data, request, page)
 	end if
 
-	object w = wiki_db:get(page, map:get(request, "rev"))
+	object w = wiki_db:get(page, rev)
 	if atom(w) then
 		if has_role("user") then
 			return edit(data, request)
@@ -133,8 +134,8 @@ function view(map data, map request)
 
 	if length(w[WIKI_HTML]) = 0 then
 		w[WIKI_HTML] = format_body(w[WIKI_TEXT])
-		edbi:execute("UPDATE wiki_page SET wiki_html=%s WHERE rev=0 AND name=%s", {
-				w[WIKI_HTML], page })
+		edbi:execute("UPDATE wiki_page SET wiki_html=%s WHERE rev=%d AND name=%s", {
+				w[WIKI_HTML], rev, page })
 	end if
 
 	map:put(data, "wiki", w)
