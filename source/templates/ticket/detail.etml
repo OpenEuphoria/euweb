@@ -10,7 +10,6 @@
   include user_db.e
 %>
 
-<%- euweb:head title="Ticket Detail" active="ticket" %>
 <%
 object ticket = @ticket
 integer is_admin = has_role("admin")
@@ -20,12 +19,26 @@ integer is_owner = 0
 if is_user and current_user[user_db:USER_ID] = ticket[ticket_db:SUBMITTED_BY_ID] then
 	is_owner = 1
 end if
+
+sequence chopped_subject = ticket[ticket_db:SUBJECT]
+if length( chopped_subject ) > 10 then
+    chopped_subject = chopped_subject[1..10] & "..."
+end if
+
+sequence page_title = sprintf("Ticket Detail: #%d %s", {
+        ticket[ticket_db:ID], chopped_subject }) 
 %>
+
+<%- euweb:head title=!page_title active="ticket" %>
 
 <form method="POST" action="/ticket/update.wc">
 	<input type="hidden" name="id" value="<%= _h(ticket[ticket_db:ID]) %>" />
 	<div class="post forum">
-	    <h3><span><%= _h(@product_name) %></span> Ticket <span>#<%= _h(ticket[ticket_db:ID]) %></span>: <%= _h(ticket[ticket_db:SUBJECT]) %></h3>
+	    <h3>
+        <span><%= _h(@product_name) %></span> 
+        Ticket <span>#<%= _h(ticket[ticket_db:ID]) %></span>: 
+        <%= _h(ticket[ticket_db:SUBJECT]) %>
+        </h3>
 		<%- euweb:errors %>
 		<ul class="post_info">
 			<li class="date">
