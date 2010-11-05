@@ -38,7 +38,7 @@ constant
 	q_wiki = `SELECT 'wiki', name, created_at, name, '', CONCAT('/wiki/view/', name, '.wc') FROM wiki_page
 		WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`,
 	q_manual = `SELECT 'manual', name, created_at, name, '', 
-		CONCAT('/manual/', filename, '#', a_name) FROM manual
+		CONCAT('/docs/', filename, '#', a_name) FROM manual
 		WHERE MATCH(content) AGAINST(%s IN BOOLEAN MODE)`
 
 function result(map:map data, map:map request)
