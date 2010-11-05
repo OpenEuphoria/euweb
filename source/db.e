@@ -10,6 +10,10 @@ include std/get.e
 
 public include edbi/edbi.e
 
+ifdef PRODUCTION then
+	include myhelp.e
+end ifdef
+
 include config.e
 
 public db_handle db = 0
@@ -17,7 +21,11 @@ public db_handle db = 0
 edbi:set_driver_path(DB_DRIVERS_PATH)
 
 public procedure open()
-	db = edbi:open(DB_URL)
+	ifdef PRODUCTION then
+		db = edbi:open(DB_URL, edbi_results)
+	elsedef
+		db = edbi:open(DB_URL)
+	end ifdef
 end procedure
 
 public procedure close()
