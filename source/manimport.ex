@@ -8,16 +8,19 @@ include std/search.e
 include std/sequence.e as seq
 include std/io.e
 include std/regex.e as re
+include std/datetime.e as dt
 
 include config.e
 include db.e
 
 constant re_tag = re:new(`<[^>]+>`)
 
+constant now = dt:now()
+
 procedure add(sequence fname, sequence a_name, sequence name, sequence content)
 	edbi:execute("""INSERT INTO manual (created_at, filename, a_name, name, content) 
-		VALUES (NOW(), %s, %s, %s, %s)""", {
-			fname, a_name, name, content })
+		VALUES (%T, %s, %s, %s, %s)""", {
+			now, fname, a_name, name, content })
 end procedure
 
 sequence cmds = command_line()

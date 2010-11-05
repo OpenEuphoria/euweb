@@ -36,13 +36,13 @@ end for
 <p>
 	<% if @page > 1 then %>
 		&#171;
-		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page - 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>">previous page</a>
+		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page - 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>&amp;manual=<%= _h(@s_manual) %>">previous page</a>
 		&#187;
 	<% end if %>
 
 	<% if length(items) = @per_page then %>
 		&#171;
-		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page + 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>">next page</a>
+		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page + 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>&amp;manual=<%= _h(@s_manual) %>">next page</a>
 		&#187;
 	<% end if %>
 </p>
