@@ -46,7 +46,8 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowrap="nowrap" align="center">
-                <img src="/images/famfam/<%= item[recent:R_ICON] %>" />
+                <img title="<%= item[recent:R_TYPE] %>" 
+                  src="/images/famfam/<%= item[recent:R_ICON] %>" />
             </td>
             <td nowarp="nowrap" align="center">
                 <%= _h(item[recent:R_TYPE]) %>

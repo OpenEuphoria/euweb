@@ -21,8 +21,11 @@ for i = 1 to length(items) do
     sequence item = items[i]
 %>
 	<tr>
-		<td><img src="/images/famfam/<%= item[S_ICON] %>"/></td>
-		<td><%= item[S_TYPE] %></td>
+		<td>
+            <img title="<%= _h(item[S_TYPE]) %>" 
+              src="/images/famfam/<%= item[S_ICON] %>"/>
+        </td>
+		<td><%= _h(item[S_TYPE]) %></td>
 		<td>
 			<a href="<%= item[S_URL] %>"><%= _h(item[S_SUBJECT]) %></a>
 		</td>
