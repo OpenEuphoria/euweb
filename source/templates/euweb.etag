@@ -340,7 +340,7 @@ end if
 </script>
 
 {{{creole_previewer}}}
-<div id="<%= #name %>_preview" style="padding: 5px;"></div>
+<div id="<%= #name %>_preview" class="wiki" style="padding: 5px;"></div>
 <script type="text/javascript">
 function preview_<%= #name %>() {
 	new Ajax.Updater('<%= #name %>_preview', '/ajax/creole_preview.wc', {
