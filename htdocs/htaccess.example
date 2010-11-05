@@ -17,6 +17,13 @@ RewriteCond %{REMOTE_ADDR} ^96\.224\.139\.195 [OR]
 RewriteCond %{REMOTE_ADDR} ^71\.190\.5\.103
 RewriteRule .* - [F]
 
+# Rewrite our old EUforum to our new EUforum
+RewriteRule ^EUforum/m(\d+)\.html$ http://openeuphoria.org/forum/m/$1.wc [R=301,L]
+
+# Rewrite our old euwiki to our new wiki
+RewriteCond %{QUERY_STRING} ^(.*)$
+RewriteRule ^wiki/euwiki.cgi$ http://openeuphoria.org/wiki/view/%1.wc? [R=301,L]
+
 # If the requested file does not exist, rewrite
 RewriteRule ^user/profile/(.+)\.wc$ /euweb.ex?module=user&action=profile&user=$1 [L,QSA]
 RewriteRule ^wiki/([^/]+)/([^/]+)\.wc$ /euweb.ex?module=wiki&action=$1&page=$2 [L,QSA]
