@@ -315,7 +315,7 @@ div.creole {
   padding-bottom: 1em;
 }
 
-#main_inner .wiki_body .error {
+.interwiki_error {
   background-color: #ffdddd;
   color: #ff0000;
 }

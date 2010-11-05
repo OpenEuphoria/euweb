@@ -151,7 +151,7 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 			end for
 
 			if length(lHTMLText) = 0 then
-				lHTMLText = "<span class=\"error\">Interwiki link failed for "
+				lHTMLText = "<span class=\"interwiki_error\">Interwiki link failed for "
 				for i = 1 to length(pParms) do
 					lHTMLText &= pParms[i]
 					if i < length(pParms) then
