@@ -10,7 +10,8 @@ include search.e
     <tr>
         <th width="2%">&nbsp;</th>
         <th width="2%">Type</th>
-        <th width="94%">Subject</th>
+        <th width="4%">Score</th>
+        <th width="90%">Subject</th>
         <th width="2%">Age</th>
     </tr>
 
@@ -26,6 +27,9 @@ for i = 1 to length(items) do
               src="/images/famfam/<%= item[S_ICON] %>"/>
         </td>
 		<td><%= _h(item[S_TYPE]) %></td>
+        <td align="right">
+            <%= sprintf("%.3f", { item[S_SCORE] }) %>
+        </td>
 		<td>
 			<a href="<%= item[S_URL] %>"><%= _h(item[S_SUBJECT]) %></a>
 		</td>

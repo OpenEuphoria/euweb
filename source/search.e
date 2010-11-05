@@ -26,20 +26,37 @@ sequence result_vars = {
 	{ wc:SEQUENCE, "s" }
 }
 
-public enum S_TYPE, S_ID, S_DATE, S_SUBJECT, S_ICON, S_URL
+public enum S_TYPE, S_ID, S_DATE, S_SUBJECT, S_ICON, S_URL, S_SCORE
 
-constant
-	q_forum = `SELECT 'forum', id, created_at, subject, '', CONCAT('/forum/m/', id, '.wc') FROM messages
-		WHERE MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE)`,
-	q_news = `SELECT 'news', id, publish_at AS created_at, subject, '', CONCAT('/news', id, '.wc') FROM news
-		WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`,
-	q_ticket = `SELECT 'ticket', id, created_at, subject, '', CONCAT('/ticket/', id, '.wc') FROM ticket
-		WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`,
-	q_wiki = `SELECT 'wiki', name, created_at, name, '', CONCAT('/wiki/view/', name, '.wc') FROM wiki_page
-		WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`,
-	q_manual = `SELECT 'manual', name, created_at, name, '', 
-		CONCAT('/docs/', filename, '#', a_name) FROM manual
-		WHERE MATCH(content) AGAINST(%s IN BOOLEAN MODE)`
+constant q_forum = `SELECT 'forum', id, created_at, subject, '', 
+CONCAT('/forum/m/', id, '.wc'), 
+MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE) as score
+FROM messages
+WHERE MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE)`
+
+constant q_news = `SELECT 'news', id, publish_at AS created_at, subject, '', 
+CONCAT('/news/', id, '.wc'),
+MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE) as score
+FROM news
+WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`
+
+constant q_ticket = `SELECT 'ticket', id, created_at, subject, '', 
+CONCAT('/ticket/', id, '.wc'),
+MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE) as score	
+FROM ticket
+WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`
+
+constant q_wiki = `SELECT 'wiki', name, created_at, name, '', 
+CONCAT('/wiki/view/', name, '.wc'),
+MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE) as score
+FROM wiki_page
+WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`
+
+constant q_manual = `SELECT 'manual', name, created_at, name, '', 
+CONCAT('/docs/', filename, '#', a_name), 
+MATCH(content) AGAINST(%s IN BOOLEAN MODE) as score
+FROM manual
+WHERE MATCH(content) AGAINST(%s IN BOOLEAN MODE)`
 
 function result(map:map data, map:map request)
 	sequence search_term = map:get(request, "s")
@@ -65,34 +82,39 @@ function result(map:map data, map:map request)
 
 	if s_news then
 		params = append(params, search_term)
+		params = append(params, search_term)
 		queries = append(queries, q_news)
 	end if
 
 	if s_ticket then
+		params = append(params, search_term)
 		params = append(params, search_term)
 		queries = append(queries, q_ticket)
 	end if
 
 	if s_forum then
 		params = append(params, search_term)
+		params = append(params, search_term)
 		queries = append(queries, q_forum)
 	end if
 
 	if s_wiki then
+		params = append(params, search_term)
 		params = append(params, search_term)
 		queries = append(queries, q_wiki)
 	end if
 
 	if s_manual then
 		params = append(params, search_term)
+		params = append(params, search_term)
 		queries = append(queries, q_manual)
 	end if
 
 	sequence sql = join(queries, " UNION ALL ") &
-		" ORDER BY created_at DESC LIMIT %d OFFSET %d"
+		" ORDER BY score DESC, created_at DESC LIMIT %d OFFSET %d"
 	params = append(params, per_page)
 	params = append(params, (page_no - 1) * per_page)
-
+	
 	object rows = edbi:query_rows(sql, params)
 
 	for i = 1 to length(rows) do
