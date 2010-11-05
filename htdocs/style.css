@@ -795,8 +795,8 @@ a:visited.forum_message {
 }
 
 .wiki th {
-  border-bottom: 1px dotted black;
-  text-align: right;
+  border-bottom: 1px solid #336633;
+  text-align: center;
   background-color: #eeffee;
   color: #336633;
 }
@@ -804,6 +804,8 @@ a:visited.forum_message {
 .post table th, .wiki table th {
   padding: 5px;
   text-align: center;
+  background-color: #eeffee;
+  color: #336633;
 }
 
 .post table tr, .wiki table tr {
