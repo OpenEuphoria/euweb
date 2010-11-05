@@ -39,7 +39,6 @@ body
 h1,h2,h3,h4,h5,h6
 {
   font-weight: normal;
-  /*letter-spacing: -1px;*/
 }
 
 h3,h4,h5,h6,th
@@ -272,16 +271,16 @@ dd
 
 #main_inner h3
 {
-  font-size: 2.1em;
+  font-size: 1.8em;
   padding-bottom: 0.1em;
-  /* margin-bottom: 0.8em; */
+  margin-top: 0.5em;
 }
 
 #main_inner h4
 {
   font-size: 1.2em;
   padding-bottom: 0.175em;
-  margin-bottom: 1.4em;
+  margin-bottom: 0.2em;
   margin-top: 0.95em;
 }
 
@@ -774,49 +773,46 @@ div.LEVELTOC div.toc_4 {
 
 a.forum_message {
   padding-right: 20px;
-  background: white url("/images/new.png") no-repeat top right;
+  color: #0f45ae; /* #F16C00; */
+  font-weight: bold;
 }
 
 a:visited.forum_message {
-  background: 0;
   padding-right: 0px;
+  color: #0fae45; /* #F16C00; */
 }
 
 .post table, .wiki table {
   margin-top: 5px;
+  margin-bottom: 15px;
   border-collapse: collapse;
-  border: 2px solid #607080;
+  border: 1px solid #336633;
+  background-color: #f8f8f8;
 }
 
 .post table {
-  margin-bottom: 15px;
   margin-left: 10px;
 }
 
 .wiki th {
+  border-bottom: 1px dotted black;
   text-align: right;
+  background-color: #eeffee;
+  color: #336633;
 }
 
 .post table th, .wiki table th {
-  border-width: 0px 1px 0px 1px;
-  border-style: solid;
-  border-color: #bdbdcf;
-  background-color: #607080;
-  color: white;
   padding: 5px;
+  text-align: center;
 }
 
 .post table tr, .wiki table tr {
   padding: 3px 0px 3px 0px;
-  border-bottom: 1px solid #bfbfcf;
-  background-color: #efefff;
 }
 
 .post table td, .wiki table td {
-  padding: 3px 5px 3px 5px;
-  border-width: 0px 1px 0px 1px;
-  border-style: solid;
-  border-color: #bdbdcf;
+  padding: 4px 7px 4px 7px;
+  border: 1px dotted black;
 }
 
 .wiki div.embedded {
