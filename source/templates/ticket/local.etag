@@ -18,7 +18,7 @@ quick_links &= {
     { "/ticket/closed.wc", "Closed Tickets" }
 }
 
-quick_links &= { { "/wiki/euwiki.cgi?WhatAreTickets", "About Tickets" } }
+quick_links &= { { "/wiki/view/WhatAreTickets.wc", "About Tickets" } }
 
 %>
 
