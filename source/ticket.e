@@ -134,8 +134,10 @@ function real_index(map data, map request, sequence where="")
     integer by_milestone = 0
     integer milestone_progress = 0
     sequence milestone_progress_text = ""
-	
-    if length(milestone) > 0 then
+
+	if equal(milestone, "None") then
+		local_where = append(local_where, "(t.milestone IS NULL or t.milestone='')")
+    elsif length(milestone) > 0 then
         sequence safe_milestone = match_replace("\\",
             match_replace("'", milestone, "''", 0),
             "\\\\")

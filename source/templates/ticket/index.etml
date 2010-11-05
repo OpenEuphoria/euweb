@@ -37,7 +37,15 @@
                     <%- euweb:select include_empty=1 name="category_id" selected=@category_id option_sql=@category_sql %>
                 </td>
                 <th>Milestone:</th>
-                <td colspan="5"><%- euweb:select include_blank=1 name="milestone" selected=@milestone option_sql=@milestone_sql %></td>
+                <td colspan="5">
+                    <%- euweb:select 
+                      include_blank=1 
+                      static_items=!{ {"None","** No Milestone **"} }
+                      name="milestone" 
+                      selected=@milestone 
+                      option_sql=@milestone_sql 
+            	    %>
+            	</td>
             </tr>
             <tr>
                 <th>Severity:</th>
