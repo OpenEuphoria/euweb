@@ -21,7 +21,10 @@ public function type_icon(sequence typ)
 
 		case "wiki" then
 			return "world.png"
-
+			
+		case "manual" then
+			return "book.png"
+			
 		case else
 			return ""
 	end switch

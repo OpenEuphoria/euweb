@@ -22,39 +22,45 @@ sequence result_vars = {
 	{ wc:INTEGER,  "news",      0 },
 	{ wc:INTEGER,  "forum",     0 },
 	{ wc:INTEGER,  "wiki",      0 },
+	{ wc:INTEGER,  "manual",    0 },
 	{ wc:SEQUENCE, "s" }
 }
 
-public enum S_TYPE, S_ID, S_DATE, S_SUBJECT, S_ICON
+public enum S_TYPE, S_ID, S_DATE, S_SUBJECT, S_ICON, S_URL
 
 constant
-	q_forum = `SELECT 'forum', id, created_at, subject, '' FROM messages
+	q_forum = `SELECT 'forum', id, created_at, subject, '', CONCAT('/forum/m/', id, '.wc') FROM messages
 		WHERE MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE)`,
-	q_news = `SELECT 'news', id, publish_at AS created_at, subject, '' FROM news
+	q_news = `SELECT 'news', id, publish_at AS created_at, subject, '', CONCAT('/news', id, '.wc') FROM news
 		WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`,
-	q_ticket = `SELECT 'ticket', id, created_at, subject, '' FROM ticket
+	q_ticket = `SELECT 'ticket', id, created_at, subject, '', CONCAT('/ticket/', id, '.wc') FROM ticket
 		WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`,
-	q_wiki = `SELECT 'wiki', name, created_at, name, '' FROM wiki_page
-		WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`
+	q_wiki = `SELECT 'wiki', name, created_at, name, '', CONCAT('/wiki/view/', name, '.wc') FROM wiki_page
+		WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`,
+	q_manual = `SELECT 'manual', name, created_at, name, '', 
+		CONCAT('/manual/', filename, '#', a_name) FROM manual
+		WHERE MATCH(content) AGAINST(%s IN BOOLEAN MODE)`
 
 function result(map:map data, map:map request)
 	sequence search_term = map:get(request, "s")
 	integer
-		page_no = map:get(request, "page"),
+		page_no  = map:get(request, "page"),
 		per_page = map:get(request, "per_page"),
-		s_news = map:get(request, "news"),
+		s_news   = map:get(request, "news"),
 		s_ticket = map:get(request, "ticket"),
-		s_forum = map:get(request, "forum"),
-		s_wiki = map:get(request, "wiki")
+		s_forum  = map:get(request, "forum"),
+		s_wiki   = map:get(request, "wiki"),
+		s_manual = map:get(request, "manual")	
 
 	sequence params = {}
 	sequence queries = {}
 
-	if (s_news + s_ticket + s_forum + s_wiki) = 0 then
-		s_news = 1
+	if (s_news + s_ticket + s_forum + s_wiki + s_manual) = 0 then
+		s_news   = 1
 		s_ticket = 1
-		s_forum = 1
-		s_wiki = 1
+		s_forum  = 1
+		s_wiki   = 1
+		s_manual = 1
 	end if
 
 	if s_news then
@@ -77,6 +83,11 @@ function result(map:map data, map:map request)
 		queries = append(queries, q_wiki)
 	end if
 
+	if s_manual then
+		params = append(params, search_term)
+		queries = append(queries, q_manual)
+	end if
+
 	sequence sql = join(queries, " UNION ALL ") &
 		" ORDER BY created_at DESC LIMIT %d OFFSET %d"
 	params = append(params, per_page)
@@ -97,6 +108,8 @@ function result(map:map data, map:map request)
 	map:put(data, "s_news", s_news)
 	map:put(data, "s_ticket", s_ticket)
 	map:put(data, "s_forum", s_forum)
+	map:put(data, "s_wiki", s_wiki)
+	map:put(data, "s_manual", s_manual)
 	map:put(data, "is_search", 1)
 
 	return { TEXT, t_result:template(data) }

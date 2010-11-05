@@ -24,17 +24,7 @@ for i = 1 to length(items) do
 		<td><img src="/images/famfam/<%= item[S_ICON] %>"/></td>
 		<td><%= item[S_TYPE] %></td>
 		<td>
-        <%
-        sequence typeUrl
-        if equal("wiki", item[S_TYPE]) then
-	        typeUrl = "wiki/view"
-        else
-        	typeUrl = item[S_TYPE]
-        end if
-        %>
-
-			<a href="/<%= typeUrl %>/<%= _h(item[S_ID]) %>.wc#<%= _h(item[S_ID]) %>"
-				><%= _h(item[S_SUBJECT]) %></a>
+			<a href="<%= item[S_URL] %>"><%= _h(item[S_SUBJECT]) %></a>
 		</td>
 		<td nowrap="nowrap"><%= _h(item[S_DATE]) %></td>
 	</tr>

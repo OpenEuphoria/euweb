@@ -109,6 +109,7 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="ticket" value="1" <% if @s_ticket then %>checked="checked"<% end if %> /> Tickets<br />
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="forum" value="1" <% if @s_forum then %>checked="checked"<% end if %> /> Forum<br />
 						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="wiki" value="1" <% if @s_wiki then %>checked="checked"<% end if %> /> Wiki<br />
+						&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="manual" value="1" <% if @s_manual then %>checked="checked"<% end if %> /> Manual<br />
 					</div>
 				</form>
 

@@ -63,6 +63,7 @@ procedure app(object data, object vars)
     map:put(data, "s_ticket", 1)
     map:put(data, "s_forum", 1)
 	map:put(data, "s_wiki", 1)
+	map:put(data, "s_manual", 1)
     map:put(data, "is_search", 0)
 end procedure
 
