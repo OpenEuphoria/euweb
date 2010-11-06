@@ -17,10 +17,12 @@ public function fuzzyDateDiff(dt:datetime d1, dt:datetime d2)
     f = ""
 
     if sd > SECS_PER_YEAR then
-        tmp = floor(sd / SECS_PER_YEAR)
-        f &= sprint(tmp) & " year"
+		return dt:format(d1, "%b %d, %Y")
     elsif sd > SECS_PER_MONTH then
         tmp = floor(sd / SECS_PER_MONTH)
+		if tmp > 3 then
+			return dt:format(d1, "in %B")
+		end if
         f &= sprint(tmp) & " month"
     elsif sd > SECS_PER_WEEK then
         tmp = floor(sd / SECS_PER_WEEK)
@@ -46,7 +48,7 @@ public function fuzzyDateDiff(dt:datetime d1, dt:datetime d2)
         f &= "s"
     end if
 
-    return f
+    return f & " ago"
 end function
 
 public function fuzzy_ago(dt:datetime d1)
@@ -54,6 +56,6 @@ public function fuzzy_ago(dt:datetime d1)
 		return "never"
 	end if
 
-	return fuzzyDateDiff(d1, dt:now()) & " ago"
+	return fuzzyDateDiff(d1, dt:now())
 end function
 
