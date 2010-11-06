@@ -12,15 +12,6 @@ sequence div_class = "normal"
 
 
 <form method="post" action="/forum/save.wc">
-    <% if length(@body_formatted) then %>
-    	<h3><span>Preview</span> Message</h3>
-		<div class="post forum <%= div_class %>">
-			<%= @body_formatted %>
-	    </div>
-        <input class="button" type="submit" name="save" value="Post" />
-        <br />&nbsp;
-    <% end if %>
-
     <% if @parent_id > 0 then %>
 
     	<h3><span>Reply</span> to '<%= _h(@subject) %>'</h3>
@@ -49,10 +40,23 @@ sequence div_class = "normal"
 		Body:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		common formatting: <code>**bold text**, //italic text//, ##code text##, [[http://google.com|Google]]</code>
 	</div>
-	<textarea name="body" rows="15" cols="80" style="width: 100%;"><%= _h(@quote_body) %></textarea>
+	<textarea id="body" name="body" rows="15" cols="80" style="width: 100%;"><%= _h(@quote_body) %></textarea>
+	<%- euweb:creole_previewer name="body" class="post forum" %>
+	<noscript>
+    <% if length(@body_formatted) then %>
+		<div class="post forum <%= div_class %>">
+			<%= @body_formatted %>
+	    </div>
+    <% end if %>
+	</noscript>
 	<br />
 	<input class="button" type="submit" name="save" value="Post" />
-	<input class="button" type="submit" name="save" value="Preview" />
+	<script type="text/javascript">
+	document.write('<input class="button" type="button" value="Preview" onclick="preview_body();" />');
+	</script>
+	<noscript>
+		<input class="button" type="submit" name="save" value="Preview" />
+	</noscript>
 </form>
 
 <script type="text/javascript">

@@ -80,10 +80,14 @@
 			<div id="columnA_2columns">
 
 {{{foot}}}
-<%@ include std/datetime.e %>
-<%@ include user_db.e %>
-<%@ include fuzzydate.e %>
-<%@ include euphoria/info.e as euinfo %>
+<%@
+
+include std/datetime.e
+include user_db.e
+include fuzzydate.e
+include euphoria/info.e as euinfo
+
+%>
 			</div>
 
 		</div>
@@ -277,8 +281,12 @@ end if
 %>
 
 {{{select}}}
-<%@ include edbi/edbi.e %>
-<%@ include std/text.e %>
+<%@
+
+include edbi/edbi.e
+include std/text.e
+
+%>
 <%
   integer static_count = 0
   object rows = {}
@@ -340,7 +348,13 @@ end if
 </script>
 
 {{{creole_previewer}}}
-<div id="<%= #name %>_preview" class="wiki" style="padding: 5px;"></div>
+<%
+sequence cls = "wiki"
+if length(#class) then
+    cls = #class
+end if
+%>
+<div id="<%= #name %>_preview" class="<%= cls %>" style="padding: 5px;"></div>
 <script type="text/javascript">
 function preview_<%= #name %>() {
 	new Ajax.Updater('<%= #name %>_preview', '/ajax/creole_preview.wc', {
@@ -350,11 +364,15 @@ function preview_<%= #name %>() {
 }
 </script>
 {{{progress_bar}}}
-<%@ include std/convert.e %>
+<%@
+
+include std/convert.e
+
+%>
 <%
  integer width = to_number(#width)
  integer percent = #percent
- 
+
  sequence message = #message
  if not length(message) then
  message = sprintf("%d%%", { percent })
