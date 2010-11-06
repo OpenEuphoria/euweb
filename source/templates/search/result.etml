@@ -23,7 +23,7 @@ for i = 1 to length(items) do
 %>
 	<tr>
 		<td>
-            <img title="<%= _h(item[S_TYPE]) %>" 
+            <img title="<%= _h(item[S_TYPE]) %>"
               src="/images/famfam/<%= item[S_ICON] %>"/>
         </td>
 		<td><%= _h(item[S_TYPE]) %></td>
@@ -43,13 +43,13 @@ end for
 <p>
 	<% if @page > 1 then %>
 		&#171;
-		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page - 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>&amp;manual=<%= _h(@s_manual) %>">previous page</a>
+		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page - 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>&amp;wiki=<%= _h(@s_wiki) %>&amp;manual=<%= _h(@s_manual) %>">previous page</a>
 		&#187;
 	<% end if %>
 
 	<% if length(items) = @per_page then %>
 		&#171;
-		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page + 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>&amp;manual=<%= _h(@s_manual) %>">next page</a>
+		<a href="/search/results.wc?s=<%= url:encode(@s) %>&amp;page=<%= _h(@page + 1) %>&amp;per_page=<%= _h(@per_page) %>&amp;news=<%= _h(@s_news) %>&amp;ticket=<%= _h(@s_ticket) %>&amp;forum=<%= _h(@s_forum) %>&amp;wiki=<%= _h(@s_wiki) %>&amp;manual=<%= _h(@s_manual) %>">next page</a>
 		&#187;
 	<% end if %>
 </p>
