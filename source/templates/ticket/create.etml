@@ -5,6 +5,8 @@
   include templates/euweb.etag as euweb
   include local.etag as local
   include ticket_db.e
+
+  sequence div_class = "normal"
 %>
 
 <%- euweb:head title="Ticket Create" active="ticket" %>
@@ -133,14 +135,17 @@
                     </td>
                   </tr>
                   
-                  <tr>
-                    <th>&nbsp;</th>
-                    <td>
-                      <input type="submit" value="Create Ticket" />
-                      <input type="button" value="Preview Content" onclick="preview_content();"/>
-                    </td>
-                  </tr>
 		</table>
+	<input class="button" type="submit" name="save" value="Create Ticket" />
+	<%- euweb:creole_previewer_button name="content" %>
+	<br />
+	<%- euweb:creole_previewer name="content" class="post forum" %>
+    <% if length(@content_formatted) then %>
+		<div class="post forum <%= div_class %>">
+			<%= @content_formatted %>
+	    </div>
+    <% end if %>
+	</noscript>
 	</form>
 
 <script type="text/javascript">

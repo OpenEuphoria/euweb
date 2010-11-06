@@ -299,6 +299,7 @@ function validate_do_create(map data, map request)
         errors = wc:add_error(errors, "form", "You are not authorized to add a new ticket")
     end if
 
+   if not equal(map:get(request, "save"), "Preview") then
     if map:get(request, "severity_id") = -1 then
         errors = wc:add_error(errors, "severity_id", "You must select a severity level.")
     end if
@@ -318,11 +319,16 @@ function validate_do_create(map data, map request)
     if length(trim(map:get(request, "content"))) = 0 then
         errors = wc:add_error(errors, "content", "Content cannot be blank.")
     end if
+   end if
 
     return errors
 end function
 
 function do_create(map data, map request)
+	if equal(map:get(request, "save"), "Preview") then
+		map:put(data, "content_formatted", format_body(map:get(request, "content")))
+		return ticket_create(data, request)
+	end if
     ticket_db:create(
         map:get(request, "type_id"),
         get_product_id(request),
@@ -432,6 +438,7 @@ function validate_update(map data, map request)
         errors = wc:add_error(errors, "form", "You are not authorized to edit or comment on a ticket")
     end if
 
+    if not equal(map:get(request, "save"), "Preview") then
 	if map:get(request, "full_edit") then
 		if not valid:not_empty(map:get(request, "subject")) then
 			errors = wc:add_error(errors, "subject", "Subject cannot be blank.")
@@ -441,6 +448,7 @@ function validate_update(map data, map request)
 			errors = wc:add_error(errors, "content", "Content cannot be blank.")
 		end if
 	end if
+    end if
 
     return errors
 end function
@@ -471,6 +479,11 @@ function update(map data, map request)
             map:get(request, "svn_rev")
         )
 	
+		   if equal(map:get(request, "save"), "Preview") then
+			map:put(request, "full_edit", "1")
+			map:put(data, "content_formatted", format_body(map:get(request, "content")))
+			return detail(data, request)
+		   end if
 		if map:get(request, "full_edit") then
 			ticket_db:update_full(
 				map:get(request, "id"),
