@@ -36,6 +36,11 @@ body
   font-family: "trebuchet ms", helvetica, sans-serif;
 }
 
+hr {
+margin-top: 0.5ex;
+margin-bottom: 1ex;
+}
+
 h1,h2,h3,h4,h5,h6
 {
   font-weight: normal;
