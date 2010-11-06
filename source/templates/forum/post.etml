@@ -41,6 +41,10 @@ sequence div_class = "normal"
 		common formatting: <code>**bold text**, //italic text//, ##code text##, [[http://google.com|Google]]</code>
 	</div>
 	<textarea id="body" name="body" rows="15" cols="80" style="width: 100%;"><%= _h(@quote_body) %></textarea>
+	<br />
+	<input class="button" type="submit" name="save" value="Post" />
+	<%- euweb:creole_previewer_button name="body" %>
+	<br />
 	<%- euweb:creole_previewer name="body" class="post forum" %>
 	<noscript>
     <% if length(@body_formatted) then %>
@@ -48,14 +52,6 @@ sequence div_class = "normal"
 			<%= @body_formatted %>
 	    </div>
     <% end if %>
-	</noscript>
-	<br />
-	<input class="button" type="submit" name="save" value="Post" />
-	<script type="text/javascript">
-	document.write('<input class="button" type="button" value="Preview" onclick="preview_body();" />');
-	</script>
-	<noscript>
-		<input class="button" type="submit" name="save" value="Preview" />
 	</noscript>
 </form>
 

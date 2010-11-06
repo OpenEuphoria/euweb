@@ -363,6 +363,13 @@ function preview_<%= #name %>() {
 	})
 }
 </script>
+{{{creole_previewer_button}}}
+<script type="text/javascript">
+document.write('<input class="button" type="button" value="Preview" onclick="preview_<%= #name %>();" />');
+</script>
+<noscript>
+<input class="button" type="submit" name="save" value="Preview" />
+</noscript>
 {{{progress_bar}}}
 <%@
 

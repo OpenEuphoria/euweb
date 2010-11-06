@@ -11,25 +11,25 @@ include local.etag as local
   <%- euweb:errors %>
 
   <form method="post" action="/wiki/save/<%= _h(@page) %>.wc">
-    <% if length(@text_formatted) then %>
-    <h3><span>Preview</span> Message</h3>
-    <div class="wiki">
-      <%= @text_formatted %>
-    </div>
-    <input class="button" type="submit" name="save" value="Save" />
-    <br />&nbsp;
-    <% end if %>
-
     Change Reason:<br />
     <input type="text" id="modify_reason" name="modify_reason" value="<%= _h(@modify_reason) %>" size="80" />
     <div style="padding:0;margin:0;">
       Body:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       common formatting: <code>**bold text**, //italic text//, ##code text##, [[http://google.com|Google]]</code>
     </div>
-    <textarea name="text" rows="15" cols="80" style="width: 100%;"><%= _h(@text) %></textarea>
-    <br />
-    <input class="button" type="submit" name="save" value="Save" />
-    <input class="button" type="submit" name="save" value="Preview" />
+    <textarea id="text" name="text" rows="15" cols="80" style="width: 100%;"><%= _h(@text) %></textarea>
+	<br />
+	<input class="button" type="submit" name="save" value="Save" />
+	<%- euweb:creole_previewer_button name="text" %>
+	<br />
+	<%- euweb:creole_previewer name="text" class="wiki" %>
+	<noscript>
+    <% if length(@text_formatted) then %>
+		<div class="wiki">
+			<%= @text_formatted %>
+	    </div>
+    <% end if %>
+	</noscript>
 </form>
 
 <script type="text/javascript">
