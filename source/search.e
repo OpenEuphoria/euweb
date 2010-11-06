@@ -7,7 +7,7 @@ include edbi/edbi.e
 -- Webclay includes
 include webclay/webclay.e as wc
 include webclay/logging.e as log
-include webclay/escape.e as esc
+include webclay/escape.e  as esc
 
 -- Local includes
 include templates/search/result.etml as t_result
@@ -69,7 +69,7 @@ function result(map:map data, map:map request)
 		s_wiki   = map:get(request, "wiki"),
 		s_manual = map:get(request, "manual")	
 
-	sequence params = {}
+	sequence params  = {}
 	sequence queries = {}
 
 	if (s_news + s_ticket + s_forum + s_wiki + s_manual) = 0 then
@@ -81,32 +81,35 @@ function result(map:map data, map:map request)
 	end if
 
 	if s_news then
-		params = append(params, search_term)
-		params = append(params, search_term)
+		params  = append(params, search_term)
+		params  = append(params, search_term)
 		queries = append(queries, q_news)
 	end if
 
 	if s_ticket then
-		params = append(params, search_term)
-		params = append(params, search_term)
+		params  = append(params, search_term)
+		params  = append(params, search_term)
 		queries = append(queries, q_ticket)
 	end if
 
 	if s_forum then
-		params = append(params, search_term)
-		params = append(params, search_term)
+		params  = append(params, search_term)
+		params  = append(params, search_term)
 		queries = append(queries, q_forum)
 	end if
 
 	if s_wiki then
-		params = append(params, search_term)
-		params = append(params, search_term)
+		params  = append(params, search_term)
+		params  = append(params, search_term)
 		queries = append(queries, q_wiki)
 	end if
 
 	if s_manual then
-		params = append(params, search_term)
-		params = append(params, search_term)
+		sequence tmp_search_term = sprintf("%s >\"function %s\" >\"procedure %s\" >\"type %s\"", {
+				search_term, search_term, search_term, search_term })
+		
+		params  = append(params, tmp_search_term)
+		params  = append(params, tmp_search_term)
 		queries = append(queries, q_manual)
 	end if
 
@@ -122,17 +125,17 @@ function result(map:map data, map:map request)
 		rows[i][S_ICON] = type_icon(rows[i][S_TYPE])
 	end for
 
-	map:put(data, "items", rows)
-	map:put(data, "s", htmlspecialchars(search_term))
+	map:put(data, "items",       rows)
+	map:put(data, "s",           htmlspecialchars(search_term))
 	map:put(data, "search_term", htmlspecialchars(search_term))
-	map:put(data, "page", page_no)
-	map:put(data, "per_page", per_page)
-	map:put(data, "s_news", s_news)
-	map:put(data, "s_ticket", s_ticket)
-	map:put(data, "s_forum", s_forum)
-	map:put(data, "s_wiki", s_wiki)
-	map:put(data, "s_manual", s_manual)
-	map:put(data, "is_search", 1)
+	map:put(data, "page",        page_no)
+	map:put(data, "per_page",    per_page)
+	map:put(data, "s_news",      s_news)
+	map:put(data, "s_ticket",    s_ticket)
+	map:put(data, "s_forum",     s_forum)
+	map:put(data, "s_wiki",      s_wiki)
+	map:put(data, "s_manual",    s_manual)
+	map:put(data, "is_search",   1)
 
 	return { TEXT, t_result:template(data) }
 end function
