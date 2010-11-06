@@ -59,34 +59,7 @@ sequence div_class = "normal"
 	$('subject').focus();
 </script>
 
-<h4><span>More</span> Common Formatting</h4>
-<p>
-See <a href="/wiki/view/CreoleHelp.wc">CreoleHelp</a> to see even more formatting options.
-</p>
-<pre>
-Force a line break \\
-
-&lt;eucode&gt;
--- eucode
-&lt;/eucode&gt;
-
-&#123;&#123;&#123;
-General Code or console input/output
-&#125;&#125;&#125;
-
-|| Table Header 1 || Table Header 2 ||
-| Table Col 1     | Table Col 2      |
-
-: Indented paragraph
-
-* Bullet List 1
-* Bullet List 2
-** Bullet List 2.1
-
-# Numbered List 1
-# Numbered List 2
-## Numbered List 2.1
-</pre>
+<%- euweb:creole_common_formatting %>
 
 <%- local:foot %>
 

@@ -28,32 +28,32 @@ sequence result_vars = {
 
 public enum S_TYPE, S_ID, S_DATE, S_SUBJECT, S_ICON, S_URL, S_SCORE
 
-constant q_forum = `SELECT 'forum', id, created_at, subject, '', 
-CONCAT('/forum/m/', id, '.wc'), 
+constant q_forum = `SELECT 'forum', id, created_at, subject, '',
+CONCAT('/forum/m/', id, '.wc'),
 MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE) as score
 FROM messages
 WHERE MATCH(subject, body) AGAINST(%s IN BOOLEAN MODE)`
 
-constant q_news = `SELECT 'news', id, publish_at AS created_at, subject, '', 
+constant q_news = `SELECT 'news', id, publish_at AS created_at, subject, '',
 CONCAT('/news/', id, '.wc'),
 MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE) as score
 FROM news
 WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`
 
-constant q_ticket = `SELECT 'ticket', id, created_at, subject, '', 
+constant q_ticket = `SELECT 'ticket', id, created_at, subject, '',
 CONCAT('/ticket/', id, '.wc'),
-MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE) as score	
+MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE) as score
 FROM ticket
 WHERE MATCH(subject, content) AGAINST(%s IN BOOLEAN MODE)`
 
-constant q_wiki = `SELECT 'wiki', name, created_at, name, '', 
+constant q_wiki = `SELECT 'wiki', name, created_at, name, '',
 CONCAT('/wiki/view/', name, '.wc'),
 MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE) as score
 FROM wiki_page
 WHERE rev=0 AND MATCH(name, wiki_text) AGAINST(%s IN BOOLEAN MODE)`
 
-constant q_manual = `SELECT 'manual', name, created_at, name, '', 
-CONCAT('/docs/', filename, '#', a_name), 
+constant q_manual = `SELECT 'manual', name, created_at, name, '',
+CONCAT('/docs/', filename, '#', a_name),
 MATCH(content) AGAINST(%s IN BOOLEAN MODE) as score
 FROM manual
 WHERE MATCH(content) AGAINST(%s IN BOOLEAN MODE)`
@@ -67,7 +67,7 @@ function result(map:map data, map:map request)
 		s_ticket = map:get(request, "ticket"),
 		s_forum  = map:get(request, "forum"),
 		s_wiki   = map:get(request, "wiki"),
-		s_manual = map:get(request, "manual")	
+		s_manual = map:get(request, "manual")
 
 	sequence params  = {}
 	sequence queries = {}
@@ -107,7 +107,7 @@ function result(map:map data, map:map request)
 	if s_manual then
 		sequence tmp_search_term = sprintf("%s >\"function %s\" >\"procedure %s\" >\"type %s\"", {
 				search_term, search_term, search_term, search_term })
-		
+
 		params  = append(params, tmp_search_term)
 		params  = append(params, tmp_search_term)
 		queries = append(queries, q_manual)
@@ -117,7 +117,7 @@ function result(map:map data, map:map request)
 		" ORDER BY score DESC, created_at DESC LIMIT %d OFFSET %d"
 	params = append(params, per_page)
 	params = append(params, (page_no - 1) * per_page)
-	
+
 	object rows = edbi:query_rows(sql, params)
 
 	for i = 1 to length(rows) do
