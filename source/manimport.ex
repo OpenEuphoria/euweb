@@ -18,6 +18,7 @@ constant re_tag = re:new(`<[^>]+>`)
 constant now = dt:now()
 
 procedure add(sequence fname, sequence a_name, sequence name, sequence content)
+	content = re:find_replace(re_tag, content, "")
 	edbi:execute("""INSERT INTO manual (created_at, filename, a_name, name, content) 
 		VALUES (%T, %s, %s, %s, %s)""", {
 			now, fname, a_name, name, content })
@@ -32,7 +33,7 @@ end if
 db:open()
 
 edbi:execute("BEGIN")
-edbi:execute("DELETE FROM manual_html")
+edbi:execute("DELETE FROM manual")
 
 sequence files = cmds[3..$]
 
@@ -57,7 +58,6 @@ for i = 1 to length(files) do
 				begins("<h4", nline)
 			then
 				if length(a_name) and length(content) then
-					content = re:find_replace(re_tag, content, "")
 					add(bfname, a_name, name, content)
 				end if
 			
