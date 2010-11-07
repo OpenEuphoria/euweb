@@ -121,7 +121,7 @@ end function
 
 function latest_wiki_changes(integer count)
 	object rows = edbi:query_rows("""
-			SELECT w.name, w.created_at, u.user, w.change_msg
+			SELECT w.name, w.created_at, u.user, w.change_msg, w.rev
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (u.id = w.created_by_id)
 			ORDER BY w.created_at DESC
@@ -132,7 +132,7 @@ function latest_wiki_changes(integer count)
 		rows[i] = {
 			rows[i][2],
 			rows[i][3],
-			sprintf("/wiki/view/%s.wc", { rows[i][1] }),
+			sprintf("/wiki/view/%s.wc?rev=%d", { rows[i][1], rows[i][5] }),
 			sprintf("Wiki: %s", { rows[i][1] }),
 			sprintf("Change message: %s", { rows[i][4] })
 		}
