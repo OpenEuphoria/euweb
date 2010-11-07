@@ -4,6 +4,7 @@
 
 include std/map.e
 include std/search.e
+include std/datetime.e as dt
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
@@ -20,6 +21,7 @@ include comment_db.e
 include news_db.e
 include format.e
 include fuzzydate.e
+include wiki_db.e
 
 sequence index_invars = {
 	{ wc:INTEGER, "page",   	1 },
@@ -31,10 +33,14 @@ function index(map data, map invars)
 	map:put(data, "per_page", map:get(invars, "per_page"))
 	map:put(data, "article_count", news_db:article_count())
 
+	object news_wiki = wiki_db:get("NewsHome")
+	map:put(data, "news_html", format_body(news_wiki[WIKI_TEXT]))
+
 	object arts = news_db:get_article_list(map:get(invars, "page"), map:get(invars, "per_page"))
 	for i = 1 to length(arts) do
 		arts[i][news_db:CONTENT] = format_body(arts[i][news_db:CONTENT])
-		arts[i][news_db:PUBLISH_AT] = fuzzy_ago(arts[i][news_db:PUBLISH_AT])
+		--arts[i][news_db:PUBLISH_AT] = fuzzy_ago(arts[i][news_db:PUBLISH_AT])
+		arts[i][news_db:PUBLISH_AT] = dt:format(arts[i][news_db:PUBLISH_AT], "%b %d, %Y")
 		arts[i] &= edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d AND item_id=%d", 
 			{ news_db:MODULE_ID, arts[i][news_db:ID] })
 	end for

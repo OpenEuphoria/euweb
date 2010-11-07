@@ -1029,3 +1029,26 @@ table.category form {
 div.right {
   float: right;
 }
+
+table.old_news {
+  border: 1px dotted black;
+  border-collapse: collapse;
+  background: #fafafa;
+}
+
+table.old_news td {
+  padding: 10px;
+}
+
+table.old_news td div.news {
+  padding: 5px 0px 8px 5px;
+}
+
+table.old_news td div.news_title {
+  font-weight: bold;
+}
+
+table.old_news td div.news_meta {
+  padding-left: 30px;
+  font-size: 0.8em;
+}

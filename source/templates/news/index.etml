@@ -1,6 +1,16 @@
-<%@ include std/text.e %>
-<%@ include std/math.e %>
-<%@ include templates/euweb.etag as euweb %>
+<%@ 
+
+include std/text.e
+include std/math.e
+
+include templates/euweb.etag as euweb 
+include local.etag as news
+
+include news_db.e
+
+integer current_count = 3
+%>
+
 <%@ include news_db.e %>
 
 <%@ include db.e  %>
@@ -18,29 +28,51 @@ end if
 
 <%- euweb:head title="News Index" active="home" %>
 
-<% sequence articles = @articles %>
-<%
-for i = 1 to length(articles) do 
-    sequence article = articles[i]
-	%>
-	
-	<div class="post">
-		<h3><a href="/news/<%= _h(article[ID]) %>.wc"><%= _h(article[SUBJECT]) %></a></h3>
-		<ul class="post_info">
-			<li class="date">Posted by <%- euweb:user_profile user=!article[AUTHOR_NAME] %> 
-			<%= article[PUBLISH_AT] %></li>
-			<li class="comments"><a href="/news/<%= _h(article[ID]) %>.wc#comments"><%= _h(article[$]) %> comments</a></li>
-			<% if has_role("news_admin") then %>
-				<li>
-					<a href="/news/edit.wc?id=<%= _h(article[ID]) %>">Edit</a>,
-					<a href="/news/remove.wc?id=<%= _h(article[ID]) %>">Remove</a>
-				</li>
-			<% end if %>
-		</ul>					
+<div class="wiki">
+<%= @news_html %>
+</div>
 
-		<%= article[CONTENT] %>
+<h3><span>Current</span> News</h3>
+
+<% 
+sequence articles = @articles
+%>
+
+<% for i = 1 to current_count do %>
+	<%- news:display article=!articles[i] %>
+<% end for %>
+
+<h3><span>Older</span> News</h3>
+
+<table class="old_news" width="100%">
+<tr>
+<%
+integer col1 = floor((length(articles) - current_count) / 2)
+integer col2 = length(articles) - current_count - col1
+
+sequence cols = { max({ col1, col2 }), min({ col1, col2 }) }
+for i = 1 to 2 do 
+%>
+
+<td valign="top">
+<% for j = 1 to cols[i] do 
+	sequence article = articles[(j * i) + current_count]
+	%>
+	<div class="news">
+	<div class="news_title">
+		&#187; <a href="/news/<%= _h(article[news_db:ID]) %>.wc"><%= _h(article[news_db:SUBJECT]) %></a><br />
 	</div>
+	<div class="news_meta">
+		Posted by <%- euweb:user_profile user=!article[AUTHOR_NAME] %> 
+		<%= article[PUBLISH_AT] %>
+		<a href="/news/<%= _h(article[ID]) %>.wc#comments"><%= _h(article[$]) %> comments</a>
+	</div>
+	</div>
+<% end for %>
+</td>
 
 <% end for %>
+</tr>
+</table>
 
 <%- euweb:foot quick_links=!quick_links %>
