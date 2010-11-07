@@ -52,9 +52,10 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 		</ul>
 
 		<%= message[MSG_BODY_FORMATTED] %>
-		<%- cat:item_list module_id=!forum_db:MODULE_ID item_id=!message[forum_db:MSG_ID] %>
-
 		<div class="post_tools">
+		<div class="right">
+		<%- cat:item_list hidden=1 module_id=!forum_db:MODULE_ID item_id=!message[forum_db:MSG_ID] %>
+		</div>
 			<% if has_role("user") then %>
 				<a href="/forum/post.wc?parent_id=<%= _h(message[MSG_ID]) %>">reply</a>,
 				<a href="/forum/post.wc?parent_id=<%= _h(message[MSG_ID]) %>&amp;quote=1">reply with quote</a>,
@@ -81,6 +82,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 			 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
 			 <a href="/forum.wc">topic index</a>
 			 &#187; <a href="/forum/m/<%= _h(message[MSG_ID]) %>.wc">view message</a>
+			 &#187; <a href="#" onclick="$('category_<%= _h(message[MSG_ID]) %>').appear(); return false;">categorize</a>
 		</div>
 	</div>
 <% end for %>

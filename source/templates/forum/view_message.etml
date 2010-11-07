@@ -1,6 +1,7 @@
 <%@
 include std/math.e
 include templates/euweb.etag as euweb
+include templates/category.etag as cat
 include local.etag as local
 include forum_db.e
 %>
@@ -65,6 +66,7 @@ end if
 	</ul>
 
 	<%= @body_formatted %>
+	<%- cat:item_list hidden="1" module_id=!forum_db:MODULE_ID item_id=@id %>
 
 	<div class="post_tools_bottom">
 		<% if has_role("user") then %>

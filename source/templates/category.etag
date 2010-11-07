@@ -5,16 +5,21 @@ include category_db.e as category_db
 include templates/euweb.etag as euweb
 %>
 <%
+sequence cats = category_db:item_list(#module_id, #item_id)	
 integer is_user = has_role("user")
+integer hidden = equal("1", #hidden)
 sequence id_mod = _h(#item_id)
+sequence style = ""
+if hidden and length(cats) = 0 then
+  style = "style=\"display:none;\""
+end if
 %>
 <a name="category_<%= id_mod %>"></a>
-<table id="category">
-	<tr>
+<table class="category" id="<%= id_mod %>" <% if equal("1", #hide) then %> style="display: none;"<% end if %>>
+	<tr <%= style %> id="category_<%= id_mod %>">
 		<td width="90%" valign="middle">
-			<div id="category_list_<%= id_mod %>">
+			<div id="category_list_<%= id_mod %>" class="category_list">
 			<%
-				sequence cats = category_db:item_list(#module_id, #item_id)	
 				for i = 1 to length(cats) do
 					%>
 					<span id="cat_<%= _h(i) %>">

@@ -38,10 +38,11 @@ sequence KnownWikis = {
 	{"WIKICREOLE",	"http://wikicreole.org/wiki/"},
 	{"OHANA",		"http://wikiohana.net/cgi-bin/wiki.pl/"},
 	{"WIKIPEDIA",	"http://wikipedia.org/wiki/"},
-	{"TICKET",  	"http://openeuphoria.org/ticket/view.wc?id="},
-	{"MESSAGE", 	"http://openeuphoria.org/forum/view.wc?id="},
-	{"NEWS",		"http://openeuphoria.org/news/view.wc?id="},
-	{"WIKI",        "http://openeuphoria.org/wiki/view.wc?page="},
+	{"TICKET",  	"/ticket/view.wc?id="},
+	{"MESSAGE", 	"/forum/view.wc?id="},
+	{"NEWS",		"/news/view.wc?id="},
+	{"WIKI",        "/wiki/view.wc?page="},
+	{"CATEGORY",    "/category/members.wc?category="},
 	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&amp;revision="}
 }
 
