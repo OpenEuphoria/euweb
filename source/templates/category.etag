@@ -1,0 +1,49 @@
+{{{item_list}}}
+<%@
+include std/net/url.e as url
+include category_db.e as category_db
+include templates/euweb.etag as euweb
+%>
+<%
+integer is_user = has_role("user")
+sequence id_mod = _h(#item_id)
+%>
+<a name="category_<%= id_mod %>"></a>
+<table id="category">
+	<tr>
+		<td width="90%" valign="middle">
+			<div id="category_list_<%= id_mod %>">
+			<%
+				sequence cats = category_db:item_list(#module_id, #item_id)	
+				for i = 1 to length(cats) do
+					%>
+					<span id="cat_<%= _h(i) %>">
+						<a href="/category/members.wc?category=<%= _h(cats[i][2]) %>"><%= _h(cats[i][2]) 
+						%></a><% if is_user then 
+						%><sup><a href="/category/categorize.wc?module_id=<%= _h(#module_id) %>&item_id=<%= _h(#item_id) %>&cat_name=<%= _h(cats[i][2]) %>&operation=2&url=<%= url:encode(getenv("REQUEST_URI")) %>">(x)</a></sup><% end if %><% if i < length(cats) then %>,<% end if %>
+					</span>
+					<%
+				end for
+			%>
+			<% if length(cats) = 0 then %>
+			<strong>Not Categorized, Please Help</strong>
+			<% end if %>
+			</div>
+		</td>
+		<td width="10%" valign="middle" align="center">
+			<% if is_user then 
+				sequence cat_name = sprintf("cat_name_%s", { id_mod })
+				%>
+				<form method="post" action="/category/categorize.wc">
+					<input type="hidden" name="operation" value="1" />
+					<input type="hidden" name="module_id" value="<%= _h(#module_id) %>" />
+					<input type="hidden" name="item_id" value="<%= _h(#item_id) %>" />
+					<input type="text" name="cat_name" id="<%= cat_name %>" />
+					<%- autocomplete_http url="/category/autocomplete.wc" name=!cat_name %>
+					<input type="hidden" name="url" value="<%= _h(getenv("REQUEST_URI")) %>" />
+					<input type="submit" value="Assign Category" />
+				</form>
+			<% end if %>
+		</td>
+	</tr>
+</table>

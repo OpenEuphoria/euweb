@@ -3,9 +3,11 @@
 include std/math.e
 
 include templates/euweb.etag as euweb
+include templates/category.etag as cat
 include local.etag as local
 
-include forum_db.e
+include forum_db.e as forum_db
+
 %>
 
 <%
@@ -50,6 +52,7 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 		</ul>
 
 		<%= message[MSG_BODY_FORMATTED] %>
+		<%- cat:item_list module_id=!forum_db:MODULE_ID item_id=!message[forum_db:MSG_ID] %>
 
 		<div class="post_tools">
 			<% if has_role("user") then %>

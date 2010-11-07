@@ -14,6 +14,8 @@ include edbi/edbi.e
 include config.e
 include db.e
 
+public constant MODULE_ID = 4
+
 --**
 -- Get the number of messages
 -- 

@@ -18,6 +18,7 @@ include db.e
 include user_db.e
 
 -- Module includes
+include category.e
 include forum.e
 include news.e
 include preview.e

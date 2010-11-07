@@ -1003,3 +1003,25 @@ div.index_title {
 ul.page_list {
   list-style: none;
 }
+
+table#category {
+  border: 1px dotted black;
+  margin: 8px 10px 8px 10px;
+  padding: 10px;
+  background-color: #fafafa;
+}
+
+div#category_list {
+  margin-bottom: 8px;
+}
+
+table#category form {
+  font-size: 0.8em;
+}
+
+.cloud_tools {
+  border-top: dotted 1px #E1E1E1;
+  text-align: center;
+  margin-top: 10px;
+  padding-top: 10px;
+}

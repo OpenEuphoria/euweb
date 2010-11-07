@@ -327,6 +327,17 @@ include std/text.e
   <% end for %>
 </select>
 
+{{{autocomplete_http}}}
+<div id="<%= #name %>_div" style="display:none;border:1px solid black;background-color:white;height:80px;width:120px;overflow:auto;"></div>
+<script type="text/javascript" language="javascript" charset="utf-8">
+// <![CDATA[
+  new Ajax.Autocompleter('<%= #name %>','<%= #name %>_div', '<%= #url %>', {
+  	paramName: "value",
+  	minChars: 2,
+  	tokens: ',' });
+// ]]>
+</script>
+
 {{{autocomplete}}}
 <%
   object rows = edbi:query_rows(#sql)

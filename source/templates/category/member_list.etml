@@ -1,0 +1,105 @@
+<%@
+
+include std/math.e
+include std/text.e
+
+include templates/euweb.etag as euweb
+
+include fuzzydate.e
+
+%>
+
+<%- euweb:head title="Category Page List" active="home" %>
+
+<%
+
+integer num_of_groups = length(@groups)
+integer num_of_members = @num_of_members
+
+sequence groups = @groups
+
+%>
+
+<h3>Category <span><%= _h(@category) %></span> Members</h3>
+
+<div class="wiki">
+<div class="wiki_tools_top">
+<%= _h(num_of_members) %> members(s)
+</div>
+
+<%
+
+if num_of_members = 0 then
+
+%>
+
+<p><strong>No members found.</strong></p>
+
+<%
+
+else
+
+%>
+
+<table class="nostyle" width="100%">
+<tr>
+
+<%
+
+for i = 1 to num_of_groups do
+    sequence group = groups[i]
+%>
+
+<td valign="top">
+
+<%
+ for j = 1 to length(group) do
+ 
+   if group[j][1] > 0 then
+%>
+<div class="index_title">
+  <%= sprintf("%s", group[j][1]) %>
+  <% if group[j][3] then %>cont...<% end if %>
+</div>
+<%
+end if
+%>
+
+<ul class="page_list">
+
+<%
+
+for k = 1 to length(group[j][2]) do
+      sequence page = group[j][2][k]
+%>
+
+<li>
+      <img src="/images/famfam/<%= page[2] %>"/> <a href="<%= page[3] %>"><%= _h(page[1]) %></a>
+</li>
+
+
+<% end for %>
+</ul>
+
+<%
+    end for
+%>
+
+</td>
+
+<%
+end for
+%>
+
+</tr>
+</table>
+
+<% end if %>
+
+<div class="wiki_tools">
+<a href="/category/cloud.wc">Category Cloud</a>
+</div>
+
+</div>
+
+<%- euweb:foot %>

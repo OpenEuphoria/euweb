@@ -85,7 +85,7 @@ function real_index(map data, map request, sequence where="")
         map:put(data, "no_product_id", 1)
         return change_product(data, request)
     end if
-	
+
 	-- Special case where New Ticket button is pressed.
 	if equal(map:get(request, "actiontype"), "New Ticket") then
 		return ticket_create(data, request)
@@ -130,7 +130,7 @@ function real_index(map data, map request, sequence where="")
             sprintf("(t.submitted_by_id=%d OR t.assigned_to_id=%d)", {
                     user_id, user_id }))
     end if
-    
+
     integer by_milestone = 0
     integer milestone_progress = 0
     sequence milestone_progress_text = ""
@@ -144,29 +144,29 @@ function real_index(map data, map request, sequence where="")
         local_where = append(local_where, sprintf("t.milestone='%s'", {
                     safe_milestone
         }))
-        
+
         by_milestone = 1
         integer total_count = edbi:query_object("""
-            SELECT COUNT(t.id) FROM ticket AS t 
+            SELECT COUNT(t.id) FROM ticket AS t
             WHERE product_id=%d AND milestone=%s
-            """,  
+            """,
             { product_id, safe_milestone  } )
         integer active_count = edbi:query_object("""
-            SELECT COUNT(t.id) 
-            FROM ticket AS t 
+            SELECT COUNT(t.id)
+            FROM ticket AS t
             INNER JOIN ticket_status AS tstat ON (tstat.id=t.status_id)
-            WHERE tstat.is_open=1 AND 
+            WHERE tstat.is_open=1 AND
             t.product_id=%d AND t.milestone=%s
-            """, 
+            """,
             { product_id, safe_milestone })
-    
+
 		if total_count > 0 then
 			milestone_progress = 100 - floor((active_count / total_count) * 100)
 			milestone_progress_text = sprintf("%d of %d complete (%d%%)", {
 					total_count - active_count, total_count, milestone_progress })
 		else
 			milestone_progress_text = "No assigned tickets"
-		end if	
+		end if
     end if
 
     if length(local_where) then
@@ -183,7 +183,7 @@ function real_index(map data, map request, sequence where="")
     -- we will have to query the db specifically for the product name.
     if length(tickets) > 0 then
         map:put(data, "product_name", tickets[1][ticket_db:PRODUCT])
-	
+
 		for i = 1 to length(tickets) do
 			switch tickets[i][TYPE_ID] do
 				case 1 then
@@ -194,7 +194,7 @@ function real_index(map data, map request, sequence where="")
 					tickets[i][ticket_db:ICON] = "script_gear"
 			end switch
 		end for
-		
+
     else
         map:put(data, "product_name", edbi:query_object("SELECT name FROM ticket_product WHERE id=%d", {
             product_id }))
@@ -223,12 +223,12 @@ function real_index(map data, map request, sequence where="")
     if has_role("developer") or has_role("admin") then
         static_developer_items = { { current_user[user_db:USER_ID], "** Me **", "me" } }
     end if
-    
+
     map:put(data, "static_developer_items", static_developer_items)
     map:put(data, "by_milestone", by_milestone)
     map:put(data, "milestone_progress", milestone_progress)
     map:put(data, "milestone_progress_text", milestone_progress_text)
-	
+
     return { TEXT, t_index:template(data) }
 end function
 
@@ -340,15 +340,16 @@ function do_create(map data, map request)
         map:get(request, "milestone"),
         map:get(request, "subject"),
         map:get(request, "content"))
-	
+
     if edbi:error_code() then
         map:put(data, "error_code", edbi:error_code())
         map:put(data, "error_message", edbi:error_message())
+
 		return { TEXT, t_update_ok:template(data) }
     end if
-	
+
 	integer id = edbi:last_insert_id()
-	
+
 	return { REDIRECT_303, sprintf("/ticket/%d.wc", { id }) }
 end function
 wc:add_handler(routine_id("do_create"), routine_id("validate_do_create"), "ticket", "do_create",
@@ -373,9 +374,10 @@ function detail(map data, map request)
 
         ticket_db:remove_comment(map:get(request, "remove_comment_id"))
     end if
-	
+
 	if map:get(data, "has_errors") then
 		map:copy(request, data)
+		map:put(data, "content", format_body(ticket[ticket_db:CONTENT], 0))
 	else
 		map:put(data, "id",               ticket[ticket_db:ID])
 		map:put(data, "type_id",          ticket[ticket_db:TYPE_ID])
@@ -394,20 +396,20 @@ function detail(map data, map request)
 		map:put(data, "status",           ticket[ticket_db:STATUS])
 		map:put(data, "svn_rev",          ticket[ticket_db:SVN_REV])
 		map:put(data, "subject",          ticket[ticket_db:SUBJECT])
-	
+
 		if map:get(request, "full_edit") then
 			map:put(data, "content", ticket[ticket_db:CONTENT])
 		else
 			map:put(data, "content", format_body(ticket[ticket_db:CONTENT], 0))
 		end if
 	end if
-	
+
     map:put(data, "created_at", fuzzy_ago(ticket[ticket_db:CREATED_AT]))
 
     map:put(data, "comments", comment_db:get_all(ticket_db:MODULE_ID, map:get(request, "id")))
     map:put(data, "product_name", ticket[ticket_db:PRODUCT])
 	map:put(data, "full_edit", map:get(request, "full_edit"))
-	
+
     get_product_id(request, data)
 
     return { TEXT, t_detail:template(data) }
@@ -443,7 +445,7 @@ function validate_update(map data, map request)
 		if not valid:not_empty(map:get(request, "subject")) then
 			errors = wc:add_error(errors, "subject", "Subject cannot be blank.")
 		end if
-	
+
 		if not valid:not_empty(map:get(request, "content")) then
 			errors = wc:add_error(errors, "content", "Content cannot be blank.")
 		end if
@@ -478,7 +480,7 @@ function update(map data, map request)
             map:get(request, "status_id"),
             map:get(request, "svn_rev")
         )
-	
+
 		   if equal(map:get(request, "save"), "Preview") then
 			map:put(request, "full_edit", "1")
 			map:put(data, "content_formatted", format_body(map:get(request, "content")))
@@ -490,7 +492,7 @@ function update(map data, map request)
 					map:get(request, "subject"),
 					map:get(request, "content"))
 		end if
-		
+
         if edbi:error_code() then
             map:put(data, "error_code", edbi:error_code())
             map:put(data, "error_message", edbi:error_message())
@@ -510,14 +512,14 @@ function update(map data, map request)
         if edbi:error_code() then
             map:put(data, "error_code", edbi:error_code())
             map:put(data, "error_message", edbi:error_message())
-			
+
 			return { TEXT, t_update_ok:template(data) }
         end if
-	
+
 		add_redirect = sprintf("#%d", { edbi:last_insert_id() })
     end if
-	
-	return { REDIRECT_303, sprintf("/ticket/%d.wc%s", { 
+
+	return { REDIRECT_303, sprintf("/ticket/%d.wc%s", {
 				map:get(request, "id"), add_redirect }) }
 end function
 wc:add_handler(routine_id("update"), routine_id("validate_update"), "ticket", "update", update_vars)

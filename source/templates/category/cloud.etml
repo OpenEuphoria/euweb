@@ -1,0 +1,33 @@
+<%@
+
+include templates/euweb.etag as euweb
+
+%>
+
+<%- euweb:head title="Category Cloud" active="home" %>
+
+<h3><%= _h(@title) %></h3>
+
+<div class="cloud_list">
+<%
+sequence cats = @categories
+
+for i = 1 to length(cats) do
+	sequence cat = cats[i]
+	%>
+	<a href="/category/members.wc?category=<%= _h(cat[1]) %>" style="font-size: <%= sprintf("%0.3f", { cat[3] }) %>em;"
+		><%= _h(cat[1]) %></a><% if i < length(cats) then %>,<% end if %>
+	<%
+end for
+%>
+</div>
+
+<div class="cloud_tools">
+<% integer sort_key = @sort %>
+
+<% if sort_key != 1 then %>:<a href="/category/cloud.wc?sort=1">by alphabetical order</a>:<% end if %>
+<% if sort_key != 2 then %>:<a href="/category/cloud.wc?sort=2">by popularity</a>:<% end if %>
+<% if sort_key != 3 then %>:<a href="/category/cloud.wc?sort=3">by popularity centered</a>:<% end if %>
+</div>
+
+<%- euweb:foot %>

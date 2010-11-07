@@ -1,5 +1,7 @@
 <%@
+
 include templates/euweb.etag as euweb
+include templates/category.etag as cat
 
 include wiki_db.e
 include local.etag as local
@@ -29,6 +31,7 @@ end if
     <div class="wiki_body">
     <%= wiki[wiki_db:WIKI_HTML] %>
     </div>
+    <%- cat:item_list module_id=!wiki_db:MODULE_ID item_id=!wiki[WIKI_NAME] %>
 
     <ul class="wiki_info">
       <li>
@@ -67,6 +70,7 @@ end if
         <%-euweb:user_profile user=!wiki[WIKI_CREATED_BY] show_public_roles=0 %>
       </li>
     </ul>
+
   </div>
 
 <%- local:foot %>
