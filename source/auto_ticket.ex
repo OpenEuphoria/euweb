@@ -78,4 +78,14 @@ for i = 1 to length(svn_log) do
 end for
 
 db:close()
+function getnumber(sequence s)
+	s = value(s)
+	-- if the read fails with an error, current_rev will be ""
+	-- or some other non-numberic value
+	-- value() will return GET_FAILURE with s[2] being 0
+	-- and 0 will always be less than last_svn
+	return s[2]
+end function
+if getnumber(current_rev) > getnumber(last_svn) then
 write_file("auto_ticket.svn", current_rev)
+end if
