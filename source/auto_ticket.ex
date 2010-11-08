@@ -88,4 +88,7 @@ function getnumber(sequence s)
 end function
 if getnumber(current_rev) > getnumber(last_svn) then
 write_file("auto_ticket.svn", current_rev)
+elsif getnumber(current_rev) < 1 then
+printf(2, "Error processing revision, got: %s", {current_rev})
+abort(2)
 end if
