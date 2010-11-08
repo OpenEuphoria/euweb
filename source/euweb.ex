@@ -20,6 +20,7 @@ include user_db.e
 -- Module includes
 include category.e
 include forum.e
+include general.e
 include news.e
 include preview.e
 include recent.e

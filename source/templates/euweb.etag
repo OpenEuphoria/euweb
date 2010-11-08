@@ -190,7 +190,8 @@ include euphoria/info.e as euinfo
 <div id="footer" class="fluid">
 	Copyright &copy; 2009,2010 by The OpenEuphoria Group. All rights reserved.
 	<br />
-	<a href="/wiki/view/AboutWebsite.wc">About Website</a>
+	<a href="/wiki/view/AboutWebsite.wc">About Website</a> |
+	<a href="/general/donate.wc">Help Fund OpenEuphoria</a>
 	<br />
         <a href="/rss.wc"><img style="vertical-align: middle;" src="/images/famfam/rss.png"></a>
  	<a href="http://www.openeuphoria.org/"><img style="vertical-align: middle;" src="/images/poweredby-euphoria.png" alt="Powered By Euphoria" /></a>

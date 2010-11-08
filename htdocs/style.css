@@ -1057,3 +1057,7 @@ table.old_news td div.news_meta {
   float: right;
   width: 50%;
 }
+
+div.donate {
+  text-align: center;
+}
