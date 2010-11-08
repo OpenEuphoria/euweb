@@ -29,6 +29,9 @@ end if
 <%- euweb:head title="News Index" active="home" %>
 
 <div class="wiki">
+<div class="news_example">
+<%= @example %>
+</div>
 <%= @news_html %>
 </div>
 

@@ -5,6 +5,9 @@
 include std/map.e
 include std/search.e
 include std/datetime.e as dt
+include std/rand.e
+include std/sequence.e
+include std/text.e
 
 include webclay/webclay.e as wc
 include webclay/logging.e as log
@@ -23,20 +26,33 @@ include format.e
 include fuzzydate.e
 include wiki_db.e
 
-sequence index_invars = {
+sequence index_vars = {
 	{ wc:INTEGER, "page",   	1 },
-	{ wc:INTEGER, "per_page",  20 }
+	{ wc:INTEGER, "per_page",  20 },
+	{ wc:INTEGER, "example",   -1 }
 }
 
-function index(map data, map invars)
-	map:put(data, "page", map:get(invars, "page"))
-	map:put(data, "per_page", map:get(invars, "per_page"))
+function index(map data, map request)
+	map:put(data, "page", map:get(request, "page"))
+	map:put(data, "per_page", map:get(request, "per_page"))
 	map:put(data, "article_count", news_db:article_count())
 
 	object news_wiki = wiki_db:get("NewsHome")
 	map:put(data, "news_html", format_body(news_wiki[WIKI_TEXT]))
 
-	object arts = news_db:get_article_list(map:get(invars, "page"), map:get(invars, "per_page"))
+	object news_example = wiki_db:get("NewsExamples")
+	if sequence(news_example) then
+		sequence examples = split(news_example[WIKI_TEXT], "----")
+		object idx = map:get(request, "example") + 1
+		if idx = 0 then
+			idx = rand_range(2, length(examples))
+		end if
+		map:put(data, "example", format_body(trim(examples[idx])))
+	else
+		map:put(data, "example", "")
+	end if
+
+	object arts = news_db:get_article_list(map:get(request, "page"), map:get(request, "per_page"))
 	for i = 1 to length(arts) do
 		arts[i][news_db:CONTENT] = format_body(arts[i][news_db:CONTENT])
 		--arts[i][news_db:PUBLISH_AT] = fuzzy_ago(arts[i][news_db:PUBLISH_AT])
@@ -49,8 +65,8 @@ function index(map data, map invars)
 
 	return { TEXT, t_index:template(data) }
 end function
-wc:add_handler(routine_id("index"), -1, "news", "index", index_invars)
-wc:add_handler(routine_id("index"), -1, "index", "index", index_invars)
+wc:add_handler(routine_id("index"), -1, "news", "index", index_vars)
+wc:add_handler(routine_id("index"), -1, "index", "index", index_vars)
 wc:set_default_handler(routine_id("greet_form"))
 
 sequence edit_in = {

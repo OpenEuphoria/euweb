@@ -1052,3 +1052,8 @@ table.old_news td div.news_meta {
   padding-left: 30px;
   font-size: 0.8em;
 }
+
+.news_example {
+  float: right;
+  width: 50%;
+}
