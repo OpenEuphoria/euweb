@@ -61,21 +61,18 @@ sequence view_vars = {
 function view(map data, map request)
 	sequence page = map:get(request, "page")
 	integer rev = map:get(request, "rev")
-	if length(page) > 8 and equal(page[1..8], "Category") then
-		return category_view(data, request, page)
-	end if
-	
+
 	-- do any updating before we load this pages database record
 	if has_role("wiki_admin") then
 		switch map:get(request, "read_only") do
 			case 0 then
 				wiki_db:mark_writable(page)
-			
+
 			case 1 then
 				wiki_db:mark_read_only(page)
 		end switch
 	end if
-	
+
 	-- load the page data
 	object w = wiki_db:get(page, rev)
 	if atom(w) then
@@ -83,7 +80,7 @@ function view(map data, map request)
 			return edit(data, request)
 		else
 			map:copy(request, data)
-			
+
 			return { TEXT, t_not_found:template(data) }
 		end if
 	end if
