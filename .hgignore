@@ -1,0 +1,6 @@
+.pp.
+config_jeremy.e
+htdocs/.htaccess
+eu.cfg
+htdocs/euweb.ex
+.log$
