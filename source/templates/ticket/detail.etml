@@ -8,6 +8,8 @@
   include comment_db.e
   include ticket_db.e
   include user_db.e
+
+  sequence div_class = "normal"
 %>
 
 <%
@@ -65,6 +67,10 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                 <a href="/ticket/<%= _h(@id) %>.wc?full_edit=1">Full Edit</a>
                 </p>
             <% end if %>
+    <% elsif length(@content_formatted) then %>
+		<div class="post forum <%= div_class %>">
+			<%= @content_formatted %>
+	    </div>
         <% end if %>
             
 		<h4><span>Details</span></h4>
@@ -199,7 +205,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
 				<tr>
 					<th nowrap="nowrap">New Comment:</th>
 					<td colspan="5">
-						<textarea id="comment" name="comment" rows="8" cols="60" style="width: 100%"></textarea>
+						<textarea id="comment" name="comment" rows=8 cols=60 style="width: 100%"><%= _h(@comment) %></textarea>
 						<%- euweb:creole_previewer name="comment" %>
 					</td>
 				</tr>
@@ -210,11 +216,18 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
 					<th>&nbsp;</th>
 					<td colspan="6">
 						<% if is_dev or is_owner then %>
-							<input type="submit" value="Update Ticket" />
+							<input class="button" type="submit" name="save" value="Update Ticket" />
 						<% elsif is_user then %>
-							<input type="submit" value="Add Comment" />
+							<input class="button" type="submit" name="save" value="Add Comment" />
 						<% end if %>
-						<input type="button" value="Preview Comment" onclick="preview_comment();"/>
+	<%- euweb:creole_previewer_button name="comment" %>
+	<br />
+	<%- euweb:creole_previewer name="comment" class="post forum" %>
+    <% if length(@comment_formatted) then %>
+		<div class="post forum <%= div_class %>">
+			<%= @comment_formatted %>
+	    </div>
+    <% end if %>
 					</td>
 				</tr>
 			<% end if %>

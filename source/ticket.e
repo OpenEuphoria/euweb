@@ -327,6 +327,7 @@ end function
 function do_create(map data, map request)
 	if equal(map:get(request, "save"), "Preview") then
 		map:put(data, "content_formatted", format_body(map:get(request, "content")))
+		map:put(data, "comment_formatted", format_body(map:get(request, "comment")))
 		return ticket_create(data, request)
 	end if
     ticket_db:create(
@@ -375,7 +376,9 @@ function detail(map data, map request)
         ticket_db:remove_comment(map:get(request, "remove_comment_id"))
     end if
 
-	if map:get(data, "has_errors") then
+	if equal(map:get(request, "save"), "Preview") then
+		map:copy(request, data)
+	elsif map:get(data, "has_errors") then
 		map:copy(request, data)
 		map:put(data, "content", format_body(ticket[ticket_db:CONTENT], 0))
 	else
@@ -482,8 +485,8 @@ function update(map data, map request)
         )
 
 		   if equal(map:get(request, "save"), "Preview") then
-			map:put(request, "full_edit", "1")
 			map:put(data, "content_formatted", format_body(map:get(request, "content")))
+			map:put(data, "comment_formatted", format_body(map:get(request, "comment")))
 			return detail(data, request)
 		   end if
 		if map:get(request, "full_edit") then
