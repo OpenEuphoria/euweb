@@ -43,7 +43,8 @@ sequence KnownWikis = {
 	{"NEWS",		"/news/view.wc?id="},
 	{"WIKI",        "/wiki/view.wc?page="},
 	{"CATEGORY",    "/category/members.wc?category="},
-	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&amp;revision="}
+	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&amp;revision="},
+	{"HG",          "http://scm.openeuphoria.org/hg/"}
 }
 
 export function format_body(sequence body, integer format_quotes=1)
