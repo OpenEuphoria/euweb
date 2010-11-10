@@ -1,6 +1,14 @@
 .pp.
 config_jeremy.e
-htdocs/.htaccess
 eu.cfg
-htdocs/euweb.ex
 .log$
+htdocs/.htaccess
+htdocs/euweb.ex
+htdocs/docs
+htdocs/eubins
+htdocs/eudox
+htdocs/rebuild.sh
+htdocs/unit-test
+source/auto_ticket.svn
+source/config_production.e
+source/reindex_manual.sh
