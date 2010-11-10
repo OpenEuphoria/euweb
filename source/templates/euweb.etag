@@ -158,11 +158,13 @@ include euphoria/info.e as euinfo
 						<li><a href="/user/logout.wc">Logout</a></li>
 					</ul>
 				<% end if %>
-				
+
+				<% if length(#active) = 0 or equal(#active, "home") then %>
 				<h4>Help Fund <span>OpenEuphoria</span></h4>
 				<div style="text-align: center;">
 					<a href="/general/donate.wc"><img src="/images/paypal_donate.gif"/></a>
 				</div>
+				<% end if %>
 				
 				<% if has_role("admin") then %>
 					<h4><span>Admin</span> Menu</h4>
