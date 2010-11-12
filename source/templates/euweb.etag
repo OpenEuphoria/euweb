@@ -46,7 +46,7 @@
 				  		>Wiki</a>
 				</li>
 				<li>
-					<a href="/docs/eu400_0001.html"
+					<a href="/docs"
 				  		<% if equal(#active, "manual") then %>class="active"<% end if %>
 						>Manual</a>
 				</li>
@@ -132,7 +132,7 @@ include euphoria/info.e as euinfo
 					<li class="<%= class %>"> <a href="<%= ql[1] %>"><%= ql[2] %></a></li>
 					<% end for %>
 				<% else %>
-					<li class="first"><a href="/docs/eu400_0001.html">Manual</a></li>
+					<li class="first"><a href="/docs">Manual</a></li>
 					<li><a href="http://rapideuphoria.com/archive.htm">The Archive</a></li>
 					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
 				<% end if %>

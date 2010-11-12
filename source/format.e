@@ -44,7 +44,8 @@ sequence KnownWikis = {
 	{"WIKI",        "/wiki/view.wc?page="},
 	{"CATEGORY",    "/category/members.wc?category="},
 	{"SVN", 		"http://rapideuphoria.svn.sourceforge.net/viewvc/rapideuphoria?view=rev&amp;revision="},
-	{"HG",          "http://scm.openeuphoria.org/hg/"}
+	{"HG",          "http://scm.openeuphoria.org/hg/"},
+    {"MAN",         "/docs/"}
 }
 
 export function format_body(sequence body, integer format_quotes=1)
