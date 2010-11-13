@@ -4,6 +4,7 @@
 
 include edbi/edbi.e
 include std/sequence.e
+include std/search.e
 include std/io.e
 
 -- request_count = 10, in_seconds = 5
@@ -33,7 +34,7 @@ if not atom(remote_addr) then
     	while i < length(htaccess) do
         	if equal("#IP_BAN_LIST", htaccess[i]) then
             	sequence ban_cond = sprintf("RewriteCond %%{REMOTE_ADDR} ^%s [OR]", {
-                	replace_all(remote_addr, ".", "\\.") })
+                	match_replace(".", remote_addr, "\\.") })
 	            htaccess = insert(htaccess, ban_cond, i + 1)
     	        exit
         	end if
