@@ -326,8 +326,17 @@ end function
 
 function do_create(map data, map request)
 	if equal(map:get(request, "save"), "Preview") then
-		map:put(data, "content_formatted", format_body(map:get(request, "content")))
-		map:put(data, "comment_formatted", format_body(map:get(request, "comment")))
+		object s
+		s = map:get(request, "content")
+		if atom(s) then
+			s = ""
+		end if
+		map:put(data, "content_formatted", format_body(s))
+		s = map:get(request, "comment")
+		if atom(s) then
+			s = ""
+		end if
+		map:put(data, "comment_formatted", format_body(s))
 		return ticket_create(data, request)
 	end if
     ticket_db:create(
@@ -368,12 +377,14 @@ function detail(map data, map request)
         return { TEXT, t_not_found:template(data) }
     end if
 
+	if not equal(map:get(request, "save"), "Preview") then
     if map:get(request, "remove_comment_id") > -1 then
         if not has_role("admin") then
             return { TEXT, t_security:template(data) }
         end if
 
         ticket_db:remove_comment(map:get(request, "remove_comment_id"))
+    end if
     end if
 
 	if equal(map:get(request, "save"), "Preview") then
@@ -465,6 +476,12 @@ function update(map data, map request)
         map:put(request, "assigned_to_id", 0)
     end if
 
+		   if equal(map:get(request, "save"), "Preview") then
+			map:put(data, "content_formatted", format_body(map:get(request, "content")))
+			map:put(data, "comment_formatted", format_body(map:get(request, "comment")))
+			return detail(data, request)
+		   end if
+
     if has_role("developer") or
         (sequence(current_user) and
             current_user[user_db:USER_ID] =
@@ -484,11 +501,6 @@ function update(map data, map request)
             map:get(request, "svn_rev")
         )
 
-		   if equal(map:get(request, "save"), "Preview") then
-			map:put(data, "content_formatted", format_body(map:get(request, "content")))
-			map:put(data, "comment_formatted", format_body(map:get(request, "comment")))
-			return detail(data, request)
-		   end if
 		if map:get(request, "full_edit") then
 			ticket_db:update_full(
 				map:get(request, "id"),
