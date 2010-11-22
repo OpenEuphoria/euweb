@@ -251,7 +251,7 @@ function validate_do_signup(integer data, map:map vars)
 			ifdef OLD_GET_URL then
 				object recaptcha_result = get_url(recaptcha_url, postdata)
 			elsedef
-				object recaptcha_result = http_get(recaptcha_url, postdata)
+				object recaptcha_result = http_post(recaptcha_url, postdata)
 			end ifdef
 			if length(recaptcha_result) < 2  then
 				errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
