@@ -100,6 +100,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                       option_sql="SELECT id,name FROM ticket_type ORDER BY name" 
                     %>
 					<% else %>
+						<input type="hidden" name="type_id" value="<%= _h(@type_id) %>"/>
 						<%= _h(@type) %>
 					<% end if %>
 				</td>
@@ -112,6 +113,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                       option_sql="SELECT id,name FROM ticket_severity ORDER BY position" 
                     %>
 					<% else %>
+						<input type="hidden" name="severity_id" value="<%= _h(@severity_id) %>"/>
 						<%= _h(@severity) %>
 					<% end if %>
 				</td>
@@ -124,6 +126,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                       option_sql=@category_sql 
                     %>
 					<% else %>
+						<input type="hidden" name="category_id" value="<%= _h(@category_id) %>"/>
 						<%= _h(@category) %>
 					<% end if %>
 				</td>
@@ -139,6 +142,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                       option_sql="SELECT u.id,u.user FROM users AS u, user_roles AS ur WHERE u.id=ur.user_id AND ur.role_name='developer' ORDER BY user" 
                     %>
 					<% else %>
+						<input type="hidden" name="assigned_to_id" value="<%= _h(@assigned_to_id) %>"/>
 						<%= _h(@assigned_to) %>
 					<% end if %>
 				</td>
@@ -151,6 +155,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                           option_sql="SELECT id,name,IF(is_open,'active_ticket','closed_ticket') AS cls FROM ticket_status ORDER BY position"
                         %>
 					<% else %>
+						<input type="hidden" name="status_id" value="<%= _h(@status_id) %>"/>
 						<%= _h(@status) %>
 					<% end if %>
 				</td>
@@ -159,6 +164,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
 					<% if is_dev or is_owner then %>
 						<input type="text" name="reported_release" value="<%= _h(@reported_release) %>" size="15" />
 					<% else %>
+						<input type="hidden" name="reported_release" value="<%= _h(@reported_release) %>"/>
 						<%= _h(@reported_release) %>
 					<% end if %>
 				</td>
@@ -169,6 +175,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
 					<% if is_dev then %>
 						<input type="text" name="svn_rev" value="<%= _h(@svn_rev) %>" size="15" style="width:100%;"/>
 					<% else %>
+						<input type="hidden" name="svn_rev" value="<%= _h(@svn_rev) %>"/>
 						<%= @svn_rev %>
 					<% end if %>
 				</td>
@@ -196,6 +203,7 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
                       option_sql=@milestone_sql 
                     %>
                     <% else %>
+						<input type="hidden" name="milestone" value="<%= _h(@milestone) %>" />
                         <%= _h(@milestone) %>
                     <% end if %>
                 </td>
