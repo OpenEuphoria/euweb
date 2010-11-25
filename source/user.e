@@ -250,6 +250,7 @@ function validate_do_signup(integer data, map:map vars)
 			}
 
 		if length(RECAPTCHA_PUBLIC_KEY) then
+			object recaptcha_result = http_post(recaptcha_url, postdata)
 			if length(recaptcha_result) < 2  then
 				errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
 			elsif not match("true", recaptcha_result[2]) = 1 then
@@ -352,16 +353,14 @@ public function validate_forgot_password(integer data, map vars)
 	-- No reason to do the costly tests if we already have errors.
 	if not has_errors(errors) then
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
-		sequence postdata = sprintf("privatekey=%s&remoteip=%s&challenge=%s&response=%s", {
-			url:encode(RECAPTCHA_PRIVATE_KEY), url:encode(server_var("REMOTE_ADDR")),
-			url:encode(map:get(vars, "recaptcha_challenge_field")),
-			url:encode(map:get(vars, "recaptcha_response_field")) })
+		sequence postdata = {
+				{ "privatekey", RECAPTCHA_PRIVATE_KEY },
+				{ "remoteip", server_var("REMOTE_ADDR") },
+				{ "challenge", map:get(vars, "recaptcha_challenge_field") },
+				{ "response", map:get(vars, "recaptcha_response_field") }
+			}
 
-		ifdef OLD_GET_URL then
-			object recaptcha_result = get_url(recaptcha_url, postdata)
-		elsedef
-			object recaptcha_result = http_post(recaptcha_url, postdata)
-		end ifdef
+		object recaptcha_result = http_post(recaptcha_url, postdata)
 		if length(recaptcha_result) < 2 then
 	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
 		elsif not match("true", recaptcha_result[2]) = 1 then
