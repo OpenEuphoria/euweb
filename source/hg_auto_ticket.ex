@@ -7,6 +7,7 @@
 -- References are case insensitive
 -- Multiple references can exist in one commit message
 -- Ticket references can be either ticket:123 (old style) or ticket 123 (new style)
+--
 -- Example references:
 --   * ticket 123        -- simple reference
 --   * fixes ticket 123  -- marks bug as fixed
