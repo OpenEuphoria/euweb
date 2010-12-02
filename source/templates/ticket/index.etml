@@ -142,8 +142,8 @@
 
 <div class="centered">
     <%
-    sequence qs = sprintf("&amp;type_id=%d&amp;category_id=%d&amp;severity_id=%d&amp;status_id=%d&amp;user_id=%d",
-        { @type_id, @category_id, @severity_id, @status_id, @user_id })
+    sequence qs = sprintf("&amp;type_id=%d&amp;category_id=%d&amp;severity_id=%d&amp;status_id=%d&amp;user_id=%d&amp;milestone=%s",
+        { @type_id, @category_id, @severity_id, @status_id, @user_idi, @milestone })
     %>
     <%- euweb:paginator qs=!qs page=@page per_page=@per_page total=@ticket_count %>
 </div>
