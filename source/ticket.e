@@ -424,6 +424,7 @@ function detail(map data, map request)
     map:put(data, "product_name", ticket[ticket_db:PRODUCT])
 	map:put(data, "full_edit", map:get(request, "full_edit"))
 
+	map:put(request, "product_id", ticket[ticket_db:PRODUCT_ID])
     get_product_id(request, data)
 
     return { TEXT, t_detail:template(data) }
