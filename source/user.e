@@ -107,6 +107,15 @@ end function
 wc:add_handler(routine_id("profile"), -1, "user", "profile", profile_invars)
 
 public function login_form(map data, map invars)
+	if map:has(invars, "referer") then
+		map:put(data, "referer", map:get(invars, "referer"))
+	else
+		object referer = getenv("HTTP_REFERER")
+
+		if sequence(referer) and begins(ROOT_URL, referer) then
+			map:put(data, "referer", referer)
+		end if
+	end if
 
 	return { TEXT, t_login_form:template(data) }
 end function
@@ -115,7 +124,8 @@ wc:add_handler(routine_id("login_form"), -1, "login", "index")
 
 sequence login_invars = {
 	{ wc:SEQUENCE, "code" },
-	{ wc:SEQUENCE, "password" }
+	{ wc:SEQUENCE, "password" },
+	{ wc:SEQUENCE, "referer" }
 }
 
 public function validate_do_login(integer data, map vars)
@@ -175,6 +185,8 @@ public function do_login(map data, map invars)
 		if user_db:is_old_account(current_user) then
 			return { TEXT, t_old_account:template(data) }
 		else
+			map:put(data, "referer", map:get(invars, "referer", 0))
+
 			return { TEXT, t_login_ok:template(data) }
 		end if
 	end if

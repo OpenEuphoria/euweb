@@ -8,6 +8,14 @@
     You are now logged into OpenEuphoria.org!
 </p>
 
+<% if sequence(@referer) then %>
+<p>
+
+<a href="<%= _h(@referer) %>">Return to previous location</a>
+
+</p>
+<% end if %>
+
 <br class="clear" />
 
 <%- euweb:foot %>
