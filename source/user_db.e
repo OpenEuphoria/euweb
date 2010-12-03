@@ -18,14 +18,14 @@ include db.e
 include md5.e
 
 global object current_user = 0
-global enum USER_ID, USER_NAME, USER_FULL_NAME, USER_LOCATION, USER_EMAIL, USER_SHOW_EMAIL,
-	USER_LAST_LOGIN_AT, USER_DISABLED, USER_DISABLED_REASON, USER_IP_ADDR,
-	USER_FORUM_DEFAULT_VIEW, USER_LOCAL_JS, USER_ROLES
+global enum USER_ID, USER_CREATED_AT, USER_NAME, USER_FULL_NAME, USER_LOCATION, 
+	USER_EMAIL, USER_SHOW_EMAIL, USER_LAST_LOGIN_AT, USER_DISABLED, 
+	USER_DISABLED_REASON, USER_IP_ADDR, USER_FORUM_DEFAULT_VIEW, USER_LOCAL_JS, USER_ROLES
 
 public enum FORUM_DEFAULT_VIEW_TOPIC,
 	FORUM_DEFAULT_VIEW_MESSAGE
 
-constant select_fields = `id, user, name, location, email, show_email, login_time, disabled,
+constant select_fields = `id, created_at, user, name, location, email, show_email, login_time, disabled,
 	disabled_reason, ip_addr, forum_default_view, local_js`
 
 function salt(sequence salt, sequence message)
@@ -174,10 +174,10 @@ public function create(sequence code, sequence password, sequence email,
 		sequence security_question, sequence security_answer)
 	if edbi:execute("""
 		INSERT INTO users (
-			user, password, email, security_question, security_answer
+			created_at, user, password, email, security_question, security_answer
 		) 
 		VALUES (
-			%s, SHA1(%s), %s, %s, SHA1(%s)
+			CURRENT_TIMESTAMP, %s, SHA1(%s), %s, %s, SHA1(%s)
 		)""", { code, password, email, security_question, security_answer })
 	then
 		crash("Couldn't insert user into the database: %s", { 
@@ -299,3 +299,4 @@ public function get_list(integer offset=0, integer per_page=10, sequence where="
 
 	return edbi:query_rows(sql, { per_page, offset })
 end function
+

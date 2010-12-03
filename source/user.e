@@ -87,8 +87,10 @@ public function profile(map data, map invars)
 	map:put(data, "invalid_profile", 0)
 
 	user[USER_LAST_LOGIN_AT] = fuzzy_ago(user[USER_LAST_LOGIN_AT])
+	user[USER_CREATED_AT] = dt:format(user[USER_CREATED_AT], "%m/%d/%Y %H:%M:%S")
 
 	map:put(data, "user", user)
+	map:put(data, "user_created_at", user[USER_CREATED_AT])
 	map:put(data, "user_id", user[USER_ID])
 	map:put(data, "user_name", user[USER_NAME])
 	map:put(data, "user_location", user[USER_LOCATION])

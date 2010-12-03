@@ -61,6 +61,12 @@ end function
 				<a href="/wiki/view/<%= @user_name %>.wc"><%= @user_name %></a>
 			</td>
 		</tr>
+		<% if has_role("user_admin") then %>
+		<tr>
+			<th>Created:</th>
+			<td><%= _h(@user_created_at) %></td>
+		</tr>
+		<% end if %>
 		<tr>
 			<th>Last Seen:</th>
 			<td><%= @user_last_seen %></td>
