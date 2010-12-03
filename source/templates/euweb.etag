@@ -1,4 +1,8 @@
 {{{head}}}
+<%@
+integer show_donate_button = 0
+integer is_ticket = 0
+%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
 
@@ -7,6 +11,11 @@
 	missing in a maze
 
 -->
+<%
+show_donate_button = length(#active) = 0 or equal(#active, "home") 
+is_ticket = equal(#active, "ticket")
+%>
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
@@ -119,6 +128,12 @@ include euphoria/info.e as euinfo
 
 				<h4><span>Quick</span> Links</h4>
 				<ul class="links">
+				<% if is_ticket then %>
+					<li><form style="display: inline;" method="POST" action="/ticket/index.wc">
+					Id: <input type="text" name="id" style="width: 3em">
+					<input type="submit" class="button" value="Go" />
+					</form></li>
+				<% end if %>
 				<%
 				object quick_links = #quick_links
  				if sequence(quick_links) and length(quick_links) > 0 then
@@ -159,7 +174,7 @@ include euphoria/info.e as euinfo
 					</ul>
 				<% end if %>
 
-				<% if length(#active) = 0 or equal(#active, "home") then %>
+				<% if show_donate_button then %>
 				<h4>Help Fund <span>OpenEuphoria</span></h4>
 				<div style="text-align: center;">
 					<a href="/general/donate.wc"><img src="/images/paypal_donate.gif"/></a>

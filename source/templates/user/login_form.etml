@@ -8,6 +8,9 @@
 
 <form method="post" action="/user/do_login.wc">
 <table class="form">
+	<% if sequence(@referer) then %>
+		<input type="hidden" name="referer" value="<%= _h(@referer) %>" />
+	<% end if %>
 	<tr>
 		<th>User code:</th>
 		<td><input type="text" id="code" name="code" /></td>

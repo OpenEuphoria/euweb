@@ -66,6 +66,7 @@ function get_product_id(map request, object data = 0)
 end function
 
 sequence index_vars = {
+	{ wc:INTEGER, "id", 0 },
     { wc:INTEGER,  "page",         1 },
     { wc:INTEGER,  "per_page",    20 },
     { wc:INTEGER,  "category_id", -1 },
@@ -89,6 +90,10 @@ function real_index(map data, map request, sequence where="")
 	-- Special case where New Ticket button is pressed.
 	if equal(map:get(request, "actiontype"), "New Ticket") then
 		return ticket_create(data, request)
+	end if
+
+	if map:get(request, "id") > 0 then
+		return { REDIRECT_303, sprintf("/ticket/%d.wc", { map:get(request, "id") }) }
 	end if
 
     sequence milestone  = map:get(request, "milestone")
@@ -424,6 +429,7 @@ function detail(map data, map request)
     map:put(data, "product_name", ticket[ticket_db:PRODUCT])
 	map:put(data, "full_edit", map:get(request, "full_edit"))
 
+	map:put(request, "product_id", ticket[ticket_db:PRODUCT_ID])
     get_product_id(request, data)
 
     return { TEXT, t_detail:template(data) }
