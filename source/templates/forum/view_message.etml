@@ -90,7 +90,7 @@ end if
 		 <% end if %>
 		 &nbsp;&nbsp;&nbsp;&nbsp;&#187;
 		 <a href="/forum.wc">topic index</a>
-		 &#187; <a href="/forum/<%= _h(@id) %>.wc">view thread</a>
+		 &#187; <a href="/forum/<%= _h(@id) %>.wc#<%= _h(@id) %>">view thread</a>
 
 		 &nbsp;&nbsp;&nbsp;&nbsp;
 
