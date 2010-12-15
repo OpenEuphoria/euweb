@@ -22,6 +22,7 @@ include category.e
 include forum.e
 include general.e
 include news.e
+include pastey.e
 include preview.e
 include recent.e
 include rss.e
