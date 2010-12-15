@@ -148,8 +148,6 @@ include euphoria/info.e as euinfo
 					<% end for %>
 				<% else %>
 					<li class="first"><a href="/docs">Manual</a></li>
-					<li><a href="http://rapideuphoria.com/archive.htm">The Archive</a></li>
-					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
 				<% end if %>
 				</ul>
 
@@ -180,6 +178,15 @@ include euphoria/info.e as euinfo
 					<a href="/general/donate.wc"><img src="/images/paypal_donate.gif"/></a>
 				</div>
 				<% end if %>
+
+				<h4><span>Misc</span> Menu</h4>
+				<ul class="links">
+					<li class="first"><a href="/docs">Manual</a></li>
+					<li><a href="/category/cloud.wc">Category Cloud</a></li>
+					<li><a href="/pastey/index.wc">Pastey</a></li>
+					<li><a href="http://rapideuphoria.com/archive.htm">The Archive</a></li>
+					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
+				</ul>
 				
 				<% if has_role("admin") then %>
 					<h4><span>Admin</span> Menu</h4>

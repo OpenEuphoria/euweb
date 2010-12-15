@@ -4,7 +4,9 @@
 
   include webclay/escape.e
   include fuzzydate.e
+
   include pastey_db.e
+  include comment_db.e
 %>
 
 <%
@@ -24,6 +26,35 @@ sequence p = @pastey
 	<%= p[pastey_db:BODY] %>
 </div>
 
-<%- local:foot %>
+<a name="comments"></a>
+<%
+sequence comments = @comments
+for i = 1 to length(comments) do
+	sequence comment = comments[i]
+	%>
 
+  <a name="<%= _h(comment[comment_db:ID]) %>"></a>
+  <h4>
+    <a name="<%= _h(comment[comment_db:ID]) %>"></a>
+    <span><%= _h(i) %>. Comment by</span> <%- euweb:user_profile user=!comment[comment_db:USER] %>
+    <%= _h(comment[comment_db:CREATED_AT]) %>
+    <% if has_role("forum_moderator") then %>
+    &#187; <a href="/pastey/<%= _h(p[pastey_db:ID]) %>.wc?remove_comment=<%= _h(comment[comment_db:ID]) %>">remove</a>
+    <% end if %>
+  </h4>
+
+  <%= comment[comment_db:BODY] %>
+<% end for %>
+
+<% if has_role("user") then %>
+	<h4><span>Leave</span> Comment</h4>
+	<form method="post" action="/pastey/<%= _h(p[pastey_db:ID]) %>.wc">
+		<textarea id="body" name="body" rows="5" cols="80" style="width:100%"></textarea>
+		<%- euweb:creole_previewer name="body" %>
+		<br />
+		<input type="submit" value="Leave Comment" />
+		<input type="button" value="Preview Comment" onclick="preview_body();" />
+	</form>
+<% end if %>
+<%- local:foot %>
 

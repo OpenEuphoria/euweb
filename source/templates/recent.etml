@@ -20,6 +20,8 @@
       <% if @ticket then %>checked="checked" <% end if %>/> Ticket
 <input type="checkbox" name="wiki" value="1"
       <% if @wiki then %>checked="checked" <% end if %>/> Wiki
+<input type="checkbox" name="pastey" value="1"
+      <% if @pastey then %>checked="checked" <% end if %>/> Pastey
 
 <input type="submit" value="Refresh" />
 
@@ -71,8 +73,8 @@
 
 <div class="centered">
     <%
-    sequence qs = sprintf("&amp;news=%d&amp;forum=%d&amp;wiki=%d&amp;ticket=%d", {
-        @news, @forum, @wiki, @ticket })
+    sequence qs = sprintf("&amp;news=%d&amp;forum=%d&amp;wiki=%d&amp;ticket=%d&amp;pastey=%d", {
+        @news, @forum, @wiki, @ticket, @pastey })
     %>
     <%- euweb:paginator qs=!qs base="/recent.wc" page=@page per_page=@per_page total=@total_items %>
 </div>

@@ -24,6 +24,12 @@ public function type_icon(sequence typ)
 			
 		case "manual" then
 			return "book.png"
+
+		case "pastey" then
+			return "camera_error.png"
+
+		case "pastey comment" then
+			return "camera_edit.png"
 			
 		case else
 			return ""

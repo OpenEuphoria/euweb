@@ -19,6 +19,7 @@ include edbi/edbi.e
 include ticket_db.e as ticket_db
 include news_db.e as news_db
 include wiki_db.e as wiki_db
+include pastey_db.e as pastey_db
 
 include config.e
 include fuzzydate.e
@@ -91,13 +92,30 @@ constant q_news = """
 
 """
 
+constant q_pastey = `
+
+		SELECT 'pastey', CONCAT(p.id, ''), p.created_at AS created_at, u.user, p.title, '',
+			'0', '', '', 0 AS recent_edit_cnt
+		FROM pastey AS p
+		INNER JOIN users AS u ON (u.id=p.user_id)
+	UNION ALL
+		SELECT 'pastey comment', CONCAT(p.id, ''), c.created_at, u.user, p.title, '',
+			CONCAT(c.id, ''), '', '', 0 AS recent_edit_cnt
+		FROM comment AS c
+		INNER JOIN pastey AS p ON (p.id=c.item_id)
+		INNER JOIN users AS u ON (u.id=c.user_id)
+		WHERE c.module_id=5
+
+`
+
 sequence recent_vars = {
 	{ wc:INTEGER, "page",      1 },
 	{ wc:INTEGER, "per_page", 20 },
 	{ wc:INTEGER, "forum",     0 },
 	{ wc:INTEGER, "ticket",    0 },
 	{ wc:INTEGER, "news",      0 },
-	{ wc:INTEGER, "wiki",      0 }
+	{ wc:INTEGER, "wiki",      0 },
+	{ wc:INTEGER, "pastey",    0 }
 }
 
 function recent(map data, map request)
@@ -109,18 +127,21 @@ function recent(map data, map request)
 	integer ticket   = map:get(request, "ticket")
 	integer news     = map:get(request, "news")
 	integer wiki     = map:get(request, "wiki")
+	integer pastey   = map:get(request, "pastey")
 
-	if (forum + ticket + news + wiki = 0) then
+	if (forum + ticket + news + wiki + pastey = 0) then
 		forum = 1
 		ticket = 1
 		news = 1
 		wiki = 1
+		pastey = 0 -- Off by default
 	end if
 
 	map:put(data, "forum", forum)
 	map:put(data, "ticket", ticket)
 	map:put(data, "news", news)
 	map:put(data, "wiki", wiki)
+	map:put(data, "pastey", pastey)
 
 	integer total_count = 0
 	sequence queries = {}
@@ -147,6 +168,13 @@ function recent(map data, map request)
 	if wiki then
 		queries = append(queries, q_wiki)
 		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page WHERE rev=0")
+	end if
+
+	if pastey then
+		queries = append(queries, q_pastey)
+		total_count += edbi:query_object("SELECT COUNT(id) FROM pastey")
+		total_count += edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d", {
+			pastey_db:MODULE_ID })
 	end if
 
 	sequence sql = join(queries, " UNION ALL ") &  """

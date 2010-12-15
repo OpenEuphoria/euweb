@@ -83,7 +83,10 @@ end function
 wc:add_handler(routine_id("create"), routine_id("validate_create"), "pastey", "create", create_vars)
 
 sequence view_vars = {
-	{ wc:INTEGER, "id", 0 }	
+	{ wc:INTEGER, "id", 0 },
+	{ wc:SEQUENCE, "body", "" },
+	{ wc:INTEGER, "remove_comment", 0 },
+	$
 }
 
 function view(map data, map request)
@@ -93,9 +96,31 @@ function view(map data, map request)
 		return { REDIRECT_303, "/pastey/index.wc?message=" & edbi:error_message() }
 	end if
 
+	if has_role("user") and length(map:get(request, "body")) then
+		comment_db:add_comment(
+			pastey_db:MODULE_ID, 
+			pastey[pastey_db:ID], 
+			pastey[pastey_db:TITLE], 
+			map:get(request, "body"))
+	
+		integer id = edbi:last_insert_id()
+
+		return { REDIRECT_303, sprintf("/pastey/%d.wc#%d", { pastey[pastey_db:ID], id }) }
+	end if
+	
+	if has_role("forum_moderator") and map:get(request, "remove_comment") > 0 then
+		comment_db:remove_comment(map:get(request, "remove_comment"))
+	
+		return { REDIRECT_303, sprintf("/pastey/%d.wc", { pastey[pastey_db:ID] }) }
+	end if
+
 	pastey[pastey_db:BODY] = format_body(pastey[pastey_db:BODY])
 
 	map:put(data, "pastey", pastey)
+	map:put(data, "comment_count", 
+		edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d AND item_id=%d", 
+			{ pastey_db:MODULE_ID, pastey[pastey_db:ID] }))
+	map:put(data, "comments", comment_db:get_all(pastey_db:MODULE_ID, pastey[pastey_db:ID]))
 
 	return { TEXT, t_view:template(data) }
 end function
