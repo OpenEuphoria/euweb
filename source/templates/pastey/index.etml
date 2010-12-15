@@ -10,14 +10,15 @@
 
 <%- euweb:errors %>
 
-<form method="POST" action="create.wc">
-	Title: <input type="text" name="title" size="55" value="<%= _h(@title) %>"/><br />
+<form method="POST" action="create.wc" style="margin-top: 10px">
+	Title: <input type="text" name="title" size="55" style="width: 100%" value="<%= _h(@title) %>"/>
 	<div style="margin: 12px 0px 12px 0px">
-		<textarea name="body" rows=15 cols=65><%= _h(@body) %></textarea>
+		Content:<br />
+		<textarea id="body" name="body" rows=15 cols=65 style="width: 100%"><%= _h(@body) %></textarea>
 	</div>
 	Euphoria Code? <input type="checkbox" name="eucode" value="1" 
 		<% if equal(@eucode, 1) then %>checked="checked"<% end if %>>
-	<input type="submit" name="Post"/>
+	<input type="submit" name="submit" value="Paste bin it!"/>
 </form>
 
 <%- local:foot %>
