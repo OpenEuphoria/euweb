@@ -1,0 +1,29 @@
+<%@
+  include templates/euweb.etag as euweb
+  include std/math.e
+
+  include webclay/escape.e
+  include fuzzydate.e
+  include pastey_db.e
+%>
+
+<%
+sequence p = @pastey
+%>
+
+<%- euweb:head title="Euphoria Pastey" active="home" %>
+
+<div class="post forum" id="pastey_<%= _h(p[pastey_db:ID]) %>">
+	<a name="<%= _h(p[pastey_db:ID]) %>"></a>
+	<h3>Pastey <span><%= _h(p[pastey_db:TITLE]) %></h3>
+	<ul class="post_info">
+		<li class="date">Posted by <%- euweb:user_profile user=!p[pastey_db:USERNAME] show_public_roles=1 %>
+		<%= fuzzy_ago(p[pastey_db:CREATED_AT]) %></li>
+	</ul>
+
+	<%= p[pastey_db:BODY] %>
+</div>
+
+<%- euweb:foot %>
+
+

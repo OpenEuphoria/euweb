@@ -7,9 +7,18 @@
   include pastey_db.e
 %>
 
-<%- euweb:head title="Recent Pastey Activity" active="home" %>
+<%- euweb:head title="Euphoria Pastey" active="home" %>
 
-<h3>Recent <span>Pastey</span> Activity</h3>
+<h3>Euphoria <span>Pastey</span></h3>
+
+    <%- euweb:errors %>
+
+<form method="POST" action="create.wc">
+	Title: <input type="text" name="title" size="55" value="<%= _h(@title) %>"/><br />
+	<textarea name="body" rows=10 cols=65><%= _h(@body) %></textarea>
+	<br />
+	<input type="submit" name="Post"/>
+</form>
 
 <table class="list forum">
     <tr>
@@ -25,7 +34,7 @@
         %>
         <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
             <td nowarp="nowrap">
-                <%= _h(item[pastey_db:TITLE]) %>
+                <a href="/pastey/<%= _h(item[pastey_db:ID]) %>.wc"><%= _h(item[pastey_db:TITLE]) %></a>
             </td>
             <td nowrap="nowrap">
                 <%- euweb:user_profile user=!item[pastey_db:USERNAME] %>

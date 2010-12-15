@@ -36,7 +36,7 @@ sequence base_sql = `SELECT ` & fields & ` FROM pastey as p
 	INNER JOIN users as u on p.user_id = u.id `
 
 public function recent(integer page, integer per_page)
-	sequence sql = base_sql & "ORDER BY id DESC LIMIT %d OFFSET %d"
+	sequence sql = base_sql & "ORDER BY p.id DESC LIMIT %d OFFSET %d"
 
 	object data = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
 	if atom(data) then
@@ -44,5 +44,25 @@ public function recent(integer page, integer per_page)
 	end if
 
 	return data
+end function
+
+public function create(sequence title, sequence body)
+	sequence sql
+	sequence params
+	datetime now = datetime:now()
+
+		sql = `INSERT INTO pastey (created_at, user_id, title, body) 
+				VALUES (%T, %d, %s, %s)`
+		params = { now, current_user[USER_NAME], title, body }
+
+	if edbi:execute(sql, params) then
+		crash("Couldn't insert new pastey: %s", { edbi:error_message() })
+	end if
+
+	return edbi:last_insert_id()
+end function
+
+public function get(integer id)
+	return edbi:query_row(base_sql & " WHERE p.id=%d", { id })
 end function
 
