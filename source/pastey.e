@@ -27,8 +27,9 @@ include fuzzydate.e
 sequence index_vars = {
 	{ wc:INTEGER, "page",   	1 },
 	{ wc:INTEGER, "per_page",  20 },
-	{ wc:SEQUENCE, "title" },
-	{ wc:SEQUENCE, "body" },
+	{ wc:SEQUENCE, "title"        },
+	{ wc:SEQUENCE, "body"         },
+	{ wc:INTEGER,  "eucode",    1 },
 	$
 }
 
@@ -38,14 +39,16 @@ function index(map data, map request)
 
 	map:put(data, "total_count", pastey_db:count())
 	map:put(data, "items", pastey_db:recent(map:get(request, "page"), map:get(request, "per_page")))	
+	map:put(data, "eucode", map:get(request, "eucode"))
 
 	return { TEXT, t_index:template(data) }
 end function
 wc:add_handler(routine_id("index"), -1, "pastey", "index", index_vars)
 
 sequence create_vars = {
-	{ wc:SEQUENCE, "title" },
-	{ wc:SEQUENCE, "body" },
+	{ wc:SEQUENCE, "title"     },
+	{ wc:SEQUENCE, "body"      },
+	{ wc:INTEGER,  "eucode", 0 },
 	$
 }
 
@@ -67,10 +70,13 @@ function create(map data, map request)
 	if not has_role("user") then
 		return { TEXT, t_security:template(data) }
 	end if
+
+	sequence body = map:get(request, "body")
+	if map:get(request, "eucode") then
+		body = "<eucode>\n" & body & "\n</eucode>"
+	end if
 	
-	object pastey = pastey_db:create(
-		map:get(request, "title"),
-		map:get(request, "body"))
+	object pastey = pastey_db:create(map:get(request, "title"), body)
 
 	return { REDIRECT_303, sprintf("/pastey/%d.wc", { pastey }) }
 end function

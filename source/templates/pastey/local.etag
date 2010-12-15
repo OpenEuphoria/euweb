@@ -1,0 +1,31 @@
+{{{foot}}}
+<%@
+include templates/euweb.etag as euweb 
+
+include pastey_db.e
+%>
+
+<%
+sequence quick_links = {
+}
+
+if has_role("user") then
+    quick_links = append(quick_links, { "/pastey/index.wc", "New Pastey" })
+end if
+
+sequence recent = pastey_db:recent(1, 10)
+
+for i = 1 to length(recent) do
+	quick_links = append(quick_links, { 
+		sprintf("/pastey/%d.wc", { recent[i][pastey_db:ID] }),
+		recent[i][pastey_db:TITLE] & 
+		sprintf(`<br/><i><a href="/user/profile/%s.wc">%s</a></i>`, {
+				recent[i][pastey_db:USERNAME],
+				recent[i][pastey_db:USERNAME]
+			})
+	})
+end for
+%>
+
+<%- euweb:foot quick_links=!quick_links %>
+

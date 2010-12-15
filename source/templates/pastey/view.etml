@@ -1,6 +1,6 @@
 <%@
   include templates/euweb.etag as euweb
-  include std/math.e
+  include local.etag as local
 
   include webclay/escape.e
   include fuzzydate.e
@@ -24,6 +24,6 @@ sequence p = @pastey
 	<%= p[pastey_db:BODY] %>
 </div>
 
-<%- euweb:foot %>
+<%- local:foot %>
 
 
