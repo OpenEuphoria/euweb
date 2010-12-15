@@ -93,9 +93,9 @@ sequence commentMsg = join(lines, "\n")
 
 integer summaryPos = match("summary:", commentMsg)
 if summaryPos then
-	commentMsg = "{{{\n" & trim(commentMsg[summaryPos+8..$]) & "\n}}}"
+	commentMsg = "\n" & trim(commentMsg[summaryPos+8..$]) & "\n"
 else
-	commentMsg = "{{{\n" & commentMsg & "\n}}}"
+	commentMsg = "\n" & commentMsg & "\n"
 end if
 
 sequence content = join(lines, " ")
