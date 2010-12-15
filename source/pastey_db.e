@@ -13,6 +13,7 @@ include webclay/validate.e as valid
 include webclay/logging.e as log
 
 include db.e
+include user_db.e
 
 public constant MODULE_ID=5
 
@@ -51,9 +52,9 @@ public function create(sequence title, sequence body)
 	sequence params
 	datetime now = datetime:now()
 
-		sql = `INSERT INTO pastey (created_at, user_id, title, body) 
-				VALUES (%T, %d, %s, %s)`
-		params = { now, current_user[USER_NAME], title, body }
+	sql = `INSERT INTO pastey (created_at, user_id, title, body) 
+			VALUES (%T, %d, %s, %s)`
+	params = { now, current_user[user_db:USER_ID], title, body }
 
 	if edbi:execute(sql, params) then
 		crash("Couldn't insert new pastey: %s", { edbi:error_message() })
