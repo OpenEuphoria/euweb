@@ -1061,3 +1061,85 @@ table.old_news td div.news_meta {
 div.donate {
   text-align: center;
 }
+ 
+#docs h1 {
+	padding-top: 12px;
+}
+#docs h2 {
+	padding-top: 12px;
+	font-size: 2.5em;
+}
+#docs h3 {
+	padding-top: 12px;
+	font-size: 2em;
+}
+#docs h4 {
+	padding-top: 12px;
+	font-size: 1.5em;
+}
+#docs h5 {
+	padding-top: 12px;
+	font-size: 1.25em;
+}
+#docs h6 {
+	padding-top: 12px;
+}
+#docs .doc-tools {
+	padding: 0px;
+	margin: 0px;
+}
+#docs .doc-tools a, #docs .doc-tools a:visited {
+	text-decoration: none;
+	padding: 5px;
+}
+#docs table {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border-collapse: collapse;
+  border: 1px solid #336633;
+  background-color: #f8f8f8;
+}
+
+#docs table {
+  margin-left: 10px;
+}
+
+#docs table th {
+  padding: 5px;
+  text-align: center;
+  background-color: #eeffee;
+  color: #336633;
+}
+
+#docs table tr {
+  padding: 3px 0px 3px 0px;
+}
+
+#docs table td {
+  padding: 4px 7px 4px 7px;
+  border: 1px dotted black;
+}
+
+#docs .doc-tools table, #docs .doc-tools td, #docs .doc-tools tr
+{
+border: 1px solid #cccccc;
+}
+
+
+#docs pre
+{
+margin: 1em 0px 1em 0px;
+padding: 0.5em;
+background-color: #fafafa;
+border: 1px dotted black;
+}
+
+#docs .examplecode
+{
+margin: 1em 0px 1em 0px;
+background-color: #fafafa;
+border: 1px dotted #008800;
+padding: 1ex 1ex 1ex 2ex;
+overflow: auto;	
+}
+
