@@ -10,7 +10,7 @@
 
 <%- euweb:errors %>
 
-<form method="POST" action="create.wc" style="margin-top: 10px">
+<form method="POST" action="/pastey/create.wc" style="margin-top: 10px">
 	Title: <input type="text" name="title" size="55" style="width: 100%" value="<%= _h(@title) %>"/>
 	<div style="margin: 12px 0px 12px 0px">
 		Content:<br />
