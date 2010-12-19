@@ -141,11 +141,30 @@ function latest_wiki_changes(integer count)
 	return rows
 end function
 
+function latest_pasties(integer count)
+	object rows = edbi:query_rows("""SELECT p.id, p.created_at, u.user, p.title, p.body
+		FROM pastey AS p INNER JOIN users AS u ON (u.id = p.user_id)
+		ORDER BY p.created_at DESC LIMIT %d""", { count })
+
+	for i = 1 to length(rows) do
+		rows[i] = {
+			rows[i][2],
+			rows[i][3],
+			sprintf("/pastey/%d.wc", { rows[i][1] }),
+			"Pastey: " & rows[i][4],
+			rows[i][5]
+		}
+	end for
+
+	return rows
+end function
+
 sequence rss_vars = {
 	{ wc:INTEGER, "forum",  0 },
 	{ wc:INTEGER, "ticket", 0 },
 	{ wc:INTEGER, "news",   0 },
 	{ wc:INTEGER, "wiki",   0 },
+    { wc:INTEGER, "pastey", 0 },
 	{ wc:INTEGER, "count", 20 }
 }
 
@@ -158,17 +177,19 @@ function rss(map data, map request)
 	integer include_ticket = map:get(request, "ticket")
 	integer include_news   = map:get(request, "news")
 	integer include_wiki   = map:get(request, "wiki")
+    integer include_pastey = map:get(request, "pastey")
 
 	-- Don't allow more than 50 no matter what the user says
 	if count > 50 then
 		count = 50
 	end if
 
-	if (include_forum + include_ticket + include_news + include_wiki) = 0 then
-		include_forum = 1
+	if (include_forum + include_ticket + include_news + include_wiki + include_pastey) = 0 then
+		include_forum  = 1
 		include_ticket = 1
-		include_news = 1
-		include_wiki = 1
+		include_news   = 1
+		include_wiki   = 1
+		include_pastey = 0
 	end if
 
 	if include_ticket then
@@ -188,6 +209,10 @@ function rss(map data, map request)
 	if include_wiki then
 		rows &= latest_wiki_changes(count)
 	end if
+
+    if include_pastey then
+    	rows &= latest_pasties(count)
+    end if
 
 	-- Sort based on date, then take the first 10 items
 	rows = sort_columns(rows, { -DATE })
