@@ -19,10 +19,15 @@ include templates/security.etml as t_security
 include templates/pastey/index.etml as t_index
 include templates/pastey/view.etml as t_view
 
+include config.e
+
 include comment_db.e
 include pastey_db.e
+include user_db.e
+
 include format.e
 include fuzzydate.e
+
 
 enum FMT_PLAIN, FMT_EUCODE, FMT_CREOLE
 
@@ -54,10 +59,12 @@ end function
 wc:add_handler(routine_id("index"), -1, "pastey", "index", index_vars)
 
 sequence create_vars = {
-	{ wc:SEQUENCE, "title"      },
-	{ wc:SEQUENCE, "body"       },
-	{ wc:INTEGER,  "format",  1 },
-	{ wc:SEQUENCE, "submit", "" },
+	{ wc:SEQUENCE, "title"        },
+	{ wc:SEQUENCE, "body"         },
+	{ wc:INTEGER,  "format",    1 },
+	{ wc:SEQUENCE, "submit",   "" },
+    { wc:SEQUENCE, "code",     "" },
+    { wc:SEQUENCE, "password", "" },
 	$
 }
 
@@ -80,6 +87,19 @@ function validate_create(map data, map request)
 end function
 
 function create(map data, map request)
+	integer is_service = 0
+
+    if length(map:get(request, "code")) then
+		current_user = user_db:get_by_login(map:get(request, "code"), 
+			map:get(request, "password"))
+
+        if sequence(current_user) and length(current_user) = 2 then
+        	return { TEXT, "auth error" }
+        end if
+
+    	is_service = 1
+	end if
+
 	if not has_role("user") then
 		return { TEXT, t_security:template(data) }
 	end if
@@ -90,9 +110,7 @@ function create(map data, map request)
 
     switch map:get(request, "format") do
         case FMT_PLAIN then
-            if is_preview then
-                preview = "<pre>" & body & "</pre>"
-            end if
+        	preview = "<pre>" & body & "</pre>"
 
         case FMT_EUCODE then
             body = "<eucode>\n" & body & "\n</eucode>"
@@ -111,6 +129,10 @@ function create(map data, map request)
     end if
 
 	object pastey = pastey_db:create(map:get(request, "title"), preview)
+
+	if is_service then
+    	return { TEXT, sprintf("%s/pastey/%d.wc", { ROOT_URL, pastey }) }
+    end if
 
 	return { REDIRECT_303, sprintf("/pastey/%d.wc", { pastey }) }
 end function
