@@ -10,7 +10,7 @@ sequence quick_links = {
 }
 
 if has_role("user") then
-    quick_links = append(quick_links, { "/forum/post.wc", "New Topic" })
+    quick_links = append(quick_links, { "/forum/post.wc", "<strong>New Topic</strong>" })
 end if
 %>
 

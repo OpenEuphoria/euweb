@@ -10,7 +10,7 @@ sequence quick_links = {
 }
 
 if has_role("user") then
-    quick_links = append(quick_links, { "/pastey/index.wc", "New Pastey" })
+    quick_links = append(quick_links, { "/pastey/index.wc", "<strong>New Pastey</strong>" })
 end if
 
 sequence recent = pastey_db:recent(1, 10)
