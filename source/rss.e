@@ -165,6 +165,7 @@ sequence rss_vars = {
 	{ wc:INTEGER, "news",   0 },
 	{ wc:INTEGER, "wiki",   0 },
     { wc:INTEGER, "pastey", 0 },
+    { wc:INTEGER, "all",    0 },
 	{ wc:INTEGER, "count", 20 }
 }
 
@@ -178,13 +179,20 @@ function rss(map data, map request)
 	integer include_news   = map:get(request, "news")
 	integer include_wiki   = map:get(request, "wiki")
     integer include_pastey = map:get(request, "pastey")
+	integer include_all    = map:get(request, "all")
 
 	-- Don't allow more than 50 no matter what the user says
 	if count > 50 then
 		count = 50
 	end if
 
-	if (include_forum + include_ticket + include_news + include_wiki + include_pastey) = 0 then
+	if include_all then
+    	include_forum = 1
+        include_ticket = 1
+        include_news = 1
+        include_wiki = 1
+        include_pastey = 1
+	elsif (include_forum + include_ticket + include_news + include_wiki + include_pastey) = 0 then
 		include_forum  = 1
 		include_ticket = 1
 		include_news   = 1
