@@ -7,7 +7,7 @@ sequence quick_links = {
 }
 
 if has_role("user") then
-    quick_links = append(quick_links, { "/ticket/create.wc", "<strong>New Ticket</strong>" })
+    quick_links = append(quick_links, { "/ticket/create.wc", "New Ticket", "button" })
     quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
 end if
 

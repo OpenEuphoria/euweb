@@ -143,6 +143,9 @@ include euphoria/info.e as euinfo
 						if quickLinkIdx = 1 then
 							class = "first"
 						end if
+                                                if length(ql) = 3 then
+                                                	class &= " " & ql[3]
+                                                end if
 					%>
 					<li class="<%= class %>"> <a href="<%= ql[1] %>"><%= ql[2] %></a></li>
 					<% end for %>
