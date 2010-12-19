@@ -122,6 +122,17 @@ if length(refs) then
 			sprintf("See: [[hg:%s/rev/%s]]\n\n%s", { cmdline[3], hg_node[1..12], commentMsg }))
 
 		edbi:execute("COMMIT")
+
+		switch ref[1] do
+			case REFERENCES then
+				puts(1, "references ")
+			case FIXES then
+				puts(1, "fixes ")
+			case MAYBE_FIXES then
+				puts(1, "maybe fixes ")
+		end switch
+
+		printf(1, "ticket %d\n", { ref[2] })
 	end for
 
 	db:close()
