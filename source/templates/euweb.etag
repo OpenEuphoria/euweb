@@ -12,7 +12,7 @@ integer is_ticket = 0
 
 -->
 <%
-show_donate_button = length(#active) = 0 or equal(#active, "home") 
+show_donate_button = length(#active) = 0 or equal(#active, "home")
 is_ticket = equal(#active, "ticket")
 %>
 
@@ -184,10 +184,11 @@ include euphoria/info.e as euinfo
 					<li class="first"><a href="/docs">Manual</a></li>
 					<li><a href="/category/cloud.wc">Category Cloud</a></li>
 					<li><a href="/pastey/index.wc">Pastey</a></li>
+					<li><a href="http://scm.openeuphoria.org">SCM</a></li>
 					<li><a href="http://rapideuphoria.com/archive.htm">The Archive</a></li>
 					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
 				</ul>
-				
+
 				<% if has_role("admin") then %>
 					<h4><span>Admin</span> Menu</h4>
 					<ul class="links">

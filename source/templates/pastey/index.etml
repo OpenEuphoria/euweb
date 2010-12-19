@@ -10,14 +10,31 @@
 
 <%- euweb:errors %>
 
+<% if length(@preview) then %>
+
+<div class="wiki">
+	<%= @preview %>
+</div>
+
+<% end if %>
+
 <form method="POST" action="/pastey/create.wc" style="margin-top: 10px">
 	Title: <input type="text" name="title" size="55" style="width: 100%" value="<%= _h(@title) %>"/>
 	<div style="margin: 12px 0px 12px 0px">
 		Content:<br />
 		<textarea id="body" name="body" rows=15 cols=65 style="width: 100%"><%= _h(@body) %></textarea>
 	</div>
-	Euphoria Code? <input type="checkbox" name="eucode" value="1" 
-		<% if equal(@eucode, 1) then %>checked="checked"<% end if %>>
+        <input type="radio" name="format" value="1"
+	        <% if @format = 1 then %>checked="checked"<% end if %>
+        	>Plain Text
+        <input type="radio" name="format" value="2"
+        	<% if @format = 2 then %>checked="checked"<% end if %>        
+        	>Euphoria Source
+        <input type="radio" name="format" value="3"
+        	<% if @format = 3 then %>checked="checked"<% end if %>        
+	        >Creole
+        <input type="submit" name="submit" value="Preview" />
+	&nbsp;
 	<input type="submit" name="submit" value="Paste bin it!"/>
 </form>
 

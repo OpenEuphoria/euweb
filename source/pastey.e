@@ -24,12 +24,16 @@ include pastey_db.e
 include format.e
 include fuzzydate.e
 
+enum FMT_PLAIN, FMT_EUCODE, FMT_CREOLE
+
 sequence index_vars = {
-	{ wc:INTEGER, "page",   	1 },
-	{ wc:INTEGER, "per_page",  20 },
+	{ wc:INTEGER,  "page",      1 },
+	{ wc:INTEGER,  "per_page", 20 },
+	{ wc:INTEGER,  "submit",   "" },
 	{ wc:SEQUENCE, "title"        },
 	{ wc:SEQUENCE, "body"         },
-	{ wc:INTEGER,  "eucode",    1 },
+	{ wc:INTEGER,  "format",    1 },
+    { wc:SEQUENCE, "preview",  "" },
 	$
 }
 
@@ -37,8 +41,12 @@ function index(map data, map request)
 	map:put(data, "page", map:get(request, "page"))
 	map:put(data, "per_page", map:get(request, "per_page"))
 
+    -- Put in request via "create" when submit=Preview
+    map:put(data, "preview", map:get(request, "preview"))
+    map:put(data, "format", map:get(request, "format"))
+
 	map:put(data, "total_count", pastey_db:count())
-	map:put(data, "items", pastey_db:recent(map:get(request, "page"), map:get(request, "per_page")))	
+	map:put(data, "items", pastey_db:recent(map:get(request, "page"), map:get(request, "per_page")))
 	map:put(data, "eucode", map:get(request, "eucode"))
 
 	return { TEXT, t_index:template(data) }
@@ -46,14 +54,19 @@ end function
 wc:add_handler(routine_id("index"), -1, "pastey", "index", index_vars)
 
 sequence create_vars = {
-	{ wc:SEQUENCE, "title"     },
-	{ wc:SEQUENCE, "body"      },
-	{ wc:INTEGER,  "eucode", 0 },
+	{ wc:SEQUENCE, "title"      },
+	{ wc:SEQUENCE, "body"       },
+	{ wc:INTEGER,  "format",  1 },
+	{ wc:SEQUENCE, "submit", "" },
 	$
 }
 
 function validate_create(map data, map request)
 	sequence errors = wc:new_errors("pastey", "index")
+
+    if equal(map:get(request, "submit"), "Preview") then
+    	return errors
+    end if
 
 	if not valid:not_empty(map:get(request, "title")) then
 		errors = wc:add_error(errors, "title", "Title is empty!")
@@ -72,11 +85,32 @@ function create(map data, map request)
 	end if
 
 	sequence body = map:get(request, "body")
-	if map:get(request, "eucode") then
-		body = "<eucode>\n" & body & "\n</eucode>"
-	end if
-	
-	object pastey = pastey_db:create(map:get(request, "title"), body)
+    sequence preview = ""
+    integer is_preview = equal(map:get(request, "submit"), "Preview")
+
+    switch map:get(request, "format") do
+        case FMT_PLAIN then
+            if is_preview then
+                preview = "<pre>" & body & "</pre>"
+            end if
+
+        case FMT_EUCODE then
+            body = "<eucode>\n" & body & "\n</eucode>"
+            preview = format_body(body)
+
+        case FMT_CREOLE then
+            preview = format_body(body)
+    end switch
+
+    if is_preview then
+        map:put(request, "preview", preview)
+        map:put(data, "body", map:get(request, "body"))
+        map:put(data, "title", map:get(request, "title"))
+
+        return index(data, request)
+    end if
+
+	object pastey = pastey_db:create(map:get(request, "title"), preview)
 
 	return { REDIRECT_303, sprintf("/pastey/%d.wc", { pastey }) }
 end function
@@ -98,27 +132,25 @@ function view(map data, map request)
 
 	if has_role("user") and length(map:get(request, "body")) then
 		comment_db:add_comment(
-			pastey_db:MODULE_ID, 
-			pastey[pastey_db:ID], 
-			pastey[pastey_db:TITLE], 
+			pastey_db:MODULE_ID,
+			pastey[pastey_db:ID],
+			pastey[pastey_db:TITLE],
 			map:get(request, "body"))
-	
+
 		integer id = edbi:last_insert_id()
 
 		return { REDIRECT_303, sprintf("/pastey/%d.wc#%d", { pastey[pastey_db:ID], id }) }
 	end if
-	
+
 	if has_role("forum_moderator") and map:get(request, "remove_comment") > 0 then
 		comment_db:remove_comment(map:get(request, "remove_comment"))
-	
+
 		return { REDIRECT_303, sprintf("/pastey/%d.wc", { pastey[pastey_db:ID] }) }
 	end if
 
-	pastey[pastey_db:BODY] = format_body(pastey[pastey_db:BODY])
-
 	map:put(data, "pastey", pastey)
-	map:put(data, "comment_count", 
-		edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d AND item_id=%d", 
+	map:put(data, "comment_count",
+		edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d AND item_id=%d",
 			{ pastey_db:MODULE_ID, pastey[pastey_db:ID] }))
 	map:put(data, "comments", comment_db:get_all(pastey_db:MODULE_ID, pastey[pastey_db:ID]))
 
