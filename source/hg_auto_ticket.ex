@@ -77,7 +77,7 @@ object hg_source = getenv("HG_SOURCE")
 object hg_url    = getenv("HG_URL")
 
 sequence tmp_filename = sprintf("/tmp/%s.log", { hg_node })
-system(sprintf("hg log -r %s > %s", { hg_node, tmp_filename }))
+system(sprintf("hg log -r %s -v > %s", { hg_node, tmp_filename }))
 
 object lines = read_lines(tmp_filename)
 delete_file(tmp_filename)
