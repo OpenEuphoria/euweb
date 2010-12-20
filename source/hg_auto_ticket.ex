@@ -136,5 +136,7 @@ if length(refs) then
 	end for
 
 	db:close()
+else
+	printf(1, "no ticket references\n")
 end if
 
