@@ -7,11 +7,13 @@ eu.cfg
 htdocs/.htaccess
 htdocs/ex.err
 htdocs/euweb.ex
+htdocs/euweb.cgi
 htdocs/docs
 htdocs/eubins
 htdocs/eudox
 htdocs/rebuild.sh
 htdocs/unit-test
+htdocs/archives
 source/auto_ticket.svn
 source/config_production.e
 source/reindex_manual.sh
