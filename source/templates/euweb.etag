@@ -23,6 +23,7 @@ is_ticket = equal(#active, "ticket")
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 	<link rel="stylesheet" type="text/css" href="/style.css" />
+        <link rel="shortcut icon" href="/images/euphoria.ico" />
 	<link rel="alternate" type="application/rss+xml" title="OpenEuphoria's Latest Happenings" href="/rss.wc" />
 	<%= @js_libs %>
 
@@ -35,7 +36,7 @@ is_ticket = equal(#active, "ticket")
 
 
                 <img id="right-logo" src="/logos/100px-mongoose-head-colour-V2-R0.png"/>
-                
+
 		<div id="logo">
 			<h1><span>Open</span>Euphoria</h1>
 		</div>
