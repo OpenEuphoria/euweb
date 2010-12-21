@@ -8,13 +8,21 @@ include local.etag as local
 
 %>
 
-<%- euweb:head title="Wiki View" active="wiki" %>
+<%
+
+sequence wiki = @wiki
+sequence active = "wiki"
+if equal(wiki[WIKI_NAME], "DownloadEuphoria") then
+	active = "download"
+end if
+
+%>
+
+<%- euweb:head title="Wiki View" active=!active %>
 
 <%- euweb:errors %>
 
 <%
-sequence wiki = @wiki
-
 sequence heading
 if wiki[WIKI_REV] = 0 then
     heading = sprintf("<span>%s</span>", { _h(wiki[WIKI_NAME]) })
