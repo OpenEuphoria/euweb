@@ -180,6 +180,7 @@ dd
 
 #logo
 {
+margin-left: 40px
 }
 
 #logo h1
@@ -204,10 +205,21 @@ dd
   font-size: 1.0em;
 }
 
+#right-logo
+{
+float:left;
+border: none;
+position: absolute;
+left: 0px;
+width: 80px;
+height: 80px;
+}
+
 /* Menu */
 
 #menu
 {
+margin-left: 40px;
 }
 
 #menu ul
@@ -266,7 +278,7 @@ dd
 {
   width: 950px;
   margin: 0 auto;
-  padding-top: 3.5em;
+  padding-top: 1.5em;
 }
 
 #main_inner h3,h4

@@ -33,6 +33,9 @@ is_ticket = equal(#active, "ticket")
 
 	<div id="header_inner" class="fluid">
 
+
+                <img id="right-logo" src="/logos/100px-mongoose-head-colour-V2-R0.png"/>
+                
 		<div id="logo">
 			<h1><span>Open</span>Euphoria</h1>
 		</div>
