@@ -77,7 +77,7 @@ object hg_source = getenv("HG_SOURCE")
 object hg_url    = getenv("HG_URL")
 
 sequence tmp_filename = sprintf("/tmp/%s.log", { hg_node })
-system(sprintf("hg log -r %s > %s", { hg_node, tmp_filename }))
+system(sprintf("hg log -r %s -v > %s", { hg_node, tmp_filename }))
 
 object lines = read_lines(tmp_filename)
 delete_file(tmp_filename)
@@ -122,8 +122,21 @@ if length(refs) then
 			sprintf("See: [[hg:%s/rev/%s]]\n\n%s", { cmdline[3], hg_node[1..12], commentMsg }))
 
 		edbi:execute("COMMIT")
+
+		switch ref[1] do
+			case REFERENCES then
+				puts(1, "references ")
+			case FIXES then
+				puts(1, "fixes ")
+			case MAYBE_FIXES then
+				puts(1, "maybe fixes ")
+		end switch
+
+		printf(1, "ticket %d\n", { ref[2] })
 	end for
 
 	db:close()
+else
+	printf(1, "no ticket references\n")
 end if
 
