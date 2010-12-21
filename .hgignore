@@ -1,8 +1,11 @@
+~
+.orig
 .pp.
 config_jeremy.e
 eu.cfg
 .log$
 htdocs/.htaccess
+htdocs/ex.err
 htdocs/euweb.ex
 htdocs/docs
 htdocs/eubins
