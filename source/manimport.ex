@@ -52,7 +52,7 @@ for i = 1 to length(files) do
 
 		if begins("<a name=\"", line) then
 			-- We only want h2, h3 and h4 a names
-			sequence nline = lines[j+1]
+			sequence nline = lines[j-1]
 			if begins("<h2", nline) or
 				begins("<h3", nline) or
 				begins("<h4", nline)
