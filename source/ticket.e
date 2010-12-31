@@ -24,6 +24,7 @@ include templates/ticket/create_ok.etml as t_create_ok
 include templates/ticket/detail.etml as t_detail
 include templates/ticket/update_ok.etml as t_update_ok
 include templates/ticket/change_product.etml as t_change_product
+include templates/ticket/new_product_id.etml as t_new_product_id
 include templates/ticket/not_found.etml as t_not_found
 
 include dump.e
@@ -370,6 +371,50 @@ end function
 wc:add_handler(routine_id("do_create"), routine_id("validate_do_create"), "ticket", "do_create",
     create_vars)
 
+sequence new_product_id_vars = {
+    { wc:INTEGER,  "id" },
+    { wc:INTEGER,  "product_id",     -1 }
+}
+
+function validate_do_new_product_id(map data, map request)
+    sequence errors = wc:new_errors("ticket", "new_product")
+
+    if has_role("developer") or
+        (sequence(current_user) and
+            current_user[user_db:USER_ID] =
+                edbi:query_object("SELECT submitted_by_id FROM ticket WHERE id=%d", {
+                map:get(request, "id") }))
+    then
+	else
+        errors = wc:add_error(errors, "form", "You are not authorized to add a new ticket")
+	end if
+
+    if map:get(request, "product_id") = -1 then
+        errors = wc:add_error(errors, "product_id", "You must select a product type.")
+    end if
+
+    return errors
+end function
+
+function do_new_product_id(map data, map request)
+    ticket_db:update_product_id(
+        map:get(request, "id"),
+        map:get(request, "product_id"))
+
+    if edbi:error_code() then
+        map:put(data, "error_code", edbi:error_code())
+        map:put(data, "error_message", edbi:error_message())
+
+		return { TEXT, t_update_ok:template(data) }
+    end if
+
+	return { REDIRECT_303, sprintf("/ticket/%d.wc",
+		{map:get(request, "id")}) }
+end function
+wc:add_handler(routine_id("do_new_product_id"),
+routine_id("validate_do_new_product_id"), "ticket", "new_product",
+    new_product_id_vars)
+
 sequence detail_vars = {
     { wc:INTEGER, "id",                -1 },
     { wc:INTEGER, "remove_comment_id", -1 },
@@ -558,3 +603,8 @@ function change_product(map data, map request)
     return { TEXT, t_change_product:template(data) }
 end function
 wc:add_handler(routine_id("change_product"), -1, "ticket", "change_product", {})
+
+function new_product_id(map data, map request)
+    return { TEXT, t_new_product_id:template(data) }
+end function
+wc:add_handler(routine_id("new_product_id"), -1, "ticket", "new_product_id", {})

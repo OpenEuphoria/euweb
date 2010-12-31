@@ -1,0 +1,35 @@
+<%@
+  include webclay/escape.e
+  include templates/euweb.etag as euweb
+  include local.etag as local
+%>
+
+<%- euweb:head title="Ticket Change Product" active="ticket" %>
+
+<h3><span>Change</span> Ticket Product</h3>
+
+<% if (atom(@id) and @id < 0) or length(@id) = 0 then %>
+<p>
+Error! No ticket id was given!
+</p>
+<% else %>
+<ul>
+		<input class="button" type="submit" name="<%= _h(@id) %>" />
+		<br>
+	<form method="POST" action="/ticket/do_create.wc">
+		<input type="hidden" name="id" value="<%= _h(@id) %>" />
+		<table class="form">
+                    <th>Milestone:</th>
+                    <td>
+                      <%- euweb:select 
+                       name="product" 
+                       option_sql="SELECT id,name FROM ticket_product"
+                       %>
+                    </td>
+		</table>
+	<input class="button" type="submit" name="save" value="New Product Id" />
+	</form>
+</ul>
+<% end if %>
+
+<%- local:foot %>
