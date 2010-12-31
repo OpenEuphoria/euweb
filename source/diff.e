@@ -526,6 +526,9 @@ function BestMatch(sequence s3, sequence t3, sequence sl,
     sequence pairs, best_pairs, x, y
     lens = length(s3)
     lent = length(t3)
+if lens > 30 or lent > 30 then
+	return {0}
+end if
     best_pairs = {}
     best_count = 0
     for i = 1 to lens do

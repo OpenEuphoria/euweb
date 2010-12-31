@@ -336,8 +336,6 @@ sequence diff_vars = {
 }
 
 function show_diff(map data, map request)
-    return { TEXT, "Diff is currently offline due to an algorithm bug causing severe looping. It will be back shortly." }
-    /*
 	integer  rev_from = map:get(request, "rev_from")
 	integer  rev_to   = map:get(request, "rev_to")
 	sequence page     = map:get(request, "page")
@@ -377,7 +375,6 @@ function show_diff(map data, map request)
 	map:put(data, "diff", html_diff)
 
 	return { TEXT, t_diff:template(data) }
-	*/
 end function
 wc:add_handler(routine_id("show_diff"), -1, "wiki", "diff", diff_vars)
 
