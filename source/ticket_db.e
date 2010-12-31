@@ -136,8 +136,35 @@ public function update_full(integer id, sequence subject, sequence content)
 end function
 
 --**
+-- Update the product id of a ticket
+-- 
+-- Parameters:
+--    * ##ticket_id## - integer id for the ticket to update
+--    * ##product_id##   - new product
+--
+-- Returns:
+--   Integer success code   
+--
+-- See Also:
+--   [[:update]]
+--
+
+public function update_product_id(integer id, integer product_it)
+	return edbi:execute("UPDATE ticket SET product_id=%d WHERE id=%d", {
+			product_it, id })
+end function
+
+--**
 -- Remove a ticket comment
 
 public function remove_comment(integer id)
 	return edbi:execute("DELETE FROM comment WHERE id=%d", { id })
+end function
+
+--**
+-- Adds a ticket milestone
+
+public function add_milestone(sequence milestone_name, integer product_it)
+	return edbi:execute("INSERT INTO ticket_milestone VALUES (%s, %d)", {
+			milestone_name, product_it })
 end function

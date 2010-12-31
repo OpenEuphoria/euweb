@@ -24,6 +24,7 @@ include templates/ticket/create_ok.etml as t_create_ok
 include templates/ticket/detail.etml as t_detail
 include templates/ticket/update_ok.etml as t_update_ok
 include templates/ticket/change_product.etml as t_change_product
+include templates/ticket/new_milestone.etml as t_new_milestone
 include templates/ticket/new_product_id.etml as t_new_product_id
 include templates/ticket/not_found.etml as t_not_found
 
@@ -415,6 +416,49 @@ wc:add_handler(routine_id("do_new_product_id"),
 routine_id("validate_do_new_product_id"), "ticket", "new_product",
     new_product_id_vars)
 
+sequence new_milestone_vars = {
+    { wc:SEQUENCE, "milestone_name",   "" },
+    { wc:INTEGER,  "product_id",     -1 }
+}
+
+function validate_do_new_milestone(map data, map request)
+    sequence errors = wc:new_errors("ticket", "do_new_milestone")
+
+    if not has_role("developer") and
+    not has_role("admin") then
+        errors = wc:add_error(errors, "form", "You are not authorized to add a new milestone")
+	end if
+
+    if map:get(request, "product_id") = -1 then
+        errors = wc:add_error(errors, "product_id", "You must select a product type.")
+    end if
+
+    object x = map:get(request, "milestone_name")
+    if atom(x) or not length(x) then
+        errors = wc:add_error(errors, "milestone_name", "You must add a milestone.")
+    end if
+
+    return errors
+end function
+
+function do_new_milestone(map data, map request)
+    ticket_db:add_milestone(
+        map:get(request, "milestone_name"),
+        map:get(request, "product_id"))
+
+    if edbi:error_code() then
+        map:put(data, "error_code", edbi:error_code())
+        map:put(data, "error_message", edbi:error_message())
+
+		return { TEXT, t_update_ok:template(data) }
+    end if
+
+	return { REDIRECT_303, sprintf("/ticket/index.wc", {}) }
+end function
+wc:add_handler(routine_id("do_new_milestone"),
+routine_id("validate_do_new_milestone"), "ticket", "do_new_milestone",
+    new_milestone_vars)
+
 sequence detail_vars = {
     { wc:INTEGER, "id",                -1 },
     { wc:INTEGER, "remove_comment_id", -1 },
@@ -608,3 +652,10 @@ function new_product_id(map data, map request)
     return { TEXT, t_new_product_id:template(data) }
 end function
 wc:add_handler(routine_id("new_product_id"), -1, "ticket", "new_product_id", {})
+
+function new_milestone(map data, map request)
+    map:put(data, "product_name", edbi:query_object("SELECT name FROM ticket_product WHERE id=%d", {
+    	get_product_id(request, data) }))
+    return { TEXT, t_new_milestone:template(data) }
+end function
+wc:add_handler(routine_id("new_milestone"), -1, "ticket", "new_milestone", {})
