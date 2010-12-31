@@ -6,7 +6,7 @@
 
 <%- euweb:head title="Add new Milestone" active="ticket" %>
 
-    <h4>New Milestone for <span><%= _h(@product_name) %></span> <span class="small">(<a href="/ticket/change_product.wc?url=/ticket/create.wc">select another product</a>)</span></h4>
+    <h4>New Milestone for <span><%= _h(@product_name) %></span> <span class="small">(<a href="/ticket/change_product.wc?url=/ticket/new_milestone.wc">select another product</a>)</span></h4>
 
 <h3><span>Add</span> new Milestone</h3>
 
