@@ -2,6 +2,7 @@
   include webclay/escape.e
   include templates/euweb.etag as euweb
   include local.etag as local
+  quick_links[1][1] = "/ticket/change_product.wc?url=/ticket/new_milestone.wc"
 %>
 
 <%- euweb:head title="Add new Milestone" active="ticket" %>
