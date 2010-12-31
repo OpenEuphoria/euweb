@@ -14,9 +14,7 @@ Error! No ticket id was given!
 </p>
 <% else %>
 <ul>
-		<input class="button" type="submit" name="<%= _h(@id) %>" />
-		<br>
-	<form method="POST" action="/ticket/do_create.wc">
+	<form method="POST" action="/ticket/new_product.wc">
 		<input type="hidden" name="id" value="<%= _h(@id) %>" />
 		<table class="form">
                     <th>Milestone:</th>
