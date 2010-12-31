@@ -11,6 +11,10 @@ if has_role("user") then
     quick_links = append(quick_links, { "/ticket/mine.wc", "My Tickets" })
 end if
 
+if has_role("developer") then
+    quick_links = append(quick_links, { "/ticket/new_milestone.wc", "Add Milestone" })
+end if
+
 quick_links &= {
     { "/ticket/index.wc", "Open Tickets" },
     { "/ticket/unassigned.wc", "Unassigned Tickets" },
