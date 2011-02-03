@@ -70,6 +70,18 @@ end function
 			</td>
 		</tr>
 		<tr>
+			<th>Fuzzy:</th>
+			<td>
+				<select name="no_fuzzy">
+					<option value="0" <% if @no_fuzzy = 0 then %>selected<% end if %> >
+						Use no fuzzy
+					<option value="1" <% if @no_fuzzy = 1 then %>selected<% end if %> >
+						Use intelligent fuzzy (default, recommended)
+					</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
 			<th>&nbsp;</th>
 			<td>
 				You only need to fill in New Password and Confirm password <strong>if</strong> you

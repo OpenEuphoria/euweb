@@ -102,6 +102,7 @@ public function profile(map data, map invars)
 	map:put(data, "user_disabled_reason", user[USER_DISABLED_REASON])
 	map:put(data, "user_ip_addr", user[USER_IP_ADDR])
 	map:put(data, "user_local_js", user[USER_LOCAL_JS])
+	map:put(data, "user_no_fuzzy", user[USER_NO_FUZZY])
 	map:put(data, "user_roles", user[USER_ROLES])
 
 	return { TEXT, t_profile:template(data) }
@@ -420,6 +421,7 @@ function profile_edit(map data, map invars)
 	map:put(data, "show_email", u[USER_SHOW_EMAIL])
 	map:put(data, "forum_default_view", u[USER_FORUM_DEFAULT_VIEW])
 	map:put(data, "local_js", u[USER_LOCAL_JS])
+	map:put(data, "no_fuzzy", u[USER_NO_FUZZY])
 
 	if map:has(invars, "post") then
 		map:copy(invars, data)
@@ -436,6 +438,7 @@ sequence profile_save_invars = {
 	{ wc:SEQUENCE, "show_email", "off" },
 	{ wc:SEQUENCE, "forum_default_view", 1 },
 	{ wc:INTEGER, "local_js", 0 },
+	{ wc:INTEGER, "no_fuzzy", 0 },
 	{ wc:SEQUENCE, "password", "" }
 }
 
@@ -473,13 +476,14 @@ end function
 
 function profile_save(map data, map vars)
 	object r = edbi:execute(`UPDATE users SET name=%s, location=%s, forum_default_view=%s,
-		show_email=%d, email=%s, login_time=login_time, local_js=%d WHERE user=%s`, {
+		show_email=%d, email=%s, login_time=login_time, local_js=%d, disable_fuzzy=%d WHERE user=%s`, {
 			map:get(vars, "full_name"),
 			map:get(vars, "location"),
 			map:get(vars, "forum_default_view"),
 			equal("on", map:get(vars, "show_email")),
 			map:get(vars, "email"),
 			map:get(vars, "local_js" ),
+			map:get(vars, "no_fuzzy" ),
 			map:get(vars, "user")
 		})
 	if length(map:get(vars, "password")) then

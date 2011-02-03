@@ -81,6 +81,18 @@ end function
 				<% end if %>
 			</td>
 		</tr>
+		<tr>
+			<th>Fuzzy:</th>
+			<td>
+				<% if @user_no_fuzzy = 0 then %>
+					Use intelligent fuzzy.
+				<% elsif @user_no_fuzzy = 1 then %>
+					Use no fuzzy.
+				<% else %>
+					Use unknown fuzzy.
+				<% end if %>
+			</td>
+		</tr>
 	</table>
 
 	<br class="clear" />

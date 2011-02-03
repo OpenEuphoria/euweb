@@ -51,9 +51,15 @@ public function fuzzyDateDiff(dt:datetime d1, dt:datetime d2)
     return f & " ago"
 end function
 
+include user_db.e
+
 public function fuzzy_ago(dt:datetime d1)
 	if d1[YEAR] = 0 then
 		return "never"
+	end if
+
+	if current_user[USER_NO_FUZZY] then
+		return dt:format(d1, "%b %d, %Y %H:%M:%S")
 	end if
 
 	return fuzzyDateDiff(d1, dt:now())
