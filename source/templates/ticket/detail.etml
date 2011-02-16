@@ -172,12 +172,8 @@ sequence page_title = sprintf("Ticket #%d: %s", { @id, chopped_subject })
             <tr>
 				<th>Fixed in SVN #:</th>
 				<td>
-					<% if is_dev then %>
-						<input type="text" name="svn_rev" value="<%= _h(@svn_rev) %>" size="15" style="width:100%;"/>
-					<% else %>
 						<input type="hidden" name="svn_rev" value="<%= _h(@svn_rev) %>"/>
 						<%= @svn_rev %>
-					<% end if %>
 				</td>
 				<th>View VCS:</th>
 				<td>
