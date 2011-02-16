@@ -58,7 +58,7 @@ public function fuzzy_ago(dt:datetime d1)
 		return "never"
 	end if
 
-	if current_user[USER_NO_FUZZY] then
+	if sequence(current_user) and current_user[USER_NO_FUZZY] then
 		return dt:format(d1, "%b %d, %Y %H:%M:%S")
 	end if
 
