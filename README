@@ -5,8 +5,8 @@ Dependencies:
 =======================
 
 creole     https://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria/tools/creole/trunk
-edbi       http://jeremy.cowgar.com/svn/edbi/trunk
-webclay2   http://jeremy.cowgar.com/svn/webclay2/trunk
+edbi       http://bitbucket.org/jcowgar/edbi
+webclay    http://bitbucket.org/jcowgar/webclay
 
 
 Configuring euweb
