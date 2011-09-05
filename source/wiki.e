@@ -344,9 +344,13 @@ function show_diff(map data, map request)
 	object page_to   = wiki_db:get(page, rev_to)
 
 	if atom(page_from) then
-		crash("from revision not found")
+		--crash("from revision not found")
+		page_from = repeat(0, WIKI_TEXT)
+		page_from[WIKI_TEXT] = "\n"
 	elsif atom(page_to) then
-		crash("to revision not found")
+		--crash("to revision not found")
+		page_to = repeat(0, WIKI_TEXT)
+		page_to[WIKI_TEXT] = "\n"
 	end if
 
 	sequence to_data = split(page_to[WIKI_TEXT], '\n')
