@@ -11,6 +11,8 @@ include std/net/http.e
 include std/net/url.e
 include std/types.e
 include std/text.e
+include std/net/dns.e
+include std/sequence.e
 
 -- Webclay includes
 include webclay/webclay.e as wc
@@ -143,12 +145,14 @@ public function validate_do_login(integer data, map vars)
 	-- Only do data validation if doing a login, the other option here is that
 	-- the user has forgotten their password.
 
+	object u_
 	if equal(map:get(vars, "login"), "Login") then
 		sequence password = map:get(vars, "password")
 		sequence u = user_db:get_by_login(code, password)
 		if atom(u[1]) and u[1] = 0 then
 			errors = wc:add_error(errors, "form", u[2])
 		end if
+		u_ = u
 	else
 		object u = user_db:get_by_code(code)
 		if atom(u) then
@@ -157,6 +161,23 @@ public function validate_do_login(integer data, map vars)
 			errors = wc:add_error(errors, "user", `User account is an old account and
 				does not support password resetting. You must contact a system
 				administrator for assistance`)
+		end if
+		u_ = u
+	end if
+
+	if not atom(u_) then
+		sequence email = u_[USER_EMAIL]
+		integer at = find('@', email)
+		if at < 1 then
+			errors = wc:add_error(errors, "email", "Email is invalid")
+		else
+			sequence emailhost = email[at+1..length(email)]
+			if equal(lower(emailhost),"example.com") then
+				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			end if
+			if atom(host_by_name(emailhost)) then
+				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			end if
 		end if
 	end if
 
@@ -242,6 +263,19 @@ function validate_do_signup(integer data, map:map vars)
 		errors = wc:add_error(errors, "email", "Email is invalid")
 	elsif is_email_used(email) then
 		errors = wc:add_error(errors, "email", "Email is already in use.")
+	else
+		integer at = find('@', email)
+		if at < 1 then
+			errors = wc:add_error(errors, "email", "Email is invalid")
+		else
+			sequence emailhost = email[at+1..length(email)]
+			if equal(lower(emailhost),"example.com") then
+				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			end if
+			if atom(host_by_name(emailhost)) then
+				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			end if
+		end if
 	end if
 
 	sequence security_question = map:get(vars, "security_question")
