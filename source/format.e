@@ -5,6 +5,7 @@ include std/text.e
 include config.e
 include creole.e
 include html_gen.e
+include common_gen.e as common_gen
 
 include webclay/logging.e as log
 
@@ -197,7 +198,8 @@ function generate_html(integer pAction, sequence pParms, object pContext)
 			lHTMLText = ""
 
 		case else
-			lHTMLText = html_generator(pAction, pParms)
+			common_gen:set("HTML")
+			lHTMLText = common_gen:generate(pAction, pParms, pContext)
 
 	end switch
 
