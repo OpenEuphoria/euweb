@@ -165,7 +165,7 @@ public function validate_do_login(integer data, map vars)
 		u_ = u
 	end if
 
-	if not atom(u_) then
+	if not atom(u_) and length(u_) >= USER_EMAIL then
 		sequence email = u_[USER_EMAIL]
 		integer at = find('@', email)
 		if at < 1 then
