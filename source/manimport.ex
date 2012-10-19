@@ -10,37 +10,59 @@ include std/io.e
 include std/regex.e as re
 include std/datetime.e as dt
 
-include config.e
-include db.e
+-- define NOEDBI to to output to stdout instead of writing to DB
+ifdef NOEDBI then
+	include std/console.e
+elsedef
+	include config.e
+	include db.e
+end ifdef
 
 constant re_tag = re:new(`<[^>]+>`)
 
 constant now = dt:now()
-
 procedure add(sequence fname, sequence a_name, sequence name, sequence content)
 	content = re:find_replace(re_tag, content, "")
-	edbi:execute("""INSERT INTO manual (created_at, filename, a_name, name, content)
-		VALUES (%T, %s, %s, %s, %s)""", {
-			now, fname, a_name, name, content })
+	ifdef NOEDBI then
+		display( {fname, a_name, name, content})
+	elsedef
+		edbi:execute("""INSERT INTO manual (created_at, filename, a_name, name, content)
+			VALUES (%T, %s, %s, %s, %s)""", {
+				now, fname, a_name, name, content })
+	end ifdef
 end procedure
 
 sequence cmds = command_line()
 if length(cmds) < 3 then
-	puts(1, "usage: manimport2.ex file1 file2 ...\n")
+	puts(1, "usage: manimport.ex file1 file2 ...\n")
 	abort(1)
 end if
 
-db:open()
+ifdef not NOEDBI then
+	db:open()
 
-edbi:execute("BEGIN")
-edbi:execute("DELETE FROM manual")
+	edbi:execute("BEGIN")
+	edbi:execute("DELETE FROM manual")
+end ifdef
 
 sequence files = cmds[3..$]
+enum
+	FULL_MATCH,
+	A_NAME,
+	NAME,
+	HEADER,
+	CONTENT
 
+regex re_header = regex:new( `^<a name="(.*)"></a><a name="(.*)"></a><h([2..4])>(.*)</h[2..4]>` )
 for i = 1 to length(files) do
 	sequence fname = files[i]
 	sequence bfname = filename(fname)
-	sequence a_name = "", content = "", name = "", maj_name = ""
+	sequence
+		a_name   = "",
+		content  = "",
+		name     = "",
+		maj_name = "",
+		header   = ""
 
 	printf(1, "processing %s\n", { fname })
 	sequence html = read_file(fname)
@@ -49,46 +71,25 @@ for i = 1 to length(files) do
 
 	for j = 1 to length(lines) do
 		sequence line = lines[j]
-
-		if begins("<a name=\"", line) then
-			-- We only want h2, h3 and h4 a names
-			sequence nline = lines[j-1]
-			if begins("<h2", nline) or
-				begins("<h3", nline) or
-				begins("<h4", nline)
-			then
-				if length(a_name) and length(content) then
-					add(bfname, a_name, name, content)
-				end if
-
-				content = ""
-
-				integer end_pos = find_from('"', line, 10)
-				if end_pos = 0 then
-					continue
-				end if
-
-				a_name = line[10..end_pos-1]
-
-				end_pos = find_from('<', nline, 5)
-				if end_pos = 0 then
-					continue
-				end if
-
-				-- start_pos is after the 1.2.3.4 stuff
-				integer start_pos = find(' ', nline)
-				name = nline[start_pos + 1..end_pos - 1]
-				if begins("<h2", nline) then
-					maj_name = name
-				elsif length(maj_name) then
-					name = maj_name & ": " & name
-				end if
+		object matches = regex:matches( re_header, line )
+		if sequence( matches ) then
+			
+			a_name = matches[A_NAME]
+			name   = matches[NAME]
+			header = matches[HEADER]
+			content = matches[CONTENT]
+			if equal( "2", header ) then
+				maj_name = name
+			elsif length( maj_name ) then
+				name = maj_name & ": " & name
 			end if
-		elsif length(a_name) then
-			content &= line & "\n"
+			add(bfname, a_name, name, content)
 		end if
 	end for
 end for
 
-edbi:execute("COMMIT")
-db:close()
+ifdef not NOEDBI then
+	edbi:execute("COMMIT")
+	db:close()
+end ifdef
+
