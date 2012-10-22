@@ -24,6 +24,32 @@ public enum ID, NAME, CHILDREN, RANK, KEYWORDS, DESCRIPTION
 --**
 -- Get the ID of a category. If the category is an ID already, it simply
 -- returns the ID passed. If the category is a sequence, then we query the
+-- database for the ID. Do it for anonymous users - don't add new ones.
+-- Return -1 in that case.
+--
+-- Parameters:
+--   * ##category## - category name or id
+--
+-- Returns:
+--   ##integer## ID representing the category or -1 if it is a new one
+--
+
+public function get_id_anon(object category)
+	if integer(category) then
+		return category
+	end if
+
+	object cat_rec = edbi:query_row("SELECT id FROM category WHERE name=%s", {
+			category })
+	if sequence(cat_rec) then
+		return cat_rec[1]
+	end if
+
+	return -1
+end function
+--**
+-- Get the ID of a category. If the category is an ID already, it simply
+-- returns the ID passed. If the category is a sequence, then we query the
 -- database for the ID. If it does not exist, it is created.
 --
 -- Parameters:
@@ -55,6 +81,36 @@ public function get_id(object category)
 	return -1
 end function
 
+--**
+-- Get a list of category members anonymously (i.e. don't add new ones)
+-- 
+-- Parameters:
+--   * ##category## - category to get member list for
+--
+
+public function member_list_anon(object category)
+	integer category_id = get_id_anon(category)
+
+	-- right now only forum messages and wiki pages can belong to a category
+	-- resulting list must be: name, icon, url
+	object members = edbi:query_rows("""
+			SELECT 
+				w.name AS name, 'world.png', CONCAT('/wiki/view/', w.name, '.wc')
+			FROM wiki_page AS w
+			INNER JOIN category_link AS cl ON (w.name = cl.item_id AND cl.category_id=%d)
+			WHERE w.rev = 0 AND cl.module_id=3
+		UNION ALL
+			SELECT
+				m.subject AS name, 'email.png', CONCAT('/forum/', m.id, '.wc')
+			FROM messages AS m
+			INNER JOIN category_link AS cl ON (m.id = cl.item_id)
+			WHERE cl.category_id = %d AND cl.module_id=4
+		""", { category_id, category_id })
+
+	return members
+end function
+
+--**
 --**
 -- Get a list of category members
 -- 

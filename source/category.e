@@ -109,7 +109,12 @@ function member_list(map data, map request)
 
 	map:put(data, "category", cat_name)
 
-	object members = category_db:member_list(cat_name)
+	object members = -1
+	if not has_role("user") then
+		members = category_db:member_list_anon(cat_name)
+	else
+		members = category_db:member_list(cat_name)
+	end if
 	if sequence(members) then
 		sequence page_groups = assemble_page_list(members)
 
@@ -159,6 +164,17 @@ sequence categorize_vars = {
 	{ wc:INTEGER,  "operation", 1 }
 }
 
+function validate_categorize(map data, map request)
+	sequence errors = wc:new_errors("wiki", "categorize")
+
+	if not has_role("user") then
+		errors = wc:add_error(errors, "form", "You are not authorized to edit wiki pages")
+	end if
+
+	return errors
+end function
+
+
 function categorize(map data, map request)
 	integer  module_id = map:get(request, "module_id")
 	sequence item_id   = map:get(request, "item_id")
@@ -177,7 +193,7 @@ function categorize(map data, map request)
 
 	return { REDIRECT_303, url & "#category_" & item_id }
 end function
-wc:add_handler(routine_id("categorize"), -1, "category", "categorize", categorize_vars)
+wc:add_handler(routine_id("categorize"), routine_id("validate_categorize"), "category", "categorize", categorize_vars)
 
 function autocomplete(map data, map request)
 	sequence result = ""
