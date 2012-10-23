@@ -24,7 +24,7 @@ public constant MODULE_ID = 4
 --
 
 public function message_count()
- 	return edbi:query_object("SELECT COUNT(id) FROM messages")
+ 	return edbi:query_object("SELECT COUNT(id) FROM messages WHERE is_deleted=0")
 end function
 
 --**
@@ -35,7 +35,7 @@ end function
 --
 
 public function thread_count()
- 	return edbi:query_object("SELECT COUNT(id) FROM messages WHERE parent_id=0")
+ 	return edbi:query_object("SELECT COUNT(id) FROM messages WHERE parent_id=0 and is_deleted=0")
 end function
 
 public procedure inc_view_counter(integer topic_id)
@@ -63,6 +63,7 @@ public function get_thread_list(integer page, integer per_page)
 			messages AS m
 		WHERE
 			m.parent_id = 0
+			and is_deleted = 0
 		ORDER BY m.last_post_at DESC 
 		LIMIT %d OFFSET %d`
 
@@ -88,7 +89,7 @@ constant message_select_fields = ` id, topic_id, parent_id, created_at, subject,
 --
 
 public function get(integer id)
-	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE id=%d", { id })
+	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE is_deleted=0 and id=%d", { id })
 end function
 
 --**
@@ -96,12 +97,12 @@ end function
 -- 
 
 public function get_list(integer page, integer per_page)
-	return edbi:query_rows("SELECT " & message_select_fields & " FROM messages ORDER BY id DESC LIMIT %d OFFSET %d", { per_page, (page - 1) * per_page })
+	return edbi:query_rows("SELECT " & message_select_fields & " FROM messages WHERE is_deleted=0 ORDER BY id DESC LIMIT %d OFFSET %d", { per_page, (page - 1) * per_page })
 end function
 
 public function get_topic_messages(integer topic_id)
 	object messages = edbi:query_rows("SELECT " & message_select_fields &
-		" FROM messages WHERE topic_id=%d ORDER BY id", { topic_id })
+		" FROM messages WHERE is_deleted=0 and topic_id=%d ORDER BY id", { topic_id })
 	if length(messages) then
 		return messages
 	end if
@@ -109,7 +110,7 @@ public function get_topic_messages(integer topic_id)
 	object msg = get(topic_id)
 	if sequence(msg) then
 		messages = edbi:query_rows("SELECT " & message_select_fields &
-			" FROM messages WHERE topic_id=%d ORDER BY id", { msg[MSG_TOPIC_ID] })
+			" FROM messages WHERE is_deleted=0 and topic_id=%d ORDER BY id", { msg[MSG_TOPIC_ID] })
 	end if
 
 	return messages
@@ -123,13 +124,13 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
-				subject, body, post_by, last_post_at, last_edit_at) 
-				VALUES (0, %s, %s, %s, %s, %d, %T, %T)`
+				subject, body, post_by, last_post_at, last_edit_at, is_deleted) 
+				VALUES (0, %s, %s, %s, %s, %d, %T, %T, 0)`
 		params = { current_user[USER_NAME], current_user[USER_EMAIL], subject, body, 
 			current_user[USER_ID], now, now }
 	else
 		sql = `INSERT INTO messages (topic_id, parent_id, author_name, author_email, 
-			subject, body, post_by, last_edit_at) VALUES (%d, %d, %s, %s, %s, %s, %d, %T)`
+			subject, body, post_by, last_edit_at, is_deleted) VALUES (%d, %d, %s, %s, %s, %s, %d, %T, 0)`
 		params = { topic_id, parent_id, current_user[USER_NAME], current_user[USER_EMAIL], 
 			subject, body, current_user[USER_ID], now }
 	end if
@@ -170,6 +171,30 @@ public procedure update(sequence message)
 end procedure
 
 public procedure remove_post(integer id)
+	object topic_id = edbi:query_object("SELECT topic_id FROM messages WHERE id=%d", { id })
+
+	if edbi:execute("UPDATE messages SET is_deleted=1 WHERE id=%d", { id }) then
+		crash("Couldn't remove forum post: %s", { edbi:error_message() })
+	end if
+	if edbi:execute("UPDATE messages SET is_deleted=1 WHERE topic_id=%d", { id }) then
+		crash("Couldn't remove children from forum post: %s", { edbi:error_message() })
+	end if
+	
+	object message_count = edbi:query_object("SELECT COUNT(*) FROM messages WHERE topic_id=%d and is_deleted=0",
+		{ topic_id })
+	object last_post_id = edbi:query_object("""SELECT id FROM messages 
+		WHERE topic_id=%d and is_deleted=0 ORDER BY created_at DESC LIMIT 1""", { topic_id })
+	object last_post = get(last_post_id)
+
+	if message_count then
+		edbi:execute("""UPDATE messages SET last_post_id=%d, last_post_by=%s, last_post_by_id=%d, 
+			last_post_at=%T, replies=%d WHERE id=%d""", { 
+				last_post[MSG_ID], last_post[MSG_AUTHOR_NAME], last_post[MSG_POST_BY_ID],
+	 			last_post[MSG_CREATED_AT], message_count, topic_id
+			})
+	end if
+end procedure
+public procedure erase_post(integer id)
 	object topic_id = edbi:query_object("SELECT topic_id FROM messages WHERE id=%d", { id })
 
 	if edbi:execute("DELETE FROM messages WHERE id=%d", { id }) then
