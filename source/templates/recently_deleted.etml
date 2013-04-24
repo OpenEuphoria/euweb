@@ -1,0 +1,85 @@
+<%@
+  include templates/euweb.etag as euweb
+  include std/math.e
+
+  include webclay/escape.e
+  include recently_deleted.e as recent
+%>
+
+<%- euweb:head title="Recent Activity" active="recent" %>
+
+<h3><span>Recent</span> Activity</h3>
+
+<form method="GET" style="margin: 5px 0px 5px 0px;">
+
+<input type="checkbox" name="forum" value="1"
+      <% if @forum then %>checked="checked" <% end if %>/> Forum
+<input type="checkbox" name="news" value="1"
+      <% if @news then %>checked="checked" <% end if %>/> News
+<input type="checkbox" name="ticket" value="1"
+      <% if @ticket then %>checked="checked" <% end if %>/> Ticket
+<input type="checkbox" name="wiki" value="1"
+      <% if @wiki then %>checked="checked" <% end if %>/> Wiki
+<input type="checkbox" name="pastey" value="1"
+      <% if @pastey then %>checked="checked" <% end if %>/> Pastey
+
+<input type="submit" value="Refresh" />
+
+</form>
+
+<table class="list forum">
+    <tr>
+        <th width="1%">&nbsp;</th>
+        <th width="1%">Type</th>
+        <th width="87%">Subject</th>
+        <th width="1%">Author</th>
+        <th width="10%">Age</th>
+    </tr>
+
+    <%
+    sequence items = @items
+    for i = 1 to length(items) do
+    	sequence item = items[i]
+        sequence edit_count = ""
+        if length(item) = R_EDIT_COUNT and item[R_EDIT_COUNT] > 1 then
+       		edit_count = sprintf("(%d recent edits)", { 
+                	item[R_EDIT_COUNT] })
+        end if
+        %>
+        <tr class="<% if mod(i, 3) then %>normal<% else %>stipple<% end if %>">
+            <td nowrap="nowrap" align="center">
+                <img title="<%= item[recent:R_TYPE] %>" 
+                  src="/images/famfam/<%= item[recent:R_ICON] %>" />
+            </td>
+            <td nowarp="nowrap" align="center">
+                <%= _h(item[recent:R_TYPE]) %>
+            </td>
+            <td>
+                <a href="<%= item[recent:R_URL] %>"><%= _h(item[recent:R_TITLE]) %></a>
+                <% if length(item[recent:R_ADDITIONAL]) then %>
+                <div class="additional">
+                  <%= _h(item[recent:R_ADDITIONAL]) %>
+                  <%= edit_count %>
+                </div>
+                <% end if %>
+            </td>
+            <td nowrap="nowrap">
+                <%- euweb:user_profile user=!item[recent:R_AUTHOR] %>
+            </td>
+            <td nowrap="nowrap"><%= _h(item[recent:R_AGE]) %></td>
+        </tr>
+                <div class="additional">
+                  <%= _h(item[recent:R_BODY]) %>
+                </div>
+    <% end for %>
+</table>
+
+<div class="centered">
+    <%
+    sequence qs = sprintf("&amp;news=%d&amp;forum=%d&amp;wiki=%d&amp;ticket=%d&amp;pastey=%d", {
+        @news, @forum, @wiki, @ticket, @pastey })
+    %>
+    <%- euweb:paginator qs=!qs base="/recent.wc" page=@page per_page=@per_page total=@total_items %>
+</div>
+
+<%- euweb:foot %>

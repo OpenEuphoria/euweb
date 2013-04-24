@@ -25,17 +25,17 @@ include config.e
 include fuzzydate.e
 include item_icons.e
 
-include templates/recent.etml as t_recent
+include templates/recently_deleted.etml as t_recent
 
 public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_COMMENT_ID, 
-R_ICON, R_ADDITIONAL, R_EDIT_COUNT
+R_ICON, R_ADDITIONAL, R_EDIT_COUNT, R_BODY
 
 constant q_forum = """
 
 	SELECT
 		'forum' AS typ, CONCAT(id, ''), created_at, author_name, subject, '' AS url, '0' AS comment_id,
-		'' AS icon, '' AS additional, 0 AS recent_edit_cn
-	FROM messages WHERE is_deleted = 0
+		'' AS icon, '' AS additional, 0 AS recent_edit_cn, body
+	FROM messages WHERE is_deleted = 1
 
 """
 
@@ -151,26 +151,26 @@ function recent(map data, map request)
 		total_count += edbi:query_object("SELECT COUNT(id) FROM messages")
 	end if
 
-	if ticket then
+	if 0 and ticket then
 		queries = append(queries, q_tickets)
 		total_count += edbi:query_object("SELECT COUNT(id) FROM ticket")
 		total_count += edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d", {
 			ticket_db:MODULE_ID })
 	end if
 
-	if news then
+	if 0 and news then
 		queries = append(queries, q_news)
 		total_count += edbi:query_object("SELECT COUNT(id) FROM news")
 		total_count += edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d", {
 			news_db:MODULE_ID })
 	end if
 
-	if wiki then
+	if 0 and wiki then
 		queries = append(queries, q_wiki)
 		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page WHERE rev=0")
 	end if
 
-	if pastey then
+	if 0 and pastey then
 		queries = append(queries, q_pastey)
 		total_count += edbi:query_object("SELECT COUNT(id) FROM pastey")
 		total_count += edbi:query_object("SELECT COUNT(id) FROM comment WHERE module_id=%d", {
@@ -219,4 +219,4 @@ function recent(map data, map request)
 
 	return { TEXT, t_recent:template(data) }
 end function
-wc:add_handler(routine_id("recent"), -1, "recent", "index", recent_vars)
+wc:add_handler(routine_id("recent"), -1, "recently_deleted", "index", recent_vars)

@@ -25,6 +25,7 @@ include news.e
 include pastey.e
 include preview.e
 include recent.e
+include recently_deleted.e
 include rss.e
 include search.e
 include security.e

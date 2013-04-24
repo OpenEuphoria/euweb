@@ -104,7 +104,7 @@ end function
 
 function latest_forum_posts(integer count)
 	object rows = edbi:query_rows("""SELECT m.topic_id, m.id, m.created_at, m.author_name,
-		m.subject, m.body FROM messages AS m ORDER BY created_at DESC LIMIT %d""", { count })
+		m.subject, m.body FROM messages AS m WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT %d""", { count })
 
 	for i = 1 to length(rows) do
 		rows[i] = {
