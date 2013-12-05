@@ -8,6 +8,8 @@ include std/sequence.e as seq
 include std/io.e
 include std/regex.e as re
 include std/datetime.e as dt
+include std/map.e
+
 -- define NOEDBI to to output to stdout instead of writing to DB
 ifdef NOEDBI then
 	include std/console.e
@@ -42,9 +44,21 @@ enum
 	FULL_MATCH,
 	A_NAME,
 	NAME,
-	HEADER,
-	CONTENT
-regex re_header = regex:new( `^<a name="(.*)"></a><a name="(.*)"></a><h([2-4])>(.*)</h[2-4]>` )
+	HEADER_LEVEL,
+	SECTION,
+	HEADING
+regex re_header = regex:new( `^<a name="(.*)"></a><a name="(.*)"></a><h([2-4])>([\d\.]+) (.*)</h[2-4]>` )
+regex re_words  = regex:new( `[^<"'/]\b([A-Za-z][A-Z_a-z0-9]+)\b` )
+
+procedure add_matches( map words, sequence content )
+	object matches = regex:all_matches( re_words, content )
+	if sequence( matches ) then
+		for i = 1 to length( matches ) do
+			map:put( words, matches[i][2], 0 )
+		end for
+	end if
+end procedure
+
 for i = 1 to length(files) do
 	sequence fname = files[i]
 	sequence bfname = filename(fname)
@@ -53,7 +67,9 @@ for i = 1 to length(files) do
 		content  = "",
 		name     = "",
 		maj_name = "",
-		header   = ""
+		header   = "",
+		heading  = ""
+	map words = map:new()
 	printf(1, "processing %s\n", { fname })
 	sequence html = read_file(fname)
 	sequence lines = seq:split(html, "\n")
@@ -61,17 +77,22 @@ for i = 1 to length(files) do
 		sequence line = lines[j]
 		object matches = regex:matches( re_header, line )
 		if sequence( matches ) then
-			
-			a_name = matches[A_NAME]
-			name   = matches[NAME]
-			header = matches[HEADER]
-			content = matches[CONTENT]
-			if equal( "2", header ) then
-				maj_name = name
-			elsif length( maj_name ) then
-				name = maj_name & ": " & name
+			if length( a_name ) then
+				add( bfname, a_name, heading, stdseq:join( map:keys( words, 1), ' ' ) )
 			end if
-			add(bfname, a_name, content, content)
+			a_name  = matches[A_NAME]
+			name    = matches[NAME]
+			header  = matches[HEADER_LEVEL]
+			heading = matches[HEADING]
+			words = map:new()
+			add_matches( words, heading )
+			if equal( "2", header ) then
+				maj_name = heading
+			elsif length( maj_name ) then
+				heading = maj_name & ": " & heading & " (" & matches[SECTION] & ')'
+			end if
+		else
+			add_matches( words, line )
 		end if
 	end for
 end for
