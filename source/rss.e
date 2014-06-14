@@ -7,6 +7,7 @@ include std/datetime.e
 include std/error.e
 include std/map.e
 include std/search.e
+include std/sequence.e
 include std/sort.e
 
 -- Webclay includes
@@ -21,6 +22,8 @@ include ticket_db.e
 include news_db.e
 
 include templates/rss.etml as t_rss
+
+include iconv.e
 
 public enum DATE, AUTHOR, URL, TITLE, CONTENT
 
@@ -106,7 +109,7 @@ function isdel()
 	if atom(current_user) then
 		return 0
 	end if
-	integer is_del = (equal(current_user[USER_NAME], "unknown")
+	integer is_del = (equal(current_user[USER_NAME], "unknown"))
 	return is_del
 end function
 
@@ -183,6 +186,11 @@ sequence rss_vars = {
 	{ wc:INTEGER, "count", 20 }
 }
 
+iconv_t sanitize_utf8 = iconv:new( "UTF8//IGNORE", "UTF8" )
+function sanitize( sequence text )
+	return iconv:convert( sanitize_utf8, remove_all( 0x1a, text ) )
+end function
+
 function rss(map data, map request)
 	datetime rightnow = datetime:now()
 	object rows = {}
@@ -251,6 +259,6 @@ function rss(map data, map request)
 	map:put(data, "items", rows)
 
 	wc:add_header("Content-Type", "application/rss+xml")
-	return { TEXT, t_rss:template(data) }
+	return { TEXT, sanitize( t_rss:template(data) ) }
 end function
 wc:add_handler(routine_id("rss"), -1, "rss", "index", rss_vars)

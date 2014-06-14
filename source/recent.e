@@ -133,7 +133,7 @@ function isdel()
 	if atom(current_user) then
 		return 0
 	end if
-	integer is_del = (equal(current_user[USER_NAME], "unknown")
+	integer is_del = (equal(current_user[USER_NAME], "unknown"))
 	return is_del
 end function
 
