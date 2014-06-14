@@ -18,6 +18,17 @@ public enum ID, CREATED_AT, SUBMITTED_BY_ID, ASSIGNED_TO_ID, SEVERITY_ID,
 	RESOLVED_AT, SVN_REV, SUBMITTED_BY, ASSIGNED_TO, SEVERITY, CATEGORY, STATUS,
 	PRODUCT_ID, PRODUCT, TYPE_ID, TYPE, ICON
 
+function isdel()
+	if not object(current_user) or atom(current_user) then
+		return "(is_deleted = 0)"
+	end if
+	if equal(current_user[USER_NAME], "unknown") then
+		return "(is_deleted = 0 or is_deleted = 4 or is_deleted = 2)"
+	else
+		return "is_deleted = 0"
+	end if
+end function
+
 constant BASE_FROM = """
 FROM
 	ticket AS t
@@ -29,7 +40,7 @@ FROM
 	join ticket_product AS tprod on tprod.id=t.product_id
 	join ticket_type AS ttype on ttype.id=t.type_id
 WHERE
-	t.id != 0
+	t.id != 0 and
 """
 
 constant BASE_QUERY = """SELECT
@@ -45,7 +56,7 @@ constant BASE_QUERY = """SELECT
 -- Get the number of tickets
 
 public function count(sequence where = "")
-    sequence sql = "SELECT COUNT(t.id) " & BASE_FROM
+    sequence sql = "SELECT COUNT(t.id) " & BASE_FROM & isdel()
     if length(where) > 0 then
         sql &= " AND " & where
     end if
@@ -57,7 +68,7 @@ end function
 -- Get a list of tickets for the given criteria
 
 public function get_list(integer offset=0, integer per_page=10, sequence where="")
-	sequence sql = BASE_QUERY
+	sequence sql = BASE_QUERY & isdel()
 	if length(where) then
 		sql &= " AND " & where
 	end if
@@ -71,7 +82,7 @@ end function
 -- Get a single ticket
 
 public function get(integer id)
-	return edbi:query_row(BASE_QUERY & " AND t.id=%d", { id })
+	return edbi:query_row(BASE_QUERY & isdel() & " AND t.id=%d", { id })
 end function
 
 --**
@@ -80,7 +91,7 @@ end function
 public function create(integer type_id, integer product_id, integer severity_id,
 		integer category_id, integer status_id, integer assigned_to_id, 
 		sequence reported_release, sequence milestone, sequence subject,
-        sequence content)
+        sequence content, integer is_deleted)
 	sequence assignment = "NULL"
 	if assigned_to_id > -1 then
 		assignment = sprintf("%d", { assigned_to_id })
@@ -89,12 +100,12 @@ public function create(integer type_id, integer product_id, integer severity_id,
 	return edbi:execute(
 		"""INSERT INTO ticket (created_at, status_id, submitted_by_id, assigned_to_id,
 		type_id, product_id, severity_id, category_id, reported_release, milestone, 
-		subject, content) 
-		VALUES (NOW(), %d, %d, %S, %d, %d, %d, %d, %s, %s, %s, %s)""", 
+		subject, content, is_deleted) 
+		VALUES (NOW(), %d, %d, %S, %d, %d, %d, %d, %s, %s, %s, %s, %d)""", 
 		{
 			status_id, current_user[USER_ID], assignment, type_id, product_id, 
 			severity_id, category_id, reported_release, milestone, subject, 
-			content 
+			content, is_deleted
 		}
 	)
 end function

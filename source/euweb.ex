@@ -26,6 +26,7 @@ include pastey.e
 include preview.e
 include recent.e
 include recently_deleted.e
+include recently_awaitingmoderation.e
 include rss.e
 include search.e
 include security.e

@@ -332,6 +332,7 @@ function validate_do_create(map data, map request)
 end function
 
 function do_create(map data, map request)
+	integer is_deleted = 0
 	if equal(map:get(request, "save"), "Preview") then
 		object s
 		s = map:get(request, "content")
@@ -356,7 +357,7 @@ function do_create(map data, map request)
         map:get(request, "reported_release"),
         map:get(request, "milestone"),
         map:get(request, "subject"),
-        map:get(request, "content"))
+        map:get(request, "content"), is_deleted)
 
     if edbi:error_code() then
         map:put(data, "error_code", edbi:error_code())

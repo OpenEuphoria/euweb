@@ -58,6 +58,17 @@ public enum THREAD_ID, THREAD_TOPIC_ID, THREAD_CREATED_AT, THREAD_AUTHOR_NAME, T
 -- Get the thread list
 -- 
 
+function isdel()
+	if atom(current_user) then
+		return "is_deleted = 0"
+	end if
+	if equal(current_user[USER_NAME], "unknown") then
+		return "(is_deleted = 0 or is_deleted = 4 or is_deleted = 2)"
+	else
+		return "is_deleted = 0"
+	end if
+end function
+
 public function get_thread_list(integer page, integer per_page)
 	sequence sql = `SELECT m.id, m.topic_id, m.created_at, m.author_name, m.subject, 
 			m.views, m.replies, m.last_post_id, m.last_post_by, m.last_post_at 
@@ -65,8 +76,8 @@ public function get_thread_list(integer page, integer per_page)
 			messages AS m
 		WHERE
 			m.parent_id = 0
-			and is_deleted = 0
-		ORDER BY m.last_post_at DESC 
+			and `&isdel()&"\n"&
+		`ORDER BY m.last_post_at DESC 
 		LIMIT %d OFFSET %d`
 
 	object data = edbi:query_rows(sql, { per_page, (page - 1) * per_page })
@@ -91,7 +102,7 @@ constant message_select_fields = ` id, topic_id, parent_id, created_at, subject,
 --
 
 public function get(integer id)
-	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE is_deleted=0 and id=%d", { id })
+	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE "&isdel()&" and id=%d", { id })
 end function
 
 --**
@@ -99,12 +110,13 @@ end function
 -- 
 
 public function get_list(integer page, integer per_page)
-	return edbi:query_rows("SELECT " & message_select_fields & " FROM messages WHERE is_deleted=0 ORDER BY id DESC LIMIT %d OFFSET %d", { per_page, (page - 1) * per_page })
+	return edbi:query_rows("SELECT " & message_select_fields & " FROM messages WHERE "&isdel()&" ORDER BY id DESC LIMIT %d OFFSET %d", { per_page, (page - 1) * per_page })
 end function
 
 public function get_topic_messages(integer topic_id)
-	object messages = edbi:query_rows("SELECT " & message_select_fields &
-		" FROM messages WHERE is_deleted=0 and topic_id=%d ORDER BY id", { topic_id })
+	object messages
+	messages = edbi:query_rows("SELECT " & message_select_fields &
+		" FROM messages WHERE "&isdel()&" and topic_id=%d ORDER BY id", { topic_id })
 	if length(messages) then
 		return messages
 	end if
@@ -112,7 +124,7 @@ public function get_topic_messages(integer topic_id)
 	object msg = get(topic_id)
 	if sequence(msg) then
 		messages = edbi:query_rows("SELECT " & message_select_fields &
-			" FROM messages WHERE is_deleted=0 and topic_id=%d ORDER BY id", { msg[MSG_TOPIC_ID] })
+			" FROM messages WHERE "&isdel()&" and topic_id=%d ORDER BY id", { msg[MSG_TOPIC_ID] })
 	end if
 
 	return messages
@@ -123,18 +135,20 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	sequence sql
 	sequence params
 	datetime now = datetime:now()
+	integer is_del = (equal(current_user[USER_NAME], "unknown")*2) +
+        (equal(current_user[USER_NAME], "unknown")*4)
 
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
 				subject, body, post_by, last_post_at, last_edit_at, is_deleted) 
-				VALUES (0, %s, %s, %s, %s, %d, %T, %T, 0)`
+				VALUES (0, %s, %s, %s, %s, %d, %T, %T, %d)`
 		params = { current_user[USER_NAME], current_user[USER_EMAIL], subject, body, 
-			current_user[USER_ID], now, now }
+			current_user[USER_ID], now, now, is_del }
 	else
 		sql = `INSERT INTO messages (topic_id, parent_id, author_name, author_email, 
-			subject, body, post_by, last_edit_at, is_deleted) VALUES (%d, %d, %s, %s, %s, %s, %d, %T, 0)`
+			subject, body, post_by, last_edit_at, is_deleted) VALUES (%d, %d, %s, %s, %s, %s, %d, %T, %d)`
 		params = { topic_id, parent_id, current_user[USER_NAME], current_user[USER_EMAIL], 
-			subject, body, current_user[USER_ID], now }
+			subject, body, current_user[USER_ID], now, is_del }
 	end if
 
 	if edbi:execute(sql, params) then

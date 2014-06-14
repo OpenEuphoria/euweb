@@ -102,9 +102,23 @@ function latest_news_comments(integer count)
 	return rows
 end function
 
+function isdel()
+	if atom(current_user) then
+		return 0
+	end if
+	integer is_del = (equal(current_user[USER_NAME], "unknown")
+	return is_del
+end function
+
 function latest_forum_posts(integer count)
-	object rows = edbi:query_rows("""SELECT m.topic_id, m.id, m.created_at, m.author_name,
+	object rows
+	if isdel() then
+	rows = edbi:query_rows("""SELECT m.topic_id, m.id, m.created_at, m.author_name,
+		m.subject, m.body FROM messages AS m WHERE (is_deleted = 0 or is_deleted = 4) ORDER BY created_at DESC LIMIT %d""", { count })
+	else
+	rows = edbi:query_rows("""SELECT m.topic_id, m.id, m.created_at, m.author_name,
 		m.subject, m.body FROM messages AS m WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT %d""", { count })
+	end if
 
 	for i = 1 to length(rows) do
 		rows[i] = {

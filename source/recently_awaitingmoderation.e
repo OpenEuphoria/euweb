@@ -25,26 +25,17 @@ include config.e
 include fuzzydate.e
 include item_icons.e
 
-include templates/recent.etml as t_recent
+include templates/recently_deleted.etml as t_recent
 
 public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_COMMENT_ID, 
-R_ICON, R_ADDITIONAL, R_EDIT_COUNT
+R_ICON, R_ADDITIONAL, R_EDIT_COUNT, R_BODY
 
 constant q_forum = """
 
 	SELECT
 		'forum' AS typ, CONCAT(id, ''), created_at, author_name, subject, '' AS url, '0' AS comment_id,
-		'' AS icon, '' AS additional, 0 AS recent_edit_cn
-	FROM messages WHERE is_deleted = 0
-
-"""
-
-constant q_forum_del = """
-
-	SELECT
-		'forum' AS typ, CONCAT(id, ''), created_at, author_name, subject, '' AS url, '0' AS comment_id,
-		'' AS icon, '' AS additional, 0 AS recent_edit_cn
-	FROM messages WHERE (is_deleted = 0 or is_deleted = 4)
+		'' AS icon, '' AS additional, 0 AS recent_edit_cn, substr(body, 1, 512) AS body
+	FROM messages WHERE (is_deleted = 2 or is_deleted = 4)
 
 """
 
@@ -67,55 +58,56 @@ constant q_tickets = """
 
 	SELECT
 			'ticket', CONCAT(t.id, ''), t.created_at, u.user, t.subject, '' AS url, '0' AS comment_id,
-			'' AS icon, CONCAT(p.name, ' - ', c.name) AS additional, 0 AS recent_edit_cnt
+			'' AS icon, CONCAT(p.name, ' - ', c.name) AS additional, 0 AS recent_edit_cnt, t.content as body
 		FROM ticket AS t
 		INNER JOIN users AS u ON (u.id=t.submitted_by_id)
 		INNER JOIN ticket_product AS p ON (p.id=t.product_id)
 		INNER JOIN ticket_category AS c ON (c.id=t.category_id)
-		WHERE t.is_deleted = 0
+		WHERE (t.is_deleted = 2 or t.is_deleted = 4)
 	UNION ALL
 		SELECT 'ticket comment', CONCAT(t.id, ''), c.created_at, u.user, t.subject, '',
 		CONCAT(c.id, ''), '', CONCAT(p.name, ' - ', cat.name),
-		0 AS recent_edit_cnt
+		0 AS recent_edit_cnt, c.body
 		FROM comment AS c
 		INNER JOIN ticket AS t ON (t.id = c.item_id)
 		INNER JOIN ticket_product AS p ON (p.id = t.product_id)
 		INNER JOIN ticket_category AS cat ON (cat.id=t.category_id)
 		INNER JOIN users AS u ON (u.id = c.user_id)
-		WHERE c.module_id=1 and c.is_deleted = 0
+		WHERE c.module_id=1 and (c.is_deleted = 2 or c.is_deleted = 4)
 
 """
 
 constant q_news = """
 
 		SELECT 'news', CONCAT(n.id, ''), n.publish_at AS created_at, u.user, n.subject, '',
-			'0', '', '', 0 AS recent_edit_cnt
+			'0', '', '', 0 AS recent_edit_cnt, n.content as body
 		FROM news AS n
 		INNER JOIN users AS u ON (u.id=n.submitted_by_id)
+		WHERE 0
 	UNION ALL
 		SELECT 'news comment', CONCAT(n.id, ''), c.created_at, u.user, n.subject, '',
-			CONCAT(c.id, ''), '', '', 0 AS recent_edit_cnt
+			CONCAT(c.id, ''), '', '', 0 AS recent_edit_cnt, c.body
 		FROM comment AS c
 		INNER JOIN news AS n ON (n.id=c.item_id)
 		INNER JOIN users AS u ON (u.id=c.user_id)
-		WHERE c.module_id=2 and c.is_deleted = 0
+		WHERE c.module_id=2 and (c.is_deleted = 2 or c.is_deleted = 4)
 
 """
 
 constant q_pastey = `
 
 		SELECT 'pastey', CONCAT(p.id, ''), p.created_at AS created_at, u.user, p.title, '',
-			'0', '', '', 0 AS recent_edit_cnt
+			'0', '', '', 0 AS recent_edit_cnt, p.body
 		FROM pastey AS p
 		INNER JOIN users AS u ON (u.id=p.user_id)
-		WHERE p.is_deleted = 0
+		WHERE p.is_deleted = 2 or p.is_deleted = 4
 	UNION ALL
 		SELECT 'pastey comment', CONCAT(p.id, ''), c.created_at, u.user, p.title, '',
-			CONCAT(c.id, ''), '', '', 0 AS recent_edit_cnt
+			CONCAT(c.id, ''), '', '', 0 AS recent_edit_cnt, c.body
 		FROM comment AS c
 		INNER JOIN pastey AS p ON (p.id=c.item_id)
 		INNER JOIN users AS u ON (u.id=c.user_id)
-		WHERE c.module_id=5 and c.is_deleted = 0
+		WHERE c.module_id=5 and (c.is_deleted = 2 or c.is_deleted = 4)
 
 `
 
@@ -128,14 +120,6 @@ sequence recent_vars = {
 	{ wc:INTEGER, "wiki",      0 },
 	{ wc:INTEGER, "pastey",    0 }
 }
-
-function isdel()
-	if atom(current_user) then
-		return 0
-	end if
-	integer is_del = (equal(current_user[USER_NAME], "unknown")
-	return is_del
-end function
 
 function recent(map data, map request)
 	map:copy(request, data)
@@ -153,7 +137,7 @@ function recent(map data, map request)
 		ticket = 1
 		news = 1
 		wiki = 1
-		pastey = 0 -- Off by default
+		pastey = 1 -- On by default
 	end if
 
 	map:put(data, "forum", forum)
@@ -166,11 +150,7 @@ function recent(map data, map request)
 	sequence queries = {}
 
 	if forum then
-		if isdel() then
-		queries = append(queries, q_forum_del)
-		else
 		queries = append(queries, q_forum)
-		end if
 		total_count += edbi:query_object("SELECT COUNT(id) FROM messages")
 	end if
 
@@ -188,7 +168,7 @@ function recent(map data, map request)
 			news_db:MODULE_ID })
 	end if
 
-	if wiki then
+	if 0 and wiki then
 		queries = append(queries, q_wiki)
 		total_count += edbi:query_object("SELECT COUNT(name) FROM wiki_page WHERE rev=0")
 	end if
@@ -242,4 +222,4 @@ function recent(map data, map request)
 
 	return { TEXT, t_recent:template(data) }
 end function
-wc:add_handler(routine_id("recent"), -1, "recent", "index", recent_vars)
+wc:add_handler(routine_id("recent"), -1, "recently_awaitingmoderation", "index", recent_vars)
