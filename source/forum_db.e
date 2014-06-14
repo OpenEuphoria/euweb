@@ -14,6 +14,8 @@ include edbi/edbi.e
 include config.e
 include db.e
 
+include wiki_db.e
+
 public constant MODULE_ID = 4
 
 --**
@@ -162,7 +164,21 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	return message
 end function
 
+public procedure preupdate(integer id)
+	sequence message = get(id)
+	datetime dt = message[MSG_LAST_EDIT_AT]
+	sequence dtf = datetime:format(dt)
+	sequence wiki_text = sprintf("Original date:%s\nEdited by: %s\nSubject: %s\n\n%s", {dtf, current_user[USER_NAME], message[MSG_SUBJECT], message[MSG_BODY]})
+	sequence wiki_name = sprintf("forum-msg-id-%d-edit", id)
+	wiki_db:update(wiki_name, wiki_text, "Automatic save in response to forum edit")
+	integer h = open("/tmp/euweb/" & wiki_name & "-" & dtf & ".txt", "w")
+	if h != -1 then
+		puts(h, wiki_text)
+		close(h)
+	end if
+end procedure
 public procedure update(sequence message)
+	preupdate(message[MSG_ID])
 	if edbi:execute(`UPDATE messages SET last_edit_at=CURRENT_TIMESTAMP, subject=%s,
 			body=%s WHERE id=%d`, { message[MSG_SUBJECT], message[MSG_BODY], message[MSG_ID] })
 	then
