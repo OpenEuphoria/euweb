@@ -186,7 +186,7 @@ public function create(sequence code, sequence password, sequence email,
 	end if
 	
 	integer id = edbi:last_insert_id()
-	edbi:execute("INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
+	--edbi:execute("INSERT INTO user_roles (role_name, user_id) VALUES ('user', %d)", { id })
 
 	return id
 end function

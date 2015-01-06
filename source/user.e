@@ -175,6 +175,9 @@ public function validate_do_login(integer data, map vars)
 			if equal(lower(emailhost),"example.com") then
 				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
 			end if
+			if equal(lower(emailhost),"google.com") then
+				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			end if
 			if atom(host_by_name(emailhost)) then
 				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
 			end if
@@ -270,6 +273,9 @@ function validate_do_signup(integer data, map:map vars)
 		else
 			sequence emailhost = email[at+1..length(email)]
 			if equal(lower(emailhost),"example.com") then
+				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			end if
+			if equal(lower(emailhost),"google.com") then
 				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
 			end if
 			if atom(host_by_name(emailhost)) then
@@ -542,7 +548,9 @@ constant user_list_sort = {
 	"user",           -- 1
 	"user DESC",      -- 2
 	"login_time",     -- 3
-	"login_time DESC" -- 4
+	"login_time DESC", -- 4
+	"created_at",     -- 5
+	"created_at DESC" -- 6
 }
 
 function user_list(map data, map request)
