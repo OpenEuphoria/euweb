@@ -454,3 +454,37 @@ function message(map data, map request)
 	end if
 end function
 wc:add_handler(routine_id("message"), -1, "forum", "message", message_vars)
+
+function deleted_message(map data, map request)
+	object m = forum_db:deleted_get(map:get(request, "id"))
+	if sequence( m ) then
+		map:put(data, "id", m[forum_db:MSG_ID])
+		map:put(data, "topic_id", m[forum_db:MSG_TOPIC_ID])
+		map:put(data, "parent_id", m[forum_db:MSG_PARENT_ID])
+		map:put(data, "created_at", fuzzy_ago(m[forum_db:MSG_CREATED_AT]))
+		map:put(data, "subject", m[forum_db:MSG_SUBJECT])
+		map:put(data, "body", m[forum_db:MSG_BODY])
+		map:put(data, "ip", m[forum_db:MSG_IP])
+		map:put(data, "author_name", m[forum_db:MSG_AUTHOR_NAME])
+		map:put(data, "author_email", m[forum_db:MSG_AUTHOR_EMAIL])
+		map:put(data, "post_by_id", m[forum_db:MSG_POST_BY_ID])
+		map:put(data, "views", m[forum_db:MSG_VIEWS])
+		map:put(data, "replies", m[forum_db:MSG_REPLIES])
+		map:put(data, "body_formatted", format_body(m[forum_db:MSG_BODY]))
+
+		object prev_id = edbi:query_object("SELECT id FROM messages WHERE id < %d ORDER BY id DESC LIMIT 1",
+			{ m[forum_db:MSG_ID] })
+		object next_id = edbi:query_object("SELECT id FROM messages WHERE id > %d ORDER BY id LIMIT 1",
+			{ m[forum_db:MSG_ID] })
+
+		map:put(data, "prev_id", prev_id)
+		map:put(data, "next_id", next_id)
+
+		forum_db:inc_message_view_counter(m[forum_db:MSG_ID])
+
+		return { TEXT, t_view_message:template(data) }
+	else
+		return { TEXT, t_invalid:template(data) }
+	end if
+end function
+wc:add_handler(routine_id("deleted_message"), -1, "forum", "deleted_message", message_vars)

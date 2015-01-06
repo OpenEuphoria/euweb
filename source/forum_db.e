@@ -105,6 +105,10 @@ public function get(integer id)
 	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE "&isdel()&" and id=%d", { id })
 end function
 
+public function deleted_get(integer id)
+	return edbi:query_row("SELECT " & message_select_fields & "FROM messages WHERE id=%d", { id })
+end function
+
 --**
 -- Get a message list for an index
 -- 
