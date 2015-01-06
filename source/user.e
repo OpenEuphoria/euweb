@@ -43,6 +43,8 @@ include fuzzydate.e
 include user_db.e
 include dump.e
 
+constant INVALID_DOMAINS = {"example.com", "google.com"}
+
 procedure _login(sequence u)
 	datetime rightnow = dt:now(), expire
 	sequence sess_id = set_user_ip(u, server_var("REMOTE_ADDR"))
@@ -172,14 +174,8 @@ public function validate_do_login(integer data, map vars)
 			errors = wc:add_error(errors, "email", "Email is invalid")
 		else
 			sequence emailhost = email[at+1..length(email)]
-			if equal(lower(emailhost),"example.com") then
-				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
-			end if
-			if equal(lower(emailhost),"google.com") then
-				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
-			end if
-			if atom(host_by_name(emailhost)) then
-				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			if find(lower(emailhost), INVALID_DOMAINS) or atom(host_by_name(emailhost)) then
+				errors = wc:add_error(errors, "email", "The supplied email address is not recognized as valid.")
 			end if
 		end if
 	end if
@@ -272,14 +268,8 @@ function validate_do_signup(integer data, map:map vars)
 			errors = wc:add_error(errors, "email", "Email is invalid")
 		else
 			sequence emailhost = email[at+1..length(email)]
-			if equal(lower(emailhost),"example.com") then
-				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
-			end if
-			if equal(lower(emailhost),"google.com") then
-				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
-			end if
-			if atom(host_by_name(emailhost)) then
-				errors = wc:add_error(errors, "email", "Temporary error. Please try again later.")
+			if find(lower(emailhost), INVALID_DOMAINS) or atom(host_by_name(emailhost)) then
+				errors = wc:add_error(errors, "email", "The supplied email address is not recognized as valid.")
 			end if
 		end if
 	end if
