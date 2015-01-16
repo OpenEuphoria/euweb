@@ -26,6 +26,7 @@ include fuzzydate.e
 include item_icons.e
 
 include templates/recently_deleted.etml as t_recent
+include templates/forum/invalid_message.etml as t_invalid
 
 public enum R_TYPE, R_ID, R_AGE, R_AUTHOR, R_TITLE, R_URL, R_COMMENT_ID, 
 R_ICON, R_ADDITIONAL, R_EDIT_COUNT, R_BODY
@@ -140,6 +141,11 @@ function recent(map data, map request)
 		pastey = 1 -- On by default
 	end if
 
+	if sequence(current_user) then
+	else
+		return { TEXT, t_invalid:template(data) }
+	end if
+
 	map:put(data, "forum", forum)
 	map:put(data, "ticket", ticket)
 	map:put(data, "news", news)
@@ -198,11 +204,12 @@ function recent(map data, map request)
 
 			case "forum" then
 				--if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
+				if sequence(current_user) then
 					--items[i][R_URL] = sprintf("/forum/m/%s.wc", { items[i][R_ID] })
 					items[i][R_URL] = sprintf("/euweb.cgi?module=forum&action=deleted_message&id=%s", { items[i][R_ID] })
 				--else
 					--items[i][R_URL] = sprintf("/forum/%s.wc#%s", { items[i][R_ID], items[i][R_ID] })
-				--end if
+				end if
 
 			case "ticket" then
 				items[i][R_URL] = sprintf("/ticket/%s.wc", { items[i][R_ID] })

@@ -457,7 +457,8 @@ wc:add_handler(routine_id("message"), -1, "forum", "message", message_vars)
 
 function deleted_message(map data, map request)
 	object m = forum_db:deleted_get(map:get(request, "id"))
-	if sequence( m ) then
+	if sequence(current_user) and
+	sequence( m ) then
 		map:put(data, "id", m[forum_db:MSG_ID])
 		map:put(data, "topic_id", m[forum_db:MSG_TOPIC_ID])
 		map:put(data, "parent_id", m[forum_db:MSG_PARENT_ID])
