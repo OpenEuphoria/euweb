@@ -197,11 +197,12 @@ function recent(map data, map request)
 				items[i][R_URL] = sprintf("/news/%s.wc#%s", { items[i][R_ID], items[i][R_COMMENT_ID] })
 
 			case "forum" then
-				if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
-					items[i][R_URL] = sprintf("/forum/m/%s.wc", { items[i][R_ID] })
-				else
-					items[i][R_URL] = sprintf("/forum/%s.wc#%s", { items[i][R_ID], items[i][R_ID] })
-				end if
+				--if sequence(current_user) and current_user[USER_FORUM_DEFAULT_VIEW] = 2 then
+					--items[i][R_URL] = sprintf("/forum/m/%s.wc", { items[i][R_ID] })
+					items[i][R_URL] = sprintf("/euweb.cgi?module=forum&action=deleted_message&id=%s", { items[i][R_ID] })
+				--else
+					--items[i][R_URL] = sprintf("/forum/%s.wc#%s", { items[i][R_ID], items[i][R_ID] })
+				--end if
 
 			case "ticket" then
 				items[i][R_URL] = sprintf("/ticket/%s.wc", { items[i][R_ID] })

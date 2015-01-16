@@ -194,6 +194,8 @@ include euphoria/info.e as euinfo
 					<li><a href="http://scm.openeuphoria.org">SCM</a></li>
 					<li><a href="http://rapideuphoria.com/archive.htm">The Archive</a></li>
 					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
+					<li><a href="/recently_deleted.wc">Deleted Posts</a></li>
+					<li><a href="/recently_awaitingmoderation.wc">Posts Awaiting Moderation</a></li>
 				</ul>
 
 				<% if has_role("admin") then %>
