@@ -17,6 +17,8 @@ include webclay/logging.e as log
 include db.e
 include md5.e
 
+include wiki_db.e
+
 global object current_user = 0
 global enum USER_ID, USER_CREATED_AT, USER_NAME, USER_FULL_NAME, USER_LOCATION, 
 	USER_EMAIL, USER_SHOW_EMAIL, USER_LAST_LOGIN_AT, USER_DISABLED, 
@@ -148,6 +150,10 @@ global function has_role(sequence role, object user=current_user)
 		if find("admin", user[USER_ROLES]) then
 			return 1
 		end if
+		if find("forum_moderator", user[USER_ROLES]) and
+			equal("role", "user_admin") then
+			return 1
+		end if
 
 		return find(role, user[USER_ROLES])
 	else
@@ -203,13 +209,26 @@ public procedure add_role(sequence uname, sequence role)
 	end if
 end procedure
 
+public procedure preupdate(sequence uname, sequence subject)
+	sequence wiki_text = sprintf("Edited by: %s\nSubject: %s\n", {current_user[USER_NAME], subject})
+	sequence wiki_name = sprintf("forum-user-id-%s-edit", {uname})
+	wiki_db:update(wiki_name, wiki_text, "Automatic save in response to forum edit")
+	integer h = open("/tmp/euweb/" & wiki_name & "-" & datetime:format(now_gmt()) & ".txt", "w")
+	if h != -1 then
+		puts(h, wiki_text)
+		close(h)
+	end if
+end procedure
+
 public procedure disable(sequence uname, sequence reason)
 	edbi:execute("UPDATE users SET disabled=1, disabled_reason=%s WHERE user=%s", {
 		reason, uname })
+	preupdate(uname, "User banned for reason: " & reason)
 end procedure
 
 public procedure enable(sequence uname)
 	edbi:execute("UPDATE users SET disabled=0 WHERE user=%s", { uname })
+	preupdate(uname, "User unbanned")
 end procedure
 
 public procedure set_password(sequence uname, sequence password)
