@@ -8,6 +8,7 @@ include std/datetime.e
 include std/error.e
 include std/get.e
 
+include webclay/webclay.e as wc
 include webclay/logging.e as log
 include edbi/edbi.e
 
@@ -141,18 +142,19 @@ public function create(integer parent_id, integer topic_id, sequence subject,
 	datetime now = datetime:now()
 	integer is_del = (equal(current_user[USER_NAME], "unknown")*2) +
         (equal(current_user[USER_NAME], "unknown")*4)
+	sequence user_ip = server_var("REMOTE_ADDR")
 
 	if parent_id = -1 then
 		sql = `INSERT INTO messages (parent_id, author_name, author_email, 
-				subject, body, post_by, last_post_at, last_edit_at, is_deleted) 
-				VALUES (0, %s, %s, %s, %s, %d, %T, %T, %d)`
+				subject, body, post_by, last_post_at, last_edit_at, is_deleted, ip) 
+				VALUES (0, %s, %s, %s, %s, %d, %T, %T, %d, %s)`
 		params = { current_user[USER_NAME], current_user[USER_EMAIL], subject, body, 
-			current_user[USER_ID], now, now, is_del }
+			current_user[USER_ID], now, now, is_del, user_ip}
 	else
 		sql = `INSERT INTO messages (topic_id, parent_id, author_name, author_email, 
-			subject, body, post_by, last_edit_at, is_deleted) VALUES (%d, %d, %s, %s, %s, %s, %d, %T, %d)`
+			subject, body, post_by, last_edit_at, is_deleted, ip) VALUES (%d, %d, %s, %s, %s, %s, %d, %T, %d, %s)`
 		params = { topic_id, parent_id, current_user[USER_NAME], current_user[USER_EMAIL], 
-			subject, body, current_user[USER_ID], now, is_del }
+			subject, body, current_user[USER_ID], now, is_del, user_ip }
 	end if
 
 	if edbi:execute(sql, params) then

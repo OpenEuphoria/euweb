@@ -13,6 +13,12 @@ include forum_db.e
 
 <h3><span>Forum</span> Index</h3>
 
+<h2><span>
+<a href="/wiki/view/CodeOfConduct.wc">
+Code of Conduct: Respectful, Good Faith, Collaborative, Concise, Open
+</a>
+</span></h2>
+
 <table class="list forum">
     <tr>
         <th width="1%" nowrap="nowrap">&nbsp;</th>
