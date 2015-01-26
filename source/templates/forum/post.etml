@@ -34,6 +34,12 @@ sequence div_class = "normal"
 	<input type="hidden" name="fork" value="<%= _h(@fork) %>" />
 	<input type="hidden" name="fork_id" value="<%= _h(@fork_id) %>" />
 
+<h2><span>
+<a href="/wiki/view/CodeOfConduct.wc">
+Code of Conduct: Respectful, Good Faith, Collaborative, Concise, Open
+</a>
+</span></h2>
+
 	Subject:<br />
 	<input type="text" id="subject" name="subject" value="<%= _h(@subject) %>" size="80" />
 	<div style="padding:0;margin:0;">
