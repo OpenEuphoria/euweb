@@ -44,7 +44,7 @@
 	button. Instructions on how to reset your password will be emailed to the email address
 	on file.
 	<br />
-	<strong>Need additional help?</strong> You can always <a href="mailto:openeuphoria@gmail.com">contact the admin</a> for assistance.
+	<strong>Need additional help?</strong> You can always <a href="/wiki/view/Contact%20Administrators.wc">contact the admin</a> for assistance.
 </p>
 
 <%- euweb:foot %>

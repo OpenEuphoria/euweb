@@ -196,7 +196,7 @@ include euphoria/info.e as euinfo
 					<li><a href="http://sourceforge.net/projects/rapideuphoria/">SourceForge</a></li>
 					<li><a href="/recently_deleted.wc">Deleted Posts</a></li>
 					<li><a href="/recently_awaitingmoderation.wc">Posts Awaiting Moderation</a></li>
-					<li><a href="mailto:openeuphoria@gmail.com">Contact Admin</a></li>
+					<li><a href="/wiki/view/Contact%20Administrators.wc">Contact Admin</a></li>
 				</ul>
 
 				<% if has_role("admin") then %>
