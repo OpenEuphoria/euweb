@@ -70,6 +70,8 @@ sequence page_title = "Forum: " & _h(messages[1][MSG_SUBJECT])
 				<% end if %>
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 				<a href="/forum/post.wc">new topic</a>
+			<% else %>
+				<a href="/news/260.wc">new topic</a>
 			<% end if %>
 			<% if not equal(message[MSG_PARENT_ID], 0) then %>
 				&nbsp;&nbsp;&nbsp;&nbsp;&#187;

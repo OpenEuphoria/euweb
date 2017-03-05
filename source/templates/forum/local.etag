@@ -11,6 +11,8 @@ sequence quick_links = {
 
 if has_role("user") then
     quick_links = append(quick_links, { "/forum/post.wc", "New Topic", "button" })
+else
+    quick_links = append(quick_links, { "/news/260.wc", "New Topic", "button" })
 end if
 %>
 

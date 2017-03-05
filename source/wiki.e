@@ -91,6 +91,7 @@ function view(map data, map request)
 
 	if length(w[WIKI_HTML]) = 0 then
 		w[WIKI_HTML] = format_body(w[WIKI_TEXT])
+		w[WIKI_HTML] = flatten(w[WIKI_HTML])
 		edbi:execute("UPDATE wiki_page SET wiki_html=%s WHERE rev=%d AND name=%s", {
 				w[WIKI_HTML], rev, page })
 	end if
@@ -187,7 +188,7 @@ function page_list(map data, map request)
 			SELECT w.name, 'world.png', CONCAT('/wiki/view/', w.name, '.wc')
 			FROM wiki_page AS w
 			INNER JOIN users AS u ON (w.created_by_id=u.id)
-			WHERE w.rev = 0 ORDER BY w.name
+			WHERE w.rev = 0 and w.name not like 'forum-%-id-%-edit' ORDER BY w.name
 		""")
 
 	sequence page_groups = assemble_page_list(pages)
@@ -202,6 +203,27 @@ function page_list(map data, map request)
 	return { TEXT, t_page_list:template(data) }
 end function
 wc:add_handler(routine_id("page_list"), -1, "wiki", "pagelist", {})
+
+function fpage_list(map data, map request)
+	object pages = edbi:query_rows("""
+			SELECT w.name, 'world.png', CONCAT('/wiki/view/', w.name, '.wc')
+			FROM wiki_page AS w
+			INNER JOIN users AS u ON (w.created_by_id=u.id)
+			WHERE w.rev = 0 and w.name like 'forum-%-id-%-edit' ORDER BY w.name
+		""")
+
+	sequence page_groups = assemble_page_list(pages)
+	
+	map:put(data, "all", 0)
+	map:put(data, "num_of_pages", length(pages))
+	map:put(data, "groups", page_groups)
+	map:put(data, "title", "Page")
+	map:put(data, "is_category_list", 0)
+	map:put(data, "is_backlink_list", 0)
+
+	return { TEXT, t_page_list:template(data) }
+end function
+wc:add_handler(routine_id("fpage_list"), -1, "wiki", "fpagelist", {})
 
 sequence backlink_vars = {
 	{ wc:SEQUENCE, "page" }

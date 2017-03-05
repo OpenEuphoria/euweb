@@ -37,6 +37,8 @@ end if
 			<% end if %>
 			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 			<a href="/forum/post.wc">new topic</a>
+		<% else %>
+			<a href="/news/260.wc">new topic</a>
 		<% end if %>
 		<% if not equal(@parent_id, 0) then %>
 			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
@@ -83,6 +85,8 @@ end if
 			<% end if %>
 			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
 			<a href="/forum/post.wc">new topic</a>
+		<% else %>
+			<a href="/news/260.wc">new topic</a>
 		<% end if %>
 		<% if not equal(@parent_id, 0) then %>
 			&nbsp;&nbsp;&nbsp;&nbsp;&#187;
