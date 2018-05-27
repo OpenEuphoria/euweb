@@ -2,9 +2,9 @@
 
 ## Dependencies
 
-| creole  | https://github.com/OpenEuphoria/creole |
-| edbi    | http://bitbucket.org/jcowgar/edbi      |
-| webclay | http://bitbucket.org/jcowgar/webclay   |
+* http://bitbucket.org/jcowgar/edbi
+* http://bitbucket.org/jcowgar/webclay
+* https://github.com/OpenEuphoria/creole
 
 ## Configuration
 
