@@ -25,7 +25,7 @@ function isdel()
 	if equal(current_user[USER_NAME], "unknown") then
 		return "(is_deleted = 0 or is_deleted = 4 or is_deleted = 2)"
 	else
-		return "is_deleted = 0"
+		return "(is_deleted = 0)"
 	end if
 end function
 

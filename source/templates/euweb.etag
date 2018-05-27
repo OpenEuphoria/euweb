@@ -274,7 +274,11 @@ include euphoria/info.e as euinfo
 integer size = 10, mid_size = 5
 integer current_page = #page
 integer per_page = #per_page
-integer last_page = ceil(#total / per_page)
+object  total = #total
+integer last_page = 0
+if atom( total ) then
+	last_page = ceil(#total / per_page)
+end if
 integer start = current_page
 integer end_page = start + size
 

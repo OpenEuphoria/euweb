@@ -188,7 +188,7 @@ function real_index(map data, map request, sequence where="")
 
     -- Get the product name. If we have tickets we can get it from there, otherwise
     -- we will have to query the db specifically for the product name.
-    if length(tickets) > 0 then
+    if sequence(tickets) and length(tickets) > 0 then
         map:put(data, "product_name", tickets[1][ticket_db:PRODUCT])
 
 		for i = 1 to length(tickets) do
@@ -211,9 +211,9 @@ function real_index(map data, map request, sequence where="")
         map:put(data, "error_code", edbi:error_code())
         map:put(data, "error_message", edbi:error_message())
     else
-        for i = 1 to length(tickets) do
+	if sequence(tickets) then for i = 1 to length(tickets) do
             tickets[i][ticket_db:CREATED_AT] = fuzzy_ago(tickets[i][ticket_db:CREATED_AT])
-        end for
+        end for end if
 
         map:put(data, "error_code", 0)
         map:put(data, "tickets", tickets)

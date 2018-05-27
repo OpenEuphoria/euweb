@@ -4,8 +4,11 @@
 
 -- StdLib includes
 include std/datetime.e as dt
+include std/dll.e
 include std/error.e
+include std/eumem.e
 include std/map.e
+include std/pretty.e
 include std/search.e
 include std/net/http.e
 include std/net/url.e
@@ -36,6 +39,8 @@ include templates/user/forgot_password_ok.etml as t_forgot_password_ok
 include templates/user/list.etml as t_list
 
 -- Local includes
+include curl/curl.e
+include jsmn/jsmn.e
 include config.e
 include db.e
 include format.e
@@ -232,11 +237,70 @@ sequence signup_invars = {
 	{ wc:SEQUENCE, "password_confirm" },
 	{ wc:SEQUENCE, "security_question" },
 	{ wc:SEQUENCE, "security_answer" },
-	{ wc:SEQUENCE, "recaptcha_challenge_field" },
-	{ wc:SEQUENCE, "recaptcha_response_field" },
+--	{ wc:SEQUENCE, "recaptcha_challenge_field" },
+--	{ wc:SEQUENCE, "recaptcha_response_field" },
+	{ wc:SEQUENCE, "g-recaptcha-response" },
 	{ wc:SEQUENCE, "login" },
 	{ wc:SEQUENCE, "forgot_password" }
 }
+
+function init_string( integer cleanup = 1 )
+	return eumem:malloc( "", cleanup )
+end function
+
+function writefunc( atom ptr, atom size, atom nmemb, atom userdata )
+
+	atom count = size * nmemb
+	ram_space[userdata] &= peek({ ptr, count })
+
+	return count
+end function
+constant writefunc_id = routine_id( "writefunc" )
+constant writefunc_cb = call_back( writefunc_id )
+
+function validate_recaptcha( map:map vars )
+
+	atom str = init_string()
+	atom curl = curl_easy_init()
+
+	sequence secret	  = RECAPTCHA_PRIVATE_KEY
+	sequence response = map:get( vars, "g-recaptcha-response" )
+	sequence remoteip = server_var( "REMOTE_ADDR" )
+	sequence postfields = sprintf( "secret=%s&response=%s&remoteip=%s", {secret,response,remoteip} )
+
+	curl_easy_setopt( curl, CURLOPT_URL, RECAPTCHA_VERIFY_URL )
+	curl_easy_setopt( curl, CURLOPT_POSTFIELDS, postfields )
+	curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, writefunc_cb )
+	curl_easy_setopt( curl, CURLOPT_WRITEDATA, str )
+
+	CURLcode res = curl_easy_perform( curl )
+
+	curl_easy_cleanup( curl )
+
+	if res != CURLE_OK then
+		-- request failed
+		return -1
+	end if
+
+	object json = jsmn_value( ram_space[str] )
+	if atom( json ) then
+		-- invalid JSON response
+		return -2
+	end if
+
+	object success = map:get( json[J_VALUE], "success", 0 )
+	if atom( success ) then
+		-- invalid JSON response
+		return -3
+	end if
+
+	if not equal( success[J_VALUE], "true" ) then
+		-- response not valid
+		return 0
+	end if
+
+	return 1
+end function
 
 function validate_do_signup(integer data, map:map vars)
 	sequence errors = wc:new_errors("user", "signup")
@@ -286,6 +350,7 @@ function validate_do_signup(integer data, map:map vars)
 
 	-- No reason to do the costly tests if we already have errors.
 	if not has_errors(errors) then
+	/*
 		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
 		sequence postdata = {
 				{ "privatekey", RECAPTCHA_PRIVATE_KEY },
@@ -302,6 +367,43 @@ function validate_do_signup(integer data, map:map vars)
 				errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response was incorrect.")
 			end if
 		end if
+	*/
+
+	/*
+		atom str = init_string()
+		atom curl = curl_easy_init()
+
+		sequence secret   = RECAPTCHA_PRIVATE_KEY
+		sequence response = map:get( vars, "g-recaptcha-response" )
+		sequence postfields = sprintf( "secret=%s&response=%s", {secret,response} )
+
+		curl_easy_setopt( curl, CURLOPT_URL, RECAPTCHA_VERIFY_URL )
+		curl_easy_setopt( curl, CURLOPT_POSTFIELDS, postfields )
+		curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, writefunc_cb )
+		curl_easy_setopt( curl, CURLOPT_WRITEDATA, str )
+
+		CURLcode res = curl_easy_perform( curl )
+		curl_easy_cleanup( curl )
+
+		if res != CURLE_OK then
+			errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
+		else
+			object json = jsmn_value( ram_space[str] )
+			object success = map:get( json[J_VALUE], "success", 0 )
+			if equal( success[J_VALUE], "true" ) then
+				errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response was incorrect." )
+			end if
+		end if
+	*/
+
+		integer status = validate_recaptcha( vars )
+
+		if status < 0 then
+			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA validation failed." )
+		elsif status = 0 then
+			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response incorrect." )
+		end if
+
 	end if
 
 	return errors

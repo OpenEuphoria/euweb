@@ -1,134 +1,119 @@
-euweb forum software
-https://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria/tools/euweb/trunk
+# OpenEuphoria's Web Application
 
-Dependencies:
-=======================
+## Dependencies
 
-creole     https://rapideuphoria.svn.sourceforge.net/svnroot/rapideuphoria/tools/creole/trunk
-edbi       http://bitbucket.org/jcowgar/edbi
-webclay    http://bitbucket.org/jcowgar/webclay
+| creole  | https://github.com/OpenEuphoria/creole |
+| edbi    | http://bitbucket.org/jcowgar/edbi      |
+| webclay | http://bitbucket.org/jcowgar/webclay   |
 
+## Configuration
 
-Configuring euweb
-=======================
+Read [source/config.e](https://github.com/OpenEuphoria/euweb/blob/master/source/config.e).
+Create your own configuration file and include it from `source/config.e` inside an `ifdef`.
 
-Read source/config.e.  Create your own configuration file and include it from
-source/config.e inside an ifdef.  A sample config file might look like:
+A sample config file might look like:
 
-        public constant DB_DRIVERS_PATH = "drivers"
-        public constant DB_URL = "mysql://user:password@localhost:3306/database_name"
+```euphoria
+public constant DB_DRIVERS_PATH = "drivers"
+public constant DB_URL = "mysql://user:password@localhost:3306/database_name"
 
-        -- Do NOT include the trailing slash
-        public constant ROOT_URL = "http://localhost"
+-- Do NOT include the trailing slash
+public constant ROOT_URL = "http://localhost"
 
-        public constant AUTO_LOGIN_UID = 0 -- 0 disables, otherwise set to your UID
+public constant AUTO_LOGIN_UID = 0 -- 0 disables, otherwise set to your UID
 
-        -- reCAPTCHA keys
-        public constant RECAPTCHA_PRIVATE_KEY = ""
-        public constant RECAPTCHA_PUBLIC_KEY = ""
+-- reCAPTCHA keys
+public constant RECAPTCHA_PRIVATE_KEY = ""
+public constant RECAPTCHA_PUBLIC_KEY = ""
+```
 
-Create a eu.cfg file in the euweb/htdocs directory.  It should have the following:
+Create a `eu.cfg` file in the `euweb/htdocs` directory. It should have the following:
 
-  -batch
-  -i /dir/to/euphoria/include
-  -p etml,etag:/dir/to/webclay/webclay/etml.ex
-  -i /dir/to/edbi
-  -i /dir/to/creole
-  -i /dir/to/webclay
-  -i /dir/to/euweb/source
-  -d <ifdef used in config.e>
+```
+-batch
+-i /path/to/euphoria/include
+-p etml,etag:/dir/to/webclay/webclay/etml.ex
+-i /path/to/edbi
+-i /path/to/creole
+-i /path/to/webclay
+-i /path/to/euweb/source
+-d <ifdef used in config.e>
+```
 
-This enables the webclay preprocessor and ensures that all of the include
-files can be found when running euweb.  The preprocessor needs to be run
-by a user that can write the post processed files.  The cgi process likely
-will not be running with those permissions.  For the initial configuration,
-and any time any of the templates in euweb/source/templates change, you
-will probably need to execute euweb/htdocs/euweb.ex manually from the 
-command line in order to reprocess the templates.
+This enables the webclay preprocessor and ensures that all of the include files can be found when
+running euweb. The preprocessor needs to be run by a user that can write the post processed files.
+The cgi process likely will not be running with those permissions. For the initial configuration,
+and any time any of the templates in euweb/source/templates change, you will probably need to
+execute euweb/htdocs/euweb.ex manually from the command line in order to reprocess the templates.
 
+## Database
 
-Database
-=========================
+euweb uses a MySQL database, so you'll need to have the MySQL server installed. The `sql/euweb.sql`
+file will create the database schema required, and adds a few users and a post, as well.  It uses
+a database named euweb.  To run it:
 
-euweb uses a MySQL database, so you'll need to have the MySQL server installed.
-The "sql/euweb.sql" file will create the database schema required, and adds 
-a few users and a post, as well.  It uses a database named euweb.  To run
-it:
-
+```
 $ mysql -u <username> -p < euweb.sql
+```
 
+## Apache
 
-Configuring Apache
-=======================
+Configuration files can be in different places on different systems. This guide will assume the
+following files:
 
-Configuration is somewhat different based on the version of 
-Apache that you are using.  Below are configuration guides
-for Apache 1.3 and Apache 2.
+* /etc/apache2/apache2.conf
+* /etc/apache2/sites-enabled/000-default
 
-Apache 1.3
------------------------
+If you do not have the second, look for some lines like the following in `apache2.conf`:
 
-
-Apache 2
------------------------
-
-Configuration files can be in different places on different 
-systems.  This guide will assume the following files:
-
-  /etc/apache2/apache2.conf
-  /etc/apache2/sites-enabled/000-default
-
-If you do not have the second, look for some lines like
-the following in apache2.conf:
-
-  # Include the virtual host configurations:
-  Include /etc/apache2/sites-enabled/
+```
+# Include the virtual host configurations:
+Include /etc/apache2/sites-enabled/
+```
 
 The 000-default file should look like this:
 
+```
 <VirtualHost *:80>
-	ServerAdmin webmaster@localhost
+  ServerAdmin webmaster@localhost
 
-	DocumentRoot /var/www/htdocs
-	<Directory />
-		Options FollowSymLinks
-		AllowOverride All
-	</Directory>
-	
-	<Directory /var/www/htdocs>
-		Options Indexes FollowSymLinks MultiViews ExecCGI
-		AllowOverride All
-		Order allow,deny
-		allow from all
-		AddHandler cgi-script .ex
-	</Directory>
+  DocumentRoot /var/www/htdocs
+  <Directory />
+    Options FollowSymLinks
+    AllowOverride All
+  </Directory>
 
-	ErrorLog /var/log/apache2/error.log
+  <Directory /var/www/htdocs>
+    Options Indexes FollowSymLinks MultiViews ExecCGI
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    AddHandler cgi-script .ex
+  </Directory>
 
-	# Possible values include: debug, info, notice, warn, error, crit,
-	# alert, emerg.
-	LogLevel warn
+  ErrorLog /var/log/apache2/error.log
 
-	CustomLog /var/log/apache2/access.log combined
+  # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+  LogLevel warn
+
+  CustomLog /var/log/apache2/access.log combined
 
 </VirtualHost>
+```
 
-This assumes that /var/www/htdocs is the root directory from
-which apache will serve pages.  You can simply make a symlink
-from /var/www to your euweb htdocs dir:
+This assumes that `/var/www/htdocs` is the root directory from which apache will serve pages. You
+can simply make a symlink from /var/www to your euweb htdocs dir:
 
-  $ cd /var/www
-  $ sudo ln -s /dir/to/euweb/htdocs htdocs
+```
+$ cd /var/www
+$ sudo ln -s /dir/to/euweb/htdocs htdocs
+```
 
+## .htaccess
 
-.htaccess
------------------------
+euweb uses some rewrite rules to make some friendly urls through an .htaccess file. A default
+.htaccess is in the repository, though you can additionally configure it.
 
-euweb uses some rewrite rules to make some friendly urls through
-an .htaccess file.  A default .htaccess is in the repository,
-though you can additionally configure it.  
-
-While developing and testing, your local IP may end up being in 
-the banned list.  If this happens, you can simply delete that 
-line from the IP_BAN_LIST, or revert the file via svn (assuming
-you haven't changed anything else).
+While developing and testing, your local IP may end up being in the banned list. If this happens,
+you can simply delete that line from the `IP_BAN_LIST`, or revert the file via svn (assuming you
+haven't changed anything else).

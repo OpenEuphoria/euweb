@@ -15,12 +15,11 @@
 	<tr>
 		<th>&nbsp;</th>
 		<td>
-		Your user code will be used to identify you on various parts
-		of the website such as in forum posts, news submissions or wiki page edits. Your user code must
-		be at least 4 characters long, contain only letters, numbers and underscores. It must not be all 
-		numeric. For example, john_doe, and john1988 are all valid. 2009, john+doe, and john doe are not 
-		valid user codes.
-		<br />&nbsp;
+		  Your user code will be used to identify you on various parts
+		  of the website such as in forum posts, news submissions or wiki page edits. Your user code must
+		  be at least 4 characters long, contain only letters, numbers and underscores. It must not be all 
+		  numeric. For example, john_doe, and john1988 are all valid. 2009, john+doe, and john doe are not 
+		  valid user codes.<br />&nbsp;
 		</td>
 	</tr>
 	<tr>
@@ -33,8 +32,7 @@
                   The email address will be used for password recovery, any user signed up services (such as for 
                   notification to a subscribed message thread), and occasionally for messages from the system 
                   administrators. Your email is not sold or given to any other identity. Nor will it be 
-                  displayed on the website for spammers to pickup.
-                  <br />&nbsp;
+                  displayed on the website for spammers to pickup.<br />&nbsp;
                 </td>
               </tr>
               <tr>
@@ -48,82 +46,63 @@
               <tr>
 		<th>&nbsp;</th>
 		<td>
-			Your password must be at least 5 characters. It is highly
-			suggested that it contain letters, numbers, spaces and other punctuation. However, ensure that
-			you can remember it!
-			<br />&nbsp;
+		  Your password must be at least 5 characters. It is highly
+		  suggested that it contain letters, numbers, spaces and other punctuation. However, ensure that
+		  you can remember it!<br />&nbsp;
 		</td>
 	</tr>
-		<tr>
-			<th nowrap="nowrap">Security Question:</th>
-			<td>
-				<input type="text" id="security_question" name="security_question" size="60" 
-					value="<%= @security_question %>" />
-			</td>
-		</tr>
-		<tr>
-			<th>&nbsp;</th>
-			<td>
-				In the event that you have forgotten your password or other vital
-				information, this question will be presented to you for validation.
-				Please make this question something you will know the answer to but
-				is not something publicly known.
-			</td>
-		</tr>
-		<tr>
-			<th nowrap="nowrap">Security Answer:</th>
-			<td><input type="text" name="security_answer" size="60" value="<%= @security_answer %>" /></td>
-		</tr>
-		<tr>
-			<th>&nbsp;</th>
-			<td>
-				This is the answer that the system will compare to. Please note that
-				this answer is not stored in on the OpenEuphoria.org website in textual
-				form. It is stored in an a manner that cannot be decrypted. To compare
-				the answer given to the answer stored, the system will encrypt the new
-				answer and compare the two encrypted hashes. This protects your answer
-				from even those who have access to the database.
-			</td>
-		</tr>
-                <tr>
-		<th>Captcha:</th>
+	<tr>
+		<th nowrap="nowrap">Security Question:</th>
 		<td>
-			<script type="text/javascript"
-			   src="http://api.recaptcha.net/challenge?k=<%= @re_public_key %>">
-			</script>
-
-			<noscript>
-			   <iframe src="http://api.recaptcha.net/noscript?k=<%= @re_public_key %>"
-			       height="300" width="500" frameborder="0"></iframe><br>
-			   <textarea name="recaptcha_challenge_field" rows="3" cols="40">
-			   </textarea>
-			   <input type="hidden" name="recaptcha_response_field" 
-			       value="manual_challenge">
-			</noscript>
+			<input type="text" id="security_question" name="security_question" size="60" 
+				value="<%= @security_question %>" />
 		</td>
 	</tr>
 	<tr>
 		<th>&nbsp;</th>
 		<td>
-			The captcha is a human test. It's now required due to the spam that we have been receiving
-			recently. We're sorry for the test but in today's Internet world, such tests are becoming 
-			required on many interactive web sites. As a side note, the use of reCAPTCHA helps to 
-			digitalize books, <a href="http://recaptcha.net/learnmore.html">learn more about it</a>.
-			<br />&nbsp;
+		  In the event that you have forgotten your password or other vital
+		  information, this question will be presented to you for validation.
+		  Please make this question something you will know the answer to but
+		  is not something publicly known.<br />&nbsp;
+		</td>
+	</tr>
+	<tr>
+		<th nowrap="nowrap">Security Answer:</th>
+		<td>
+                  <input type="text" name="security_answer" size="60" value="<%= @security_answer %>" />
+                </td>
+	</tr>
+	<tr>
+		<th>&nbsp;</th>
+		<td>
+		  This is the answer that the system will compare to. Please note that
+		  this answer is not stored in on the OpenEuphoria.org website in textual
+		  form. It is stored in an a manner that cannot be decrypted. To compare
+		  the answer given to the answer stored, the system will encrypt the new
+		  answer and compare the two encrypted hashes. This protects your answer
+		  from even those who have access to the database.<br />&nbsp;
+		</td>
+	</tr>
+        <tr>
+		<th>&nbsp;</th>
+		<td>
+		  <div class="g-recaptcha" data-sitekey="<%= @re_public_key %>"></div>
+		  <script src="https://www.google.com/recaptcha/api.js"></script>
 		</td>
 	</tr>
 	<tr>
 		<th>&nbsp;</th>
 		<td>
-			<input class="button" type="submit" name="login" value="Sign Up" />
-			<input class="button" type="submit" name="forgot_password" value="Forgot Password" />
+		  <input class="button" type="submit" name="login" value="Sign Up" />
+		  <input class="button" type="submit" name="forgot_password" value="Forgot Password" />
 		</td>
 	</tr>
 </table>
 </form>
 
 <script type="text/javascript">
-	$('code').focus();
+  $('code').focus();
 </script>
 
 <br class="clear" />
