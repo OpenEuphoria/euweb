@@ -1,0 +1,11 @@
+docs/
+htdocs/.htaccess*
+htdocs/euweb.cgi
+htdocs/euweb.ex
+htdocs/euweb.log
+htdocs/euweb.sh
+source/config_*.e
+eu.cfg
+*.err
+*.pp.etag
+*.pp.etml
