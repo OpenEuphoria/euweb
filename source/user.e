@@ -476,8 +476,7 @@ sequence forgot_password_invars = {
  	{ wc:SEQUENCE, "security_answer", "" },
 	{ wc:SEQUENCE, "password", "" },
 	{ wc:SEQUENCE, "password_confirm", "" },
-	{ wc:SEQUENCE, "recaptcha_challenge_field", "" },
-	{ wc:SEQUENCE, "recaptcha_response_field", "" }
+	{ wc:SEQUENCE, "g-recaptcha-response" },
 }
 
 public function validate_forgot_password(integer data, map vars)
@@ -499,20 +498,15 @@ public function validate_forgot_password(integer data, map vars)
 
 	-- No reason to do the costly tests if we already have errors.
 	if not has_errors(errors) then
-		sequence recaptcha_url = "http://api-verify.recaptcha.net/verify"
-		sequence postdata = {
-				{ "privatekey", RECAPTCHA_PRIVATE_KEY },
-				{ "remoteip", server_var("REMOTE_ADDR") },
-				{ "challenge", map:get(vars, "recaptcha_challenge_field") },
-				{ "response", map:get(vars, "recaptcha_response_field") }
-			}
 
-		object recaptcha_result = http_post(recaptcha_url, postdata)
-		if length(recaptcha_result) < 2 then
-	 		errors = wc:add_error(errors, "recaptcha", "Could not validate reCAPTCHA.")
-		elsif not match("true", recaptcha_result[2]) = 1 then
-			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response was incorrect.")
+		integer status = validate_recaptcha( vars )
+
+		if status < 0 then
+			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA validation failed." )
+		elsif status = 0 then
+			errors = wc:add_error(errors, "recaptcha", "reCAPTCHA response incorrect." )
 		end if
+
 	end if
 
 	return errors
