@@ -2,8 +2,8 @@
 
 ## Dependencies
 
-* http://bitbucket.org/jcowgar/edbi
-* http://bitbucket.org/jcowgar/webclay
+* https://github.com/OpenEuphoria/edbi
+* https://github.com/OpenEuphoria/webclay
 * https://github.com/OpenEuphoria/creole
 
 ## Configuration
